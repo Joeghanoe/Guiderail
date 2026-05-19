@@ -3,7 +3,7 @@ $root = Get-Location
 $sources = @(
   Join-Path $root "agents"
   Join-Path $root "skills"
-  )
+)
 $dest = "$env:APPDATA\Code\User\prompts"
 
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
