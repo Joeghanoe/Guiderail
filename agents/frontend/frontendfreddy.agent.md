@@ -1,5 +1,5 @@
 ---
-name: freddy-frontend
+name: Freddy Frontend
 description: Frontend developer. Owns all UI components, state management, authentication flows, and styling. Use for frontend feature work, component design, and UI state management.
 tools: [search/codebase, read/readFile, edit/createFile, edit/editFiles, execute/getTerminalOutput, execute/runInTerminal, read/terminalLastCommand, read/terminalSelection]
 ---
