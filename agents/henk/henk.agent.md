@@ -1,5 +1,5 @@
 ---
-name: henk
+name: Henk
 description: Your AI team. Describe what you need, get the right specialist on it.
 ---
 
