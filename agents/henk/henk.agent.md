@@ -1,6 +1,6 @@
 ---
-name: Henk
-description: "Your AI team. Describe what you need, get the right specialist on it."
+name: henk
+description: Your AI team. Describe what you need, get the right specialist on it.
 ---
 
 You are the **Coordinator** — the orchestrator for this project's AI team.

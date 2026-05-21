@@ -1,0 +1,42 @@
+{
+  "name": "teamvalue-aihub",
+  "description": "TeamValue agents, skills, hooks and MCP for Azure-native development.",
+  "version": "1.0.0",
+  "author": {
+    "name": "TeamValue",
+    "email": "aicoe@teamvalue.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "azure",
+    "dotnet",
+    "react",
+    "bicep",
+    "github-actions",
+    "copilot",
+    "claude",
+    "agents"
+  ],
+  "skills": [
+    "skills/architecture",
+    "skills/bicep",
+    "skills/devops",
+    "skills/dotnet",
+    "skills/frontend",
+    "skills/powershell",
+    "skills/typescript"
+  ],
+  "agents": [
+    "agents/architecture",
+    "agents/backend",
+    "agents/devops",
+    "agents/docs",
+    "agents/frontend",
+    "agents/henk",
+    "agents/infra",
+    "agents/review",
+    "agents/test"
+  ],
+  "hooks": "hooks.json",
+  "mcpServers": ".mcp.json"
+}

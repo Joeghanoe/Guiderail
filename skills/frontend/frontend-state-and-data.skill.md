@@ -1,8 +1,6 @@
 ---
-name: Frontend State And Data
-id: frontend-state-and-data
+name: frontend-state-data
 description: Frontend state management and async data-loading patterns for TeamValue UI.
-applyTo: '**/*.ts,**/*.tsx'
 ---
 
 Use this skill for stores, hooks, query behavior, redirects, and async page states.

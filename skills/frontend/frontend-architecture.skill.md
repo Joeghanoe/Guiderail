@@ -1,8 +1,6 @@
 ---
-name: Frontend Architecture
-id: frontend-architecture
+name: frontend-architecture
 description: Frontend architecture and composition constraints for TeamValue TypeScript/React work.
-applyTo: '**/*.ts,**/*.tsx'
 ---
 
 Use this skill for component boundaries, UI composition, and frontend architectural consistency.

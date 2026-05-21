@@ -1,8 +1,6 @@
 ---
-name: Frontend Security And Review
-id: frontend-security-and-review
+name: frontend-security
 description: Frontend security guardrails and review checklist for TeamValue UI changes.
-applyTo: '**/*.ts,**/*.tsx'
 ---
 
 Use this skill during implementation and review to enforce client-side security and quality gates.
