@@ -210,7 +210,7 @@ $importLine
     $userMcp = "$claudeRoot\.mcp.json"
     if (Test-Path $pluginMcp) {
         $mcp = Get-Content -Raw -Path $pluginMcp | ConvertFrom-Json
-        if ($mcp.mcpServers -and $mcp.mcpServers.PSObject.Properties.Count -gt 0) {
+        if ($mcp.mcpServers -and @($mcp.mcpServers.PSObject.Properties).Count -gt 0) {
             Write-Host "  [Claude] Merging MCP servers..."
             $user = if (Test-Path $userMcp) { Get-Content -Raw -Path $userMcp | ConvertFrom-Json } else { [pscustomobject]@{ mcpServers = [pscustomobject]@{} } }
             foreach ($prop in $mcp.mcpServers.PSObject.Properties) {
