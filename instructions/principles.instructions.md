@@ -1,54 +1,164 @@
 ---
 applyTo: '**'
 ---
-
 # Architectural Principles
 
-These rules apply across the entire codebase. Always cite the principle ID when flagging a violation.
+## Purpose
 
-## Service Design
+Normative architectural principles used by AI agents for guidance and validation.
 
-- **A.8** — Services operate independently. No tight coupling between services.
-- **A.9** — All service interfaces are versioned (`/api/v{N}/`), stable, and backward-compatible.
-- **A.12** — Every service has a single responsibility.
-- **A.13** — Each service owns its own fit-for-purpose datastore. No shared datastores.
-- **A.15** — Async-first. Synchronous calls require explicit justification.
-- **A.16** — Services do not call each other directly. Use a broker.
-- **A.17** — Replicated data is eventually consistent. No distributed transactions.
-- **A.18** — Shared datastores between services are not allowed.
-- **A.21** — Controlled autonomy. Automation and AI operate within bounded controls; destructive actions always require a human approval gate.
+## Usage by AI Agents
 
-## Standardization
+AI agents MUST:
+- always reference Principle IDs explicitly
+- never infer additional principles
+- never reinterpret principles beyond stated intent
+- treat principles as mandatory unless explicitly exempted
 
-- **A.1** — Prefer SaaS over PaaS. Justify any deviation.
-- **A.3** — One framework per frontend domain, one per backend domain.
-- **A.20** — Every architectural choice includes a cost estimate.
+---
 
-## Cloud Principles
+# A.1 – SaaS first, PaaS second
+Category: Standardization
+Guidance:
+- Prefer SaaS solutions over custom-built platforms
+- Prefer managed cloud services over self-hosted infrastructure
+- Avoid unnecessary infrastructure ownership
 
-- **C.1** — Four Eyes. No unreviewed changes reach production.
-- **C.2** — No PII in logs. No privacy-sensitive data (email, tokens, passwords) in logs or responses.
-- **C.3** — Automated key rollovers. No hardcoded secrets, connection strings, or API keys in code or config.
-- **C.5** — Stateless services. No in-process state between requests; externalize all state.
-- **C.6** — Just in Time Access. Minimal-scope, time-limited access; no standing admin access to production.
-- **C.8** — Roll Forward. Fix forward, no rollbacks.
-- **C.9** — DRY. No duplicated logic or configuration.
-- **C.11** — Everything as Code. No manual portal or infrastructure changes.
-- **C.12** — Versioned interfaces. Always version before publishing.
-- **C.14** — Supported frameworks n-1. Only current and immediate predecessor framework version in use.
-- **C.15** — Everything is auditable. Full traceability required on all operations.
-- **C.16** — POLA. Principle of Least Astonishment. Behavior must be predictable.
-- **C.17** — All code is testable. No feature ships without a test.
-- **Clean Code** — Readable, maintainable, and consistent codebase.
+---
 
-## Security
+# A.2 – Best of Suite before Best of Breed
+Category: Costs
+Guidance:
+- Prefer integrated platform ecosystems
+- Minimize vendor fragmentation
+- Reduce operational complexity and integration costs
 
-- **S.1** — Least privilege on all identities and access.
-- **S.2** — Just in Time. Grant access on demand, revoke after use, log every action.
-- **S.3** — Minimize attack surface. No unnecessary exposure.
-- **S.4** — Secure defaults. Secure out of the box; no debug config or disabled auth in production.
-- **S.5** — Defense in depth.
-- **S.6** — Fail securely. No sensitive data in error responses or logs.
-- **S.7** — Segregation of duties.
-- **S.8** — Avoid security by obscurity. Controls must work even if URLs and code are known.
-- **S.9** — Fix security issues correctly. No SQL injection, unsanitized paths, hardcoded secrets, or PII in logs.
+---
+
+# A.3 – One development framework / language per domain
+Category: Standardization
+Guidance:
+- Standardize technology stacks within domains
+- Reduce cognitive load and operational fragmentation
+
+---
+
+# A.4 – Proven Cloud Design Patterns
+Category: Standardization
+Guidance:
+- Use established cloud-native architectural patterns
+- Avoid experimental or unproven approaches for core systems
+
+---
+
+# A.5 – Multi-tenant by design
+Category: Costs
+Guidance:
+- Design systems for tenant isolation and shared scalability
+- Avoid single-tenant assumptions
+
+---
+
+# A.6 – Auto scaling by design
+Category: Costs
+Guidance:
+- Systems should scale automatically based on demand
+
+---
+
+# A.7 – Self service by design
+Category: Costs
+Guidance:
+- Reduce operational dependency on centralized teams
+
+---
+
+# A.8 – Independent services
+Category: Service design
+Guidance:
+- Services must be independently deployable and operable
+
+---
+
+# A.9 – Service interface versioning
+Category: Service design
+
+Guidance:
+- Service contracts must evolve safely
+
+---
+
+# A.10 – Identity and Access Management
+Category: Standardization
+Guidance:
+- Centralize identity and authorization patterns
+
+---
+
+# A.11 – Monitoring
+Category: Operability
+Guidance:
+- Systems must be observable and operable
+
+---
+
+# A.12 – Single service responsibility
+Category: Service design
+Guidance:
+- Services should own a single business capability
+
+---
+
+# A.13 – Fit-for-purpose datastores
+Category: Service design
+Guidance:
+- Select datastores based on workload characteristics
+
+---
+
+# A.14 – Custom code only for business value
+Category: Customization
+Guidance:
+- Avoid unnecessary bespoke implementations
+
+---
+
+# A.15 – Asynchronous before synchronous communication
+Category: Communication
+Guidance:
+- Prefer event-driven and asynchronous integration patterns
+
+---
+
+# A.16 – No direct service dependencies
+Category: Communication
+Guidance:
+- Avoid tight runtime coupling between services
+
+---
+
+# A.17 – Eventual consistency for replication
+Category: Data integrity
+Guidance:
+- Distributed systems should tolerate eventual consistency
+
+---
+
+# A.18 – No shared datastores
+Category: Data integrity
+Guidance:
+- Services must own their own data
+
+---
+
+# A.19 – Reuse at design time, not runtime
+Category: Reusability
+Guidance:
+- Favor reusable patterns and libraries over runtime coupling
+
+---
+
+# A.20 – Cost justification for all decisions
+Category: Costs
+Guidance:
+- All architectural decisions must consider cost impact
