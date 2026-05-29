@@ -1,4 +1,5 @@
 ---
+applyTo: '**'
 description: Global TeamValue engineering defaults — applies in every conversation.
 ---
 
