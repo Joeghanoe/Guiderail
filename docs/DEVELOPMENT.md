@@ -6,7 +6,7 @@ This document is the entry point for engineers contributing skills, agents, hook
 
 - **Kebab-case names everywhere.** Plugin `name`, skill `name`, agent `name`, MCP server keys. Lowercase letters, digits, hyphens. No slashes. No colons. No uppercase. No underscores.
 - **The `name:` in frontmatter MUST match the leaf folder name** for skills. Mismatch = silent load failure.
-- **Bump versions in lockstep.** `plugin.json`, `.claude-plugin/plugin.json`, and `.github/plugin/marketplace.json` all carry `version` — bump them together.
+- **Bump versions in lockstep.** `plugin.json` and `.github/plugin/marketplace.json` both carry `version` — bump them together.
 
 ## Add a new skill
 
@@ -33,9 +33,8 @@ This document is the entry point for engineers contributing skills, agents, hook
    1. ...
    ```
 4. Place supporting documents under `skills/<name>/references/`. Keep individual reference files focused — large files degrade response quality.
-5. Add the skill path to both manifests:
+5. Add the skill path to the manifest:
    - `plugin.json` → `skills` array
-   - `.claude-plugin/plugin.json` → `skills` array
 
 ## Add a new agent
 
@@ -49,8 +48,7 @@ This document is the entry point for engineers contributing skills, agents, hook
    tools: [search/codebase, read/readFile, ...]   # optional — Copilot tool IDs
    ---
    ```
-4. If you add a new category folder, add it to the `agents` array in both manifests.
-5. Note the dual-target rename: `install.ps1` rewrites `<name>.agent.md` → `~/.claude/agents/<name>.md` for Claude. Don't author two copies — author once under `agents/`.
+4. If you add a new category folder, add it to the `agents` array in the manifest.
 
 ## Add a hook
 
@@ -61,14 +59,13 @@ This document is the entry point for engineers contributing skills, agents, hook
   "PreToolUse": [
     {
       "matcher": "Edit|Write",
-      "command": "pwsh -NoProfile -File ${CLAUDE_PLUGIN_ROOT}/hooks/check-secrets.ps1"
+      "command": "pwsh -NoProfile -File hooks/check-secrets.ps1"
     }
   ]
 }
 ```
 
 - Place hook scripts under `hooks/` (create the folder).
-- Use the `${CLAUDE_PLUGIN_ROOT}` substitution so paths are portable.
 - Hook scripts must exit `0` to allow, non-zero to block.
 
 Document each hook in `docs/HOOKS.md` (create when the first hook lands) — engineers need to understand which guardrails are active before they install.
@@ -90,7 +87,7 @@ Document each hook in `docs/HOOKS.md` (create when the first hook lands) — eng
 
 The `teamvalue-context` server is per-engineer-machine-specific — the principles folder is at a different absolute path for each engineer. Don't hardcode an absolute path; either:
 - Use a documented environment variable (`$env:TEAMVALUE_PRINCIPLES_PATH`), set during onboarding, or
-- Extend `install.ps1` to prompt for the path at install time and write the resolved value into `~/.claude/.mcp.json` only (leave the repo `.mcp.json` template generic).
+- Extend `install.ps1` to prompt for the path at install time and write the resolved value locally (leave the repo `.mcp.json` template generic).
 
 ## Updating instructions
 
@@ -99,14 +96,13 @@ Top-level instructions live in `instructions/`:
 - `principles.instructions.md` — TeamValue principle reference
 - `security.instructions.md` — security defaults
 
-These are imported into `~/.claude/CLAUDE.md` via `@import` by `install.ps1`. Edits propagate automatically when symlinks are used.
+These live in `instructions/` and are loaded automatically by GitHub Copilot via the plugin manifest. Edits propagate without reinstall.
 
 ## Version bump checklist
 
 When releasing a change:
 
 - [ ] Bump `version` in `plugin.json`
-- [ ] Bump `version` in `.claude-plugin/plugin.json` (must match)
 - [ ] Bump `metadata.version` and `plugins[0].version` in `.github/plugin/marketplace.json`
 - [ ] Run `pwsh ./scripts/validate.ps1` (once written — see verification section of the plan)
 - [ ] Update `README.md` if user-facing behaviour changed
