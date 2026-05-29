@@ -1,5 +1,5 @@
 ---
-name: code-review
+name: review
 description: TeamValue code review process, severity model, and verdict format. Use when reviewing a diff, pull request, or change. Delegates the substance to the canonical principle and security files.
 ---
 

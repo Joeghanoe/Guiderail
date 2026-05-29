@@ -1,5 +1,5 @@
 ---
-name: MSSQL Database Development
+name: mssql
 description: Guidelines and constraints for designing, querying, and integrating with Microsoft SQL Server databases. Focuses on performance, maintainability, and correct usage from backend code.
 ---
 

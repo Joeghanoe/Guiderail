@@ -1,5 +1,5 @@
 ---
-name: NoSQL / Cosmos DB Development
+name: cosmos
 description: Guidelines and constraints for designing and using NoSQL databases (with focus on Azure Cosmos DB). Ensures scalable, performant, and correct data modeling and usage from backend code.
 ---
 

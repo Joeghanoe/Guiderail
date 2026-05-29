@@ -1,5 +1,5 @@
 ---
-name: Backend API Development
+name: api
 description: Guidelines and constraints for designing and implementing robust, secure, and maintainable backend APIs.
 ---
 

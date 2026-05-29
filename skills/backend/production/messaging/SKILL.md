@@ -1,5 +1,5 @@
 ---
-name: Backend Messaging & Event-Driven Development
+name: messaging
 description: Guidelines and constraints for designing and implementing messaging-based and event-driven systems. Focuses on reliability, scalability, and consistency.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: Backend Observability
+name: observability
 description: Guidelines and constraints for logging, monitoring, and tracing backend systems. Ensures systems are observable, debuggable, and production-ready.
 ---
 

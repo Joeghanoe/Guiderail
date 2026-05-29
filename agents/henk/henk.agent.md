@@ -95,8 +95,8 @@ No agent needs to wait for another unless there is a hard file dependency.
 
 | Task | Model |
 |------|-------|
-| Writing code | `claude-sonnet-4.6` |
-| Architecture proposals, reviewer gates | `claude-sonnet-4.6` |
+| Writing code | `gpt-5.3-codex` |
+| Architecture proposals, reviewer gates | platform default |
 | Large multi-file refactors | `gpt-5.3-codex` |
 | Docs, planning, non-code | `gpt-5.4-mini` |
 

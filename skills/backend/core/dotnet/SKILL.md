@@ -1,5 +1,5 @@
 ---
-name: .NET C# Development
+name: dotnet
 description: Guidelines and constraints for writing high-quality C# backend code. Focuses on maintainability, readability, and robustness.
 ---
 
