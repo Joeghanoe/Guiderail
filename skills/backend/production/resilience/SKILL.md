@@ -1,5 +1,5 @@
 ---
-name: Backend Resilience
+name: resilience
 description: Guidelines and constraints for building resilient backend systems. Focuses on handling failures, retries, and ensuring system stability under load and partial outages.
 ---
 
