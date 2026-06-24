@@ -28,8 +28,10 @@ You are finishing a code change. Before reporting work as done, run this verific
 
 ## SonarQube (if installed)
 
-- If the project uses SonarQube — a SonarLint / SonarQube for IDE extension, a `sonar-project.properties`, or a `sonar-scanner` CLI — **run analysis on the change** before finishing.
-- Scope it to the **staged files on the current branch**, not the whole tree: analyze the staged diff (e.g. `git diff --cached --name-only`) so findings map to your change.
+- TeamValue uses the **SonarQube for IDE** VS Code extension (`SonarSource.sonarlint-vscode`, formerly SonarLint). It analyzes in real time as files are opened and saved and lists findings in the editor's **Problems** panel; in Connected Mode it applies the team's server-side rules and quality profile.
+- This extension is **editor-only — it has no CLI**, so an agent cannot invoke it directly. Treat the findings it surfaces in the **Problems** panel for the staged files on the current branch as the source of truth, and resolve them before finishing.
+- Scope attention to the **staged files on the current branch** (e.g. `git diff --cached --name-only`) so findings map to your change, not the whole tree.
+- Only if the project separately configures a `sonar-scanner` CLI or `sonar-project.properties` can analysis be driven from the command line; otherwise rely on the extension's reported issues.
 - Treat new findings the same as lint: fix them, or if one must stand, mark it with a scoped, justified suppression (e.g. a `// NOSONAR <reason>` or rule-level exclusion) — never a blanket project disable.
 - Honour the project's quality gate. Do not lower thresholds or exclude files to pass.
 - If SonarQube is not installed/configured, skip this step and say so — do not install or configure it unprompted.
@@ -60,7 +62,7 @@ You are finishing a code change. Before reporting work as done, run this verific
 
 - Was the format command run (or its absence stated)?
 - Were all newly introduced lint issues fixed, or each suppression scoped and justified?
-- If SonarQube is present, was it run on the staged files and its findings resolved or justified?
+- If SonarQube is present, were its findings for the staged files (Problems panel, or `sonar-scanner` if configured) resolved or justified?
 - Does the build compile cleanly, with no new warnings?
 - Were the relevant tests run and do they pass?
 - Does the behavior match the spec, not just the type checker?
