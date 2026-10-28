@@ -1,0 +1,119 @@
+# PR verification for any TeamValue repo: the deterministic gate first, then the AI review.
+#
+# In the repo's pipeline:
+#   resources:
+#     repositories:
+#       - repository: harness
+#         type: git
+#         name: TeamValue - AiHub/TeamValue.AiHub.GitHubCopilot
+#         ref: refs/tags/<harness version>        # a tag can move; harnessCommit below is the real pin
+#   jobs:
+#     - job: Verify
+#       condition: eq(variables['Build.Reason'], 'PullRequest')
+#       pool: { vmImage: ubuntu-latest }
+#       variables:
+#         - group: teamvalue.harness             # AnthropicApiKey (secret)
+#       steps:
+#         - template: pipelines/ai-review.yml@harness
+#           parameters:
+#             harnessCommit: <full commit SHA of that tag>
+#             claudeCodeVersion: <exact npm version of @anthropic-ai/claude-code>
+#
+# The job holds no service connection: the reviewer reads untrusted PR content (SEC.1) and can only
+# Read/Grep/Glob. The build service needs "Contribute to pull requests" on the repo to post threads.
+# The harness is never copied into the repo: it is checked out next to it at the pinned commit and linked as
+# .harness/ for this run. Blocking: the pin, verify and the scenario check. Advisory: the AI review.
+
+parameters:
+  - name: harnessCommit
+    type: string
+  - name: verifyCommand
+    type: string
+    default: ./scripts/verify.sh
+  - name: scenarioConfig
+    type: string
+    default: .harness-scenarios.json
+  - name: claudeCodeVersion
+    type: string
+  - name: aiReview
+    type: boolean
+    default: true
+
+steps:
+  - checkout: self
+    path: s/repo
+    fetchDepth: 0
+  - checkout: harness
+    path: s/harness
+
+  - bash: |
+      set -euo pipefail
+      actual="$(git -C ../harness rev-parse HEAD)"
+      [[ "$actual" == "${{ parameters.harnessCommit }}" ]] || {
+        echo "harness is at $actual, the pipeline pins ${{ parameters.harnessCommit }}" >&2
+        exit 1
+      }
+      ln -sfn ../harness/harness .harness
+      echo "${{ parameters.harnessCommit }}" >"$(Agent.TempDirectory)/harness-commit"
+    displayName: "Harness at the pinned commit"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - bash: |
+      set -euo pipefail
+      mkdir -p "$(Agent.TempDirectory)/review"
+      target="origin/${SYSTEM_PULLREQUEST_TARGETBRANCH#refs/heads/}"
+      git diff --name-only "$target"...HEAD >"$(Agent.TempDirectory)/review/changed.txt"
+      git diff "$target"...HEAD >"$(Agent.TempDirectory)/review/diff.patch"
+      project="$(jq -rn --arg p "$SYSTEM_TEAMPROJECT" '$p | @uri')"
+      curl -sSf -H "Authorization: Bearer $SYSTEM_ACCESSTOKEN" \
+        "${SYSTEM_COLLECTIONURI%/}/$project/_apis/git/repositories/$BUILD_REPOSITORY_ID/pullRequests/$SYSTEM_PULLREQUEST_PULLREQUESTID?api-version=7.1" |
+        jq -r '.description // ""' >"$(Agent.TempDirectory)/review/pr.txt"
+      echo "$(wc -l <"$(Agent.TempDirectory)/review/changed.txt") changed file(s)"
+    displayName: "Collect the change"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+  - bash: ${{ parameters.verifyCommand }}
+    displayName: "Verify (T.1)"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - bash: |
+      python3 .harness/tools/testing/check-scenarios.py --config "${{ parameters.scenarioConfig }}" \
+        --description "$(Agent.TempDirectory)/review/pr.txt" <"$(Agent.TempDirectory)/review/changed.txt"
+    displayName: "Scenario for changed behaviour (T.5)"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - bash: |
+      python3 .harness/tools/iac/check-iac.py --description "$(Agent.TempDirectory)/review/pr.txt" \
+        <"$(Agent.TempDirectory)/review/changed.txt"
+    displayName: "IaC settings (IAC.2, IAC.3, IAC.4)"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - ${{ if eq(parameters.aiReview, true) }}:
+      - bash: |
+          set -euo pipefail
+          r="$(Agent.TempDirectory)/review"
+          npm install --global "@anthropic-ai/claude-code@${{ parameters.claudeCodeVersion }}" >/dev/null
+          .harness/tools/review/review.sh "$r"
+          .harness/tools/azure-devops/ado-post-findings.sh "$r/findings.json"
+          jq -n --arg harness "$(cat "$(Agent.TempDirectory)/harness-commit")" --slurpfile sel "$r/selected.json" --slurpfile f "$r/findings.json" \
+            '{harness: $harness, rules: ($sel[0].rules | to_entries | map(.value)), findings: ($f[0] | length),
+              blockers: ($f[0] | map(select(.severity == "blocker")) | length)}' >"$r/receipt.json"
+          cat "$r/receipt.json"
+        displayName: "AI review (advisory)"
+        workingDirectory: $(Pipeline.Workspace)/s/repo
+        continueOnError: true
+        env:
+          ANTHROPIC_API_KEY: $(AnthropicApiKey)
+          SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+
+      - publish: $(Agent.TempDirectory)/review
+        artifact: harness-review
+        displayName: "Publish review receipt"
+        condition: always()
+
+  # Leave nothing behind, also on self-hosted agents and after a failed step: the repo never holds the harness.
+  - bash: rm -rf "$(Pipeline.Workspace)/s/repo/.harness" "$(Pipeline.Workspace)/s/harness"
+    displayName: "Remove the harness checkout"
+    condition: always()

@@ -1,0 +1,9 @@
+# Rules
+
+* [CODE.1 Remove what is not used](code-1-remove-what-is-not-used.md) - Commented-out code, unused usings, packages, settings, files and parameters are deleted, not left behind; version control remembers them.
+* [CODE.2 Failures surface; they are not swallowed or hidden](code-2-fail-loudly.md) - An exception is handled where something useful can be done, otherwise it propagates; a failed response is checked, not ignored; one failure is logged once.
+* [CODE.3 Names and parameters say what they are for, and flags do not hide logic](code-3-names-say-what-it-is-for.md) - A name states the purpose; a boolean parameter that switches behaviour is split or named for the behaviour; a parameter that does nothing when false does not exist.
+* [CODE.4 A name or key used in more than one place is written once](code-4-write-a-name-once.md) - Setting keys and other repeated strings are constants; the name of a method is taken with nameof, never retyped; repeated code becomes a method.
+* [CODE.5 A class does one job and every type lives in its own file](code-5-one-responsibility.md) - A class owns one responsibility, the decision about a dependency stays in the class that talks to it, unrelated entry points live in separate classes, and each type has its own file.
+* [CODE.6 Use what the platform already does before writing it again](code-6-use-what-the-platform-does.md) - A check, validation or policy the platform provides is configured, not re-implemented; the reason to add your own is written next to it.
+* [CODE.7 Files that must change together are linked: listed in the change map, and checked where a check is possible](code-7-linked-changes.md) - A name, code or format that two files depend on across code, docs, infra, config and queries is listed in the repo's change map, and a test or gate fails when one side changes without the other.

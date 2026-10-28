@@ -1,0 +1,5 @@
+{
+  "min_pass_rate": 0.85,
+  "min_scenarios": 7,
+  "critical_repeats": 3
+}
