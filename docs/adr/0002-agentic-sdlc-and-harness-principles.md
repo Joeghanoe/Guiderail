@@ -52,8 +52,14 @@ A reusable evaluation corpus and evidence contract become maintained engineering
 ## Questions for ADR 0002 interview
 
 1. Which company principles are mandatory **hard gates**, and which are recommendations?
+   - **Answer:** All of them apply, but none are hard gates. Exceptions can be made with the right grounding.
 2. Who can approve deviations/exceptions, and are exceptions per-story, per-repository, or time-limited?
+   - **Answer:** Exceptions can be made at any level: the smallest owning authority decides, as long as it is documented.
 3. Should the harness prescribe a fixed engineering workflow or allow agent choice as long as outcomes and evidence meet the contract?
+   - **Answer:** The harness accepts any workflow; the described one is a means, not a mandate. Coding standards still apply.
 4. Which steps may access live customer/cloud environments, and with what permissions?
+   - **Answer:** Read-only only. Humans apply updates, creates and deletes.
 5. Who maintains and approves the eval suite and benchmark holdouts?
+   - **Answer:** The team (TeamValue/Bizure developers).
 6. What evidence is mandatory for a PR to be considered review-ready?
+   - **Answer:** When the requirements/acceptance criteria are proven by an automated test or other proof.

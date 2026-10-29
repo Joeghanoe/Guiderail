@@ -57,10 +57,15 @@ flowchart LR
 ## Open questions
 
 1. Is portability across agent CLIs sufficient, or must direct API/in-process model execution also be supported?
+   - **Answer:** Portability is enough. In practice GitHub Copilot will be used; Claude Code and Codex may be used too.
 2. Which minimal capabilities must an adapter expose before it is considered supported?
+   - **Vegviser guidance (AI Agent Operating Standard, Tool Adapter Contract; to confirm):** an adapter must load the shared instructions through native discovery, a thin adapter file or injected context, and verification must show the content was actually loaded, not just that the file exists. A tool that can do none of these is not supported.
 3. How will model-specific skills, tools or context-size differences be reported and normalized?
+   - **Vegviser guidance (AI Agent Operating Standard and AI Governance; to confirm):** register each model's owner, version, capabilities, limitations and cost, and treat a model update as an architectural change. Cross-tool checks compare decisions and authority use, not wording, and record the tool and version, evidence that instructions loaded, and unsupported capabilities.
 4. Which provider authentication flows are supported for local interactive versus unattended CI use?
+   - **Answer:** Managed Identity only, preferably.
 5. What is the threshold for adopting a cheaper model: equal hard-gate compliance, minimum task success, maximum human review effort, or another criterion?
+   - **Answer:** Task success and quality.
 
 ## Acceptance criteria for ratification
 

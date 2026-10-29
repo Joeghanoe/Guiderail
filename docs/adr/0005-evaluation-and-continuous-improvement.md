@@ -63,11 +63,16 @@ The harness must make company engineering principles measurable, rather than rel
 ## Open questions
 
 1. Who can approve a new rule or change an existing rule's severity?
+   - **Answer:** Anyone can propose. The team must agree and the behaviour (eval) must be validated.
 2. What minimum evidence constitutes a review-ready PR?
+   - **Answer:** That it works or is measurably better. (Recorded against this question; confirm it was not meant for Q5.)
 3. Which scenarios form calibration, regression and holdout sets?
 4. Which compliance rules are hard gates, advisory warnings or legitimately project-specific?
+   - **Answer:** The human must stay in control.
 5. What constitutes a meaningful improvement: pass rate, review time, reliability, cost, or all of these?
+   - **Answer:** All of them.
 6. How are false positives, rule disagreements and emergency exceptions reported?
+   - **Answer:** In the repo, the Teams channel and in team meetings.
 
 ## Acceptance criteria for ratification
 

@@ -123,10 +123,15 @@ flowchart TD
 ## Open decisions / ratification gates
 
 1. Who is the accountable story owner within the collectively owning team, and how is that recorded?
+   - **Answer:** Business and developer together, who give the commitment. Recorded in the backlog tool in use (Azure DevOps, GitHub Issues or Jira).
 2. Which objective gates are mandatory before automatic TEST/ACC promotion, and who may grant exceptions?
+   - **Answer:** Depends on the customer: TEST and ACC may or may not be gated. DEV is for the developers and is not gated.
 3. What constitutes a versioned, human-approved specification in Azure Boards / future GitHub workflows?
+   - **Answer:** The specification is registered in the backlog tool and the docs in the repo are kept up to date. The combination keeps decisions traceable through time.
 4. Does company policy permit exceptional self-review/hotfix procedures to continue unchanged for agent-authored changes?
+   - **Answer:** No. A human always stays in control for PRD.
 5. How are acceptance tests independently maintained when requirements change after harness execution begins?
+   - **Answer:** Acceptance tests live in a separate repo. When requirements change, the regression/acceptance scenarios change with them.
 
 ## Decision review triggers
 

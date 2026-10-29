@@ -49,7 +49,12 @@ This boundary keeps knowledge generation, business authorization, implementation
 ## Consequences and open questions
 
 - Need a definition of spec approval (status, field, comment, or artifact signature).
+  - **Answer:** Answered in ADR 0001 open decision 3: the specification is registered in the backlog tool and the repo docs are kept up to date.
 - Need a safe sync strategy when an approved story changes during an agent run.
+  - **Answer:** If it changes, the user tells the agent.
 - Need agreement on whether Vegviser writes into backlog directly or produces a draft the human copies/accepts.
+  - **Answer:** Vegviser advises; the user makes the decisions. It produces a draft, not backlog writes.
 - Need a clarification loop: the harness must stop or request review if the specification is materially ambiguous.
+  - **Answer:** The agent must stop when it needs a decision it cannot make without assumptions.
 - Need to define how nonfunctional requirements and architectural constraints are injected and versioned.
+  - **Answer:** They must be specified in the spec.
