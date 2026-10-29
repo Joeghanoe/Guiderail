@@ -528,7 +528,7 @@ expect 0 "~/.harness points at this repo's bundle" test "$(readlink "$tmp/home/.
 expect 0 "~/.harness-feedback points at this repo's feedback folder" test "$(readlink "$tmp/home/.harness-feedback")" = "$here/feedback"
 expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -qF '@$native_here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
 expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 2) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
-expect 0 "/tv-review for Claude" bash -c test -f '$tmp/home/.claude/skills/tv-review/SKILL.md' 
+expect 0 "/tv-review for Claude" test -f "$tmp/home/.claude/skills/tv-review/SKILL.md" 
 expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' | grep -vq updated"
 expect 0 "uninstall runs" inst --uninstall
 expect 0 "uninstall removes links and the import" bash -c "test ! -e '$tmp/home/.harness' && test ! -e '$tmp/home/.harness-feedback' && ! grep -q 'TeamValue harness' '$tmp/home/.claude/CLAUDE.md'"

@@ -13,7 +13,8 @@ RUN apt-get update \
  && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} @openai/codex@${CODEX_VERSION} \
  && git config --system --add safe.directory '*' \
  && rm -rf /var/lib/apt/lists/*
-RUN useradd -m -u 1000 agent && mkdir -p /work /trace && chown agent /work /trace
+RUN (getent passwd 1000 | cut -d: -f1 | xargs -r userdel -r || true) \
+ && useradd -m -u 1000 agent && mkdir -p /work /trace && chown agent /work /trace
 USER agent
 ENV HOME=/home/agent DOTNET_NOLOGO=1 DOTNET_CLI_TELEMETRY_OPTOUT=1
 WORKDIR /work

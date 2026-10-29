@@ -9,7 +9,7 @@
              "--trace-dir", "{trace_dir}", "--model", "claude-sonnet-5-5"]
   },
   "isolation": {"mode": "container", "evidence": null},
-  "container": {"image": "harness-eval:local", "home_volume": "harness-eval-home", "memory": "8g", "cpus": 4, "network": "bridge"},
+  "container": {"image": "harness-eval:local", "home_volume": "harness-eval-home", "memory": "5g", "cpus": 2, "network": "bridge"},
   "protected_paths": [],
   "human_interventions": 0,
   "review_minutes": null
