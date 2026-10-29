@@ -520,6 +520,7 @@ source "$here/tests/dev-read.sh"
 source "$here/tests/spec-note.sh"
 source "$here/tests/scaffold.sh"
 source "$here/tests/density.sh"
+source "$here/tests/orchestrate-models.sh"
 
 echo
 echo "$pass passed, $fail failed"
