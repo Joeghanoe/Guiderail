@@ -13,7 +13,7 @@ Inventory of this checkout, 2026-10-29. This is an assessment, not approval of n
 ## Inputs and gaps
 
 - The imported global instructions point to `C:\Users\Verst\source\repos\werk\files\TeamValue Principles & Context\`; that path is inaccessible on this machine. The harness points to Vegviser as authority. Its completeness and currency have not been verified.
-- The two reference locations were subsequently supplied as `D:/Prototypes/Bizure.Backups` and `D:/Prototypes/Integration`. The remaining project corpus, calibration/holdout allocation, business specification and functional acceptance criteria have not been identified. Do not infer them from examples or local directories.
+- The two reference locations were subsequently supplied as `D:/Prototypes/TV/Bizure.Backups` and `D:/Prototypes/TV/TeamValue.IntegrationHub.*` (moved under TV). The remaining project corpus, calibration/holdout allocation, business specification and functional acceptance criteria have not been identified. Do not infer them from examples or local directories.
 - `harness/rules/code/code-5-one-responsibility.md` is human-verified and references P-02, with a private nested-type exception and touched-file boundary. It is currently enforced by review. The user subsequently approved the C# structural scope and fixture criteria; an explicit checker is now implemented under `harness/tools/code/`, with CI integration still open.
 - No implementation-agent runner, independent frozen grader, inherited-violation baseline, holdout controls, comparable execution budget or complete cost/trace reporting has been established by this inventory. Existing reviewer cases should not be presented as evidence of these capabilities.
 

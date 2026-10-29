@@ -42,6 +42,7 @@ expect 0 "CODE.5 checker builds" dotnet build "$h/tools/code/CheckTypes.csproj"
 expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test_code_types.py
 expect 0 "provider-neutral backup grader controls" python3 -I "$here/tests/test_backup_eval.py"
 expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_freeze_eval.py"
+expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
 
 echo "== guard-bash"
 expect 0 "dotnet test is allowed" bash_hook "dotnet test Bizure.Backup.slnx -c Release"

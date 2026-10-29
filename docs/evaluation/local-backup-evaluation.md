@@ -63,6 +63,36 @@ A local unrestricted run must be labeled exploratory with policy isolation incon
 and provider-specific trace collection must be implemented/verified separately before claiming end-to-end
 Phase 3 completion. Compare models only under equivalent conditions; otherwise compare model plus harness.
 
+## Running a candidate
+
+The scenario package is `docs/evaluation/greenfield-001/` (`task.md`, `criteria.md`, `scenario.json`,
+`run-profile.template.json`); the contract above is delivered to the candidate as `CONTRACT.md`.
+`harness/tools/testing/run_candidate.py` does the rest.
+
+1. Commit the files named in `scenario.json`, then
+   `run_candidate.py freeze --scenario docs/evaluation/greenfield-001/scenario.json --approval <recorded approval> --out <new dir>`.
+   It refuses uncommitted sources unless `--allow-dirty`, which is recorded and makes the freeze non-authoritative.
+   Keep the printed manifest SHA-256 outside the frozen directory.
+2. Copy `run-profile.template.json`, fill in provider, model, options, adapter version and the adapter argv
+   (`{workspace}`, `{prompt}`, `{trace_dir}` are substituted), and list `protected_paths` (for example the
+   reference project and the source PDF). Preflight fails if provider, model or adapter is missing; the runner
+   never picks a model. An adapter may write `usage.json` into `{trace_dir}` (input/output tokens, cost,
+   retries, tool calls); otherwise usage is null with a reason.
+3. `run_candidate.py run --frozen <dir> --manifest-sha256 <trusted hash> --profile <profile> --out <new dir outside the repo>`.
+
+The runner verifies the package, builds a clean workspace from the `candidate/` files only, runs the adapter
+under the 60-minute wall-clock limit (child processes are killed), then reads the candidate's `EVAL.json`,
+runs its build and tests, invokes the frozen grader, runs the CODE.5 audit over the candidate's C# files, and
+re-verifies the package and protected paths. `report.json` and `report.md` keep functional, build/tests,
+architecture, policy, behavior and usage separate. Exit 1 is a fail, 2 inconclusive, 3 preflight failure.
+
+Limits: the runner is not a sandbox. A run is `exploratory` unless the profile declares an isolation
+mechanism with an evidence reference (`isolation.mode: declared`), and even then policy stays inconclusive
+because the runner cannot verify the declaration. It observes only protected-path and frozen-package
+modification. Provider adapters themselves (Claude Code, Codex, others) are not shipped or verified; tests use
+a stand-in. Behavior and truthfulness of `REPORT.md` need human review of the trace.
+The candidate guidance is `AGENTS.base.md` as `AGENTS.md`; confirm that is the harness context to evaluate.
+
 ## Coverage limits
 
 Retention is an eligibility simulation, not deletion or immutability enforcement. SQL data is a pre-exported

@@ -1,0 +1,20 @@
+{
+  "id": "greenfield-001",
+  "type": "greenfield",
+  "role": "calibration",
+  "holdout": false,
+  "budgets": {"max_duration_minutes": 60},
+  "eval_ids": ["F01", "F02", "F03", "F04", "F05", "F06", "F07", "F08", "F09", "F10", "CODE.5"],
+  "hard_gate_ids": ["F03", "F10"],
+  "candidate_files": [
+    {"source": "docs/evaluation/greenfield-001/task.md", "path": "candidate/TASK.md"},
+    {"source": "docs/evaluation/greenfield-001/criteria.md", "path": "candidate/CRITERIA.md"},
+    {"source": "docs/evaluation/local-backup-contract.md", "path": "candidate/CONTRACT.md"},
+    {"source": "AGENTS.base.md", "path": "candidate/AGENTS.md"}
+  ],
+  "evaluator_files": [
+    {"source": "harness/tools/testing/backup_eval.py", "path": "evaluator/backup_eval.py"},
+    {"source": "docs/evaluation/greenfield-001/scenario.json", "path": "evaluator/scenario.json"},
+    {"source": "docs/evaluation/greenfield-001/run-profile.template.json", "path": "evaluator/run-profile.template.json"}
+  ]
+}

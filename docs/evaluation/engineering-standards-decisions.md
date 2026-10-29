@@ -11,6 +11,15 @@ This records the classification of six Loop pages supplied as exports and the us
 | Loop page "Data Principles" | Data ownership, governed sharing, fit-for-purpose storage, resilience, integrity, interoperability | D.2 W3C tracing, D.3 named approval, D.11 UTC/SI/UTF-8, D.12 Purview and ABAC are concrete standards or vendor-specific controls | D.12's named product is part of the source's stated mandate but is not itself the underlying principle; applicability and exceptions need review. |
 | Loop page "IntegrationHub Principles" | Shared domain language, decoupling, minimum event data, least privilege and end-to-end observability | IH3 Service Bus queues, IH5 Event Grid, IH6 API Management, IH9 CorrelationId, IH10 `/health` and two availability-test locations are solution-specific implementation instructions | The Loop page explicitly limits these to IntegrationHub; IH11 is listed as future. Do not turn them into general company-wide rules. |
 
+## Sign-off
+
+The user signed off on every decision in this document on 2026-10-29 and stated that all open decisions were
+tackled. Preliminary source classification and the later validation phases keep their own review points.
+Project roles supplied the same day: `D:/Prototypes/TV/Bizure.Backups` is the Phase 3 example (calibration
+reference, never a holdout); `D:/Prototypes/TV/TeamValue.IntegrationHub.Connectors` and
+`D:/Prototypes/TV/TeamValue.IntegrationHub.Platform` are validation/reference projects for now, with
+calibration or holdout assignment still to be made when further projects arrive.
+
 ## Decisions accepted on 2026-10-29
 
 - External dependencies remain observable; OBS.1 distinguishes unusable services, partially available capabilities and tenant-specific outages.
@@ -23,8 +32,8 @@ This records the classification of six Loop pages supplied as exports and the us
 
 ## Initial project evidence (not an audit)
 
-- `D:/Prototypes/Bizure.Backups/src/Bizure.Backup/Bizure.Backup.csproj` targets `net10.0`; the project's `AGENTS.md` describes cross-cloud backup and a federated credential. Neither observation establishes compliance with framework policy or all identity requirements.
-- `D:/Prototypes/Integration/TeamValue.IntegrationHub.Connectors/src/` contains connector-specific health registrations and an AzureActiveDirectory function using a `CorrelationId`. These are examples to investigate, not evidence that all connectors meet IH9 or IH10.
+- `D:/Prototypes/TV/Bizure.Backups/src/Bizure.Backup/Bizure.Backup.csproj` targets `net10.0`; the project's `AGENTS.md` describes cross-cloud backup and a federated credential. Neither observation establishes compliance with framework policy or all identity requirements.
+- `D:/Prototypes/TV/TeamValue.IntegrationHub.Connectors/src/` contains connector-specific health registrations and an AzureActiveDirectory function using a `CorrelationId`. These are examples to investigate, not evidence that all connectors meet IH9 or IH10.
 - Both supplied top-level directories lack Git metadata; establish immutable source snapshots or commits before evaluation. Integration contains separate Platform and Connectors directories, whose origin and revisions need confirmation.
 
 ## Remaining implementation work

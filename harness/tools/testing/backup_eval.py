@@ -324,8 +324,9 @@ def main():
     if not isinstance(command, list) or not command or not all(isinstance(x, str) for x in command):
         parser.error("command must be a nonempty JSON string array")
     out = pathlib.Path(args.out).resolve()
-    repository = pathlib.Path(__file__).resolve().parents[3]
-    if out.is_relative_to(repository) or args.timeout <= 0:
+    here = pathlib.Path(__file__).resolve()
+    guarded = [here.parent] + [p for p in here.parents if (p / ".git").exists()][:1]
+    if any(out.is_relative_to(root) for root in guarded) or args.timeout <= 0:
         parser.error("use an external output directory and positive timeout")
     out.mkdir(parents=True, exist_ok=False)
     report = Grader(command, out, args.timeout).run()
