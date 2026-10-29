@@ -14,18 +14,19 @@ sources:
 
 Data is trustworthy, discoverable, governed, reusable and understandable.
 
-Vegviser is the authority for this principle; this file only points to it.[^vegviser] Read the source when a
+Vegviser is the authority for this principle; the applications below record approved harness guidance.[^vegviser] Read the source when a
 finding depends on the exact wording. A deviation follows Vegviser's Exception and Risk Acceptance playbook.
 
 [^vegviser]: Vegviser Principles, P9
 
 # Application to ownership and sharing
 
-Data ownership and governed sharing must identify who can change authoritative state and who consumes
-read models. Replication and shared analytical reads require explicit contracts and governance; they do
-not imply permission for multiple services to mutate the same operational store.
+Each service owns its operational write store. Services with separate ownership boundaries do not share
+mutable operational state. Governed read models for reporting and analytics are permitted, with explicit
+contracts, ownership and access controls. Replication does not transfer authority to change the source.
 
-Loop page "Architectural Principles" (A.13, A.18) and Loop page "Data Principles" (D.10) support this
-distinction. The exact boundary of an IT component and any broader restriction on shared read stores
-remain scope decisions. A named governance product in a solution instruction does not by itself establish
-that product as a company-wide prerequisite.
+Apply this boundary to service ownership rather than requiring separate physical database servers.
+The harness evaluates ownership and governed access without prescribing a storage or governance product.
+
+Supporting context: Loop page "Architectural Principles" (A.13, A.18), Loop page "Data Principles" (D.10),
+and user decisions 2026-10-29.

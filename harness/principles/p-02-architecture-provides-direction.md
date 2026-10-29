@@ -14,17 +14,21 @@ sources:
 
 Architecture gives enough direction for teams to decide independently and stay coherent.
 
-Vegviser is the authority for this principle; this file only points to it.[^vegviser] Read the source when a
+Vegviser is the authority for this principle; the applications below record approved harness guidance.[^vegviser] Read the source when a
 finding depends on the exact wording. A deviation follows Vegviser's Exception and Risk Acceptance playbook.
 
 [^vegviser]: Vegviser Principles, P2
 
-# Application to solution guidance
+# Application to communication and solution guidance
 
-Architecture guidance states its scope and the trade-off it protects. A solution's selected broker,
-gateway, package or endpoint is an implementation decision within that scope. Record those decisions
-separately so another solution can meet the same intent with a justified implementation.
+Prefer asynchronous events for business state changes. Use governed synchronous paths for reads and
+requests that need an immediate response. Document the permitted path per operation, its contract and
+failure behavior. Choose the mechanism for the required coupling, latency and consistency; a synchronous
+query is not inherently a violation of loose coupling.
 
-The supplied Loop page "Architectural Principles" (A.8-A.20) and Loop page "IntegrationHub Principles"
-(IH1-IH6) provide supporting context. Service autonomy, stable contracts and loose coupling
-guide design; product choices and file-layout conventions require their own scoped standards.
+The harness is product-agnostic. It evaluates service autonomy, stable contracts and loose coupling
+without requiring a particular broker, gateway, package, platform or project architecture. Project
+instructions belong to the project. Their underlying rationale may inform general guidance and cases
+when the evidence and applicability are explicit.
+
+Supporting context: Loop page "Architectural Principles" (A.8-A.20); user decisions 2026-10-29.

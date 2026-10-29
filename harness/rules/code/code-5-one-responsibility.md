@@ -35,3 +35,10 @@ A type nested inside its only user and private to it (a nested private enum or h
 file. A sibling top-level type may not, however small.
 
 On a touched mixed file, split out the types the change adds or changes; do not refactor the whole file.
+
+For the C# structural check, generated files are excluded. Partial declarations may live in separate
+files named `Type.cs` or `Type.Part.cs`. The private nested-type exception still applies. Compare
+against a baseline to evaluate added or changed declarations separately from inherited violations.
+
+This scope was approved by the user on 2026-10-29. The Roslyn checker in `tools/code/` emits JSON
+structural evidence; responsibility and the other design expectations remain review concerns.

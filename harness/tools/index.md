@@ -20,3 +20,5 @@ running app only through the read wrappers (CLD.1, SEC.2); the guard hook and th
 * [sonar/](sonar/) - `sonar-read.sh` is the read-only wrapper for the Sonar API, keeping the token off the command line (SEC.2)
 
 New script: put it in the folder of the system it talks to; create a folder when a new system appears, and add a line here.
+
+* [code/](code/index.md) - Roslyn CODE.5 structural check with audit and baseline comparison modes and JSON evidence.

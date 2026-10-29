@@ -13,8 +13,8 @@ Inventory of this checkout, 2026-10-29. This is an assessment, not approval of n
 ## Inputs and gaps
 
 - The imported global instructions point to `C:\Users\Verst\source\repos\werk\files\TeamValue Principles & Context\`; that path is inaccessible on this machine. The harness points to Vegviser as authority. Its completeness and currency have not been verified.
-- Two reference repository locations, project corpus, calibration/holdout allocation, business specification and functional acceptance criteria have not been identified. Do not infer them from examples or local directories.
-- `harness/rules/code/code-5-one-type-per-file-no-small-type-exception.md` is human-verified and references P-02, with a private nested-type exception and touched-file boundary. It is currently enforced by review. Its existing verification does not itself approve a new deterministic gate, its precise generated-code treatment, or an evaluation threshold.
+- The two reference locations were subsequently supplied as `D:/Prototypes/Bizure.Backups` and `D:/Prototypes/Integration`. The remaining project corpus, calibration/holdout allocation, business specification and functional acceptance criteria have not been identified. Do not infer them from examples or local directories.
+- `harness/rules/code/code-5-one-responsibility.md` is human-verified and references P-02, with a private nested-type exception and touched-file boundary. It is currently enforced by review. The user subsequently approved the C# structural scope and fixture criteria; an explicit checker is now implemented under `harness/tools/code/`, with CI integration still open.
 - No implementation-agent runner, independent frozen grader, inherited-violation baseline, holdout controls, comparable execution budget or complete cost/trace reporting has been established by this inventory. Existing reviewer cases should not be presented as evidence of these capabilities.
 
 ## Smallest integration plan
@@ -24,8 +24,11 @@ Inventory of this checkout, 2026-10-29. This is an assessment, not approval of n
 3. Extend existing case/evaluator machinery only where it fits; keep graders and policy outside the evaluated agent's write scope, capture evidence and distinguish policy hard gates from quality outcomes. Test bypasses without assuming the hook is a security boundary.
 4. After the missing specifications and project assignments are supplied, design isolated implementation scenarios and frozen acceptance criteria, separating inherited violations and protecting holdouts. Do not claim generalization or benchmark fairness before those runs exist.
 
-## Decisions requiring human review
+## Approval status
 
-Approval is required before changing principles, exceptions, evaluation criteria or enforcement policy. In particular, confirm whether CODE.5 should become a deterministic gate and approve its scope, generated-code and partial-type handling, and behavior on existing violations. No such changes are made by this inventory.
+The user approved the guidance decisions, CODE.5 structural scope and evaluation criteria on 2026-10-29.
+See [Engineering standards and accepted decisions](engineering-standards-decisions.md) for current status
+and remaining implementation work. Future changes to principles, exceptions, criteria or policy still
+follow the human-review requirement in the implementation brief.
 
-Update 2026-10-29: Six principle Loop pages were supplied as exports, along with the two project paths. See principle-classification.md for preliminary classification, project observations and unresolved conflicts. Both top-level project paths lack Git metadata; immutable revisions remain to be identified.
+Update 2026-10-29: Six principle Loop pages were supplied as exports, along with the two project paths. See engineering-standards-decisions.md for preliminary classification, project observations and unresolved conflicts. Both top-level project paths lack Git metadata; immutable revisions remain to be identified.
