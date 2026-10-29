@@ -38,3 +38,36 @@ CLI availability before creating scenarios, so a missing CLI does not get record
 
 The reviewer is limited to 10 turns and a 180-second wall-clock timeout. `bundle.py privacy-check` makes CI
 fail if private mined comments or raw eval artifacts are present in the checkout.
+
+# One scenario at a time, with a checklist
+
+`eval.py` is all or nothing, and a run that dies halfway (model quota, login expiry) loses its finished work and
+records the dead runs as a bad reviewer. `eval-queue.py` runs the same scenarios, with the same scoring (it imports
+`eval.py`), one at a time, and writes a checklist after each. Run it again and it carries on.
+
+```bash
+python3 -I harness/tools/review/eval-queue.py status                  # what is checked, what is left, what it costs
+python3 -I harness/tools/review/eval-queue.py run --limit 3           # three scenarios, then stop; spread tokens over days
+python3 -I harness/tools/review/eval-queue.py run                     # everything left, Copilot by default
+python3 -I harness/tools/review/eval-queue.py run --engine claude --no-advisory
+```
+
+- **Three outcomes.** `pass` and `fail` are results and get checked off. `error` (quota, login, timeout, CLI gone) is
+  not a result: it stays unchecked and is retried, so running out of tokens never becomes "the reviewer failed".
+  A `fail` is not re-run unless you pass `--retry-failed`.
+- **It stops instead of grinding.** A quota or login error stops the run at once and says so. Before any scenario
+  has worked, the first error stops it too: after the 0.0 run in `history.jsonl`, a broken setup should cost one
+  review, not forty. Once something has worked, `--max-errors` (default 2) in a row stops it.
+- **Cheapest first.** One cheap gating scenario goes first as a smoke test, then the critical ones (three reviews
+  each), then the rest, then the drafts. `--no-advisory` skips the drafts, which cannot fail the gate.
+- **The checklist** is `checklist.md` (readable, with `[x]` pass, `[!]` fail, `[?]` could not run) and
+  `checklist.json`, under `~/.harness-evals/<engine>-<model>-<bundle hash>/`, outside every repo. It belongs to one
+  engine, one model and one state of the rules, cases, playbooks, templates and review tools; change any and a fresh
+  one starts, and the old one is kept but not used.
+- **The verdict** is `eval.py`'s gate line, printed once every gating scenario has a result. Exit 0 finished and
+  passing, 1 finished and failing, 2 usage or the engine is unusable, 3 stopped early (resume with the same command).
+- **History.** `--append-history` records the run in `history.jsonl` as `eval.py` does, only for a complete run on a
+  clean commit.
+
+It cannot know your quota. It recognises the usual wording of a quota or login failure; for any other wording it
+relies on the consecutive-error stop, and always prints the engine's message.

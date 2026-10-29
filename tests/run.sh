@@ -521,6 +521,7 @@ source "$here/tests/spec-note.sh"
 source "$here/tests/scaffold.sh"
 source "$here/tests/density.sh"
 source "$here/tests/orchestrate-models.sh"
+source "$here/tests/eval-queue.sh"
 
 echo
 echo "$pass passed, $fail failed"
