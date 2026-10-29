@@ -10,7 +10,12 @@
     {"source": "docs/evaluation/greenfield-001/task.md", "path": "candidate/TASK.md"},
     {"source": "docs/evaluation/greenfield-001/criteria.md", "path": "candidate/CRITERIA.md"},
     {"source": "docs/evaluation/local-backup-contract.md", "path": "candidate/CONTRACT.md"},
-    {"source": "AGENTS.base.md", "path": "candidate/AGENTS.md"}
+    {"source": "AGENTS.base.md", "path": "candidate/AGENTS.md", "replace": {"~/.harness": ".harness"}},
+    {"source": "docs/evaluation/greenfield-001/CLAUDE.md", "path": "candidate/CLAUDE.md"}
+  ],
+  "candidate_trees": [
+    {"source": "harness", "path": "candidate/.harness",
+     "exclude": ["cases", "hooks", "tools/testing", "tools/review", "tools/index.md"]}
   ],
   "evaluator_files": [
     {"source": "harness/tools/testing/backup_eval.py", "path": "evaluator/backup_eval.py"},

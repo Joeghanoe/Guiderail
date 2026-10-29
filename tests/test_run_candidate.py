@@ -112,6 +112,23 @@ class RunCandidateTests(unittest.TestCase):
         (workspace / "Two.cs").unlink()
         self.assertEqual(runner.check_code5(workspace, self.root, logs)["status"], "pass")
 
+    def test_trace_mentioning_a_protected_path_is_a_hard_gate(self):
+        protected = self.root / "reference"
+        protected.mkdir()
+        out = self.root / "evidence"
+        (out / "trace").mkdir(parents=True)
+        (out / "candidate.diff").write_text("", encoding="utf-8")
+        escaped = json.dumps(str(protected / "secret.cs"))
+        (out / "trace" / "events.jsonl").write_text('{"path": ' + escaped + '}', encoding="utf-8")
+        self.assertEqual(runner.referenced([str(protected), str(self.root / "other")], out), [str(protected)])
+
+    def test_freeze_expands_trees_applies_replacements_and_excludes(self):
+        tree = pathlib.Path(runner.REPOSITORY) / "harness"
+        files = [e["path"] for e in runner.expand_tree({"source": "harness", "path": "c/.harness", "exclude": ["cases", "tools/testing", "tools/index.md"]})]
+        self.assertTrue(any(f.startswith("c/.harness/rules/") for f in files))
+        self.assertFalse(any("/cases/" in f or "/tools/testing/" in f or f.endswith("tools/index.md") or "__pycache__" in f for f in files))
+        self.assertTrue(tree.is_dir())
+
     def test_output_inside_the_repository_is_refused(self):
         args = Args(frozen=str(self.frozen), manifest_sha256=self.manifest_sha, profile=str(self.profile()),
                     out=str(ROOT / "run-evidence"))

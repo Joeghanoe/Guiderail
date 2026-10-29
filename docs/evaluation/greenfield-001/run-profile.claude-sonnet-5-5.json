@@ -1,0 +1,16 @@
+{
+  "scenario_id": "greenfield-001",
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "options": {"cli": "claude -p", "setting_sources": "project", "permission_mode": "acceptEdits"},
+  "adapter_version": "claude_code.py@<harness commit>",
+  "adapter": {
+    "argv": ["python", "<harness>/harness/tools/testing/adapters/claude_code.py", "--workspace", "{workspace}",
+             "--prompt-file", "{prompt}", "--trace-dir", "{trace_dir}", "--model", "claude-sonnet-5-5",
+             "--deny-path", "D:/Prototypes/TV"]
+  },
+  "isolation": {"mode": "none", "evidence": null},
+  "protected_paths": ["D:/Prototypes/TV"],
+  "human_interventions": 0,
+  "review_minutes": null
+}

@@ -91,7 +91,7 @@ mechanism with an evidence reference (`isolation.mode: declared`), and even then
 because the runner cannot verify the declaration. It observes only protected-path and frozen-package
 modification. Provider adapters themselves (Claude Code, Codex, others) are not shipped or verified; tests use
 a stand-in. Behavior and truthfulness of `REPORT.md` need human review of the trace.
-The candidate guidance is `AGENTS.base.md` as `AGENTS.md`; confirm that is the harness context to evaluate.
+Candidate context is the workspace only: `AGENTS.md` (from `AGENTS.base.md`, `~/.harness` rewritten to `.harness`), `CLAUDE.md` importing it, and a copy of the harness bundle at `.harness/` without cases, hooks, review and testing tools. Adapters live in `harness/tools/testing/adapters/` (`claude_code.py`, `codex.py`; run them without `-I`). They narrow access but do not isolate; `protected_paths` appearing in the trace is a hard gate. Example profile: `greenfield-001/run-profile.claude-sonnet-5-5.json`.
 
 ## Coverage limits
 

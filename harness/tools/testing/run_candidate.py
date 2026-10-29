@@ -15,6 +15,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 
@@ -116,21 +117,40 @@ def load_profile(path):
     return profile
 
 
+def expand_tree(entry):
+    """Files of a source directory, minus excluded prefixes and caches, as scenario file entries."""
+    root = (REPOSITORY / entry["source"]).resolve(strict=True)
+    skipped = tuple(x.rstrip("/") for x in entry.get("exclude", []))
+    for file in sorted(p for p in root.rglob("*") if p.is_file()):
+        rel = file.relative_to(root).as_posix()
+        if "__pycache__" in file.parts or any(rel == s or rel.startswith(s + "/") for s in skipped):
+            continue
+        yield {"source": file.relative_to(REPOSITORY).as_posix(), "path": entry["path"] + "/" + rel}
+
+
 def freeze_scenario(args):
     scenario_path = pathlib.Path(args.scenario).resolve()
     scenario = json.loads(scenario_path.read_text(encoding="utf-8"))
+    listed = scenario["candidate_files"] + scenario["evaluator_files"]
+    for tree in scenario.get("candidate_trees", []):
+        listed.extend(expand_tree(tree))
     entries, dirty = [], []
-    for entry in scenario["candidate_files"] + scenario["evaluator_files"]:
-        source = (REPOSITORY / entry["source"]).resolve(strict=True)
-        entries.append({"source": str(source), "path": entry["path"]})
-        if git(REPOSITORY, "status", "--porcelain", "--", str(source)):
-            dirty.append(entry["source"])
-    if dirty and not args.allow_dirty:
-        raise Preflight("uncommitted sources would not match the recorded commit: " + ", ".join(dirty))
-    manifest = freezer.freeze({"approval": args.approval, "harness_commit": git(REPOSITORY, "rev-parse", "HEAD"),
-                               "files": entries}, args.out)
-    if dirty:
-        manifest["uncommitted_sources"] = dirty
+    with tempfile.TemporaryDirectory() as temp:
+        for number, entry in enumerate(listed):
+            source = (REPOSITORY / entry["source"]).resolve(strict=True)
+            if git(REPOSITORY, "status", "--porcelain", "--", str(source)):
+                dirty.append(entry["source"])
+            if entry.get("replace"):
+                text = source.read_text(encoding="utf-8")
+                for old, new in entry["replace"].items():
+                    text = text.replace(old, new)
+                source = pathlib.Path(temp) / str(number)
+                source.write_text(text, encoding="utf-8", newline="")
+            entries.append({"source": str(source), "path": entry["path"]})
+        if dirty and not args.allow_dirty:
+            raise Preflight("uncommitted sources would not match the recorded commit: " + ", ".join(dirty))
+        manifest = freezer.freeze({"approval": args.approval, "harness_commit": git(REPOSITORY, "rev-parse", "HEAD"),
+                                   "files": entries}, args.out)
     print(json.dumps({"frozen": str(pathlib.Path(args.out).resolve()),
                       "manifest_sha256": freezer.sha(pathlib.Path(args.out) / "freeze.json"),
                       "uncommitted_sources": dirty}, indent=2))
@@ -199,11 +219,23 @@ def check_code5(workspace, work, logs):
             "mode": "audit, all files new (greenfield)"}
 
 
+def referenced(paths, out):
+    """Protected paths that appear in the trace, logs or diff: evidence the agent looked where it must not."""
+    needles = {p: p.lower().replace("\\", "/").rstrip("/") for p in paths}
+    found = set()
+    for file in [*(out / "trace").rglob("*"), out / "candidate.diff"]:
+        if not file.is_file() or file.name == "usage.json":
+            continue
+        text = file.read_text(encoding="utf-8", errors="replace").lower().replace("\\\\", "/").replace("\\", "/")
+        found.update(p for p, needle in needles.items() if needle in text)
+    return sorted(found)
+
+
 def read_usage(trace_dir):
     path = trace_dir / "usage.json"
     try:
         usage = json.loads(path.read_text(encoding="utf-8"))
-        return {k: usage.get(k) for k in ("input_tokens", "output_tokens", "cost", "retries", "tool_calls")}, None
+        return {k: usage.get(k) for k in ("input_tokens", "output_tokens", "cost", "retries", "tool_calls")},             usage.get("cost_reason")
     except (OSError, ValueError):
         return {"input_tokens": None, "output_tokens": None, "cost": None, "retries": None, "tool_calls": None}, \
             "adapter wrote no usage.json; provider usage is external run metadata"
@@ -255,6 +287,7 @@ def run_candidate(args):
     if freezer.verify(frozen, args.manifest_sha256):
         violations.append("frozen-package-modified")
     violations.extend("protected-path-modified:" + p for p, d in protected.items() if tree_digest(p) != d)
+    violations.extend("protected-path-referenced:" + p for p in referenced(profile.get("protected_paths", []), out))
 
     entry, entry_error = read_entrypoint(workspace)
     build = tests = grader_report = None
