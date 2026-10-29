@@ -14,7 +14,7 @@ sources:
   - id: origin
     resource: recurring pull request review feedback, 2023-2026, one platform team
   - id: external-dependencies
-    resource: IntegrationHub Principles.pdf pp. 7-8 (IH10); user clarification 2026-10-29
+    resource: Loop page "IntegrationHub Principles" (IH10); user clarification 2026-10-29
 ---
 
 # Rule

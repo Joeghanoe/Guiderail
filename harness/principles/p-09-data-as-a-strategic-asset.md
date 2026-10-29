@@ -25,7 +25,7 @@ Data ownership and governed sharing must identify who can change authoritative s
 read models. Replication and shared analytical reads require explicit contracts and governance; they do
 not imply permission for multiple services to mutate the same operational store.
 
-Architectural Principles.pdf (A.13, A.18, pp. 7-9) and Data Principles.pdf (D.10, pp. 7-8) support this
+Loop page "Architectural Principles" (A.13, A.18) and Loop page "Data Principles" (D.10) support this
 distinction. The exact boundary of an IT component and any broader restriction on shared read stores
 remain scope decisions. A named governance product in a solution instruction does not by itself establish
 that product as a company-wide prerequisite.

@@ -26,6 +26,6 @@ instruction specifies how to carry it out. All can be mandatory within their app
 authority, exceptions and evidence explicit rather than promoting a local implementation to a universal
 principle. Review inferred repository conventions before making them authoritative.
 
-The supplied Cloud Principles.pdf, p. 13, supports the current stable framework or its immediate
+The Loop page "Cloud Principles", section "Supported frameworks are always n-1", supports the current stable framework or its immediate
 predecessor. DEL.2 already expresses that window. The shorter n-1 wording in the imported global
 instructions needs alignment by its owner; it should not silently tighten the existing gate.

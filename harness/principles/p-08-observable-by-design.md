@@ -26,6 +26,6 @@ capabilities require. Monitoring makes complete failure, partial failure and unc
 the scope affected. Ownership determines who responds; it does not determine whether a dependency is
 observed. A tenant-specific outage must remain visible without declaring unaffected tenants unavailable.
 
-This application follows IntegrationHub Principles.pdf, IH9-IH10, pp. 6-8, and the user's clarification of
+This application follows Loop page "IntegrationHub Principles", IH9-IH10, and the user's clarification of
 2026-10-29. Concrete health responses and alert behavior live in OBS.1 and OBS.2; the IntegrationHub's
 named endpoint, monitoring product and probe locations are solution-specific work instructions.

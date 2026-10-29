@@ -28,4 +28,4 @@ Inventory of this checkout, 2026-10-29. This is an assessment, not approval of n
 
 Approval is required before changing principles, exceptions, evaluation criteria or enforcement policy. In particular, confirm whether CODE.5 should become a deterministic gate and approve its scope, generated-code and partial-type handling, and behavior on existing violations. No such changes are made by this inventory.
 
-Update 2026-10-29: Six principle PDFs and the two project paths were supplied. See principle-classification.md for preliminary classification, project observations and unresolved conflicts. Both top-level project paths lack Git metadata; immutable revisions remain to be identified.
+Update 2026-10-29: Six principle Loop pages were supplied as exports, along with the two project paths. See principle-classification.md for preliminary classification, project observations and unresolved conflicts. Both top-level project paths lack Git metadata; immutable revisions remain to be identified.
