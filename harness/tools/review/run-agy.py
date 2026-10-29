@@ -7,6 +7,7 @@ workspace, but unlike the Claude and Copilot engines agy has no tool allowlist: 
 
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -15,6 +16,7 @@ MAX_TIMEOUT_SECONDS = 180
 TIMEOUT_SECONDS = min(MAX_TIMEOUT_SECONDS,
                       max(1, int(os.environ.get("HARNESS_REVIEW_TIMEOUT_SECONDS", MAX_TIMEOUT_SECONDS))))
 CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                   "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                    "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
                    "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 
@@ -31,7 +33,7 @@ def main():
 
     prompt_path, output_path, review_dir, bundle_dir = map(pathlib.Path, sys.argv[1:])
     command = [
-        "agy", "--print", TOOL_NOTICE + prompt_path.read_text(encoding="utf-8"),
+        shutil.which("agy") or "agy", "--print", TOOL_NOTICE + prompt_path.read_text(encoding="utf-8"),
         "--mode", "plan", "--output-format", "text",
         "--add-dir", str(review_dir), "--add-dir", str(bundle_dir),
         "--print-timeout", f"{TIMEOUT_SECONDS}s",

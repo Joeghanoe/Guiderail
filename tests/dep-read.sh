@@ -115,7 +115,9 @@ expect 4 "npm without a lockfile asks the user" env STUB_NOLOCK=1 PATH="$depbin:
 expect 4 "pnpm without a lockfile asks the user" env STUB_NOLOCK=1 PATH="$depbin:$PATH" STUB_LOG="$tmp/depcalls" "$h/tools/deps/dep-read.sh" --allow-network pnpm audit
 mkdir -p "$tmp/nodotnet"
 for tool in env bash mktemp rm cat grep; do ln -sf "$(command -v $tool)" "$tmp/nodotnet/$tool"; done
-expect 4 "a CLI that is not installed asks the user" env PATH="$tmp/nodotnet" "$h/tools/deps/dep-read.sh" dotnet --list-sdks
+nodotnet_path="$tmp/nodotnet"
+case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) nodotnet_path=/usr/bin ;; esac   # copied .exe files lose their DLLs
+expect 4 "a CLI that is not installed asks the user" env PATH="$nodotnet_path""$h/tools/deps/dep-read.sh" dotnet --list-sdks
 
 # the guard hook lets the wrapper through the way it lets cloud-read through
 expect 0 "hook allows dep-read via ~/.harness" bash_hook "~/.harness/tools/deps/dep-read.sh dotnet list package --outdated"

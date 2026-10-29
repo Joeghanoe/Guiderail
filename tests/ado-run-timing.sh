@@ -45,8 +45,7 @@ chmod +x "$tmp/timing-bin/az" "$tmp/timing-bin/curl"
 # tm_fixture <id> <run queue s> <agent queue of Integration s> <Integration execution s> <Restore s> [live]
 # Writes run-<id>.json and timeline-<id>.json. Times are offsets from the moment the run was queued.
 tm_fixture() {
-  jq -n --argjson id "$1" --argjson q "$2" --argjson iq "$3" --argjson idur "$4" --argjson rdur "$5" \
-    --argjson live "${6:-false}" -f /dev/stdin >"$tm/fixture-$1.json" <<'JQ'
+  cat >"$tm/fixture.jq" <<'JQ'
 def t0: ("2026-10-20T08:00:00Z" | fromdateiso8601);
 def iso($s): if $s == null then null else (t0 + $s) | todate | sub("Z$"; ".1234567Z") end;
 def fin($x): if $live then null else $x end;
@@ -106,6 +105,8 @@ $q as $S
   ] end)) }
 }
 JQ
+  jq -n --argjson id "$1" --argjson q "$2" --argjson iq "$3" --argjson idur "$4" --argjson rdur "$5" \
+    --argjson live "${6:-false}" -f "$tm/fixture.jq" >"$tm/fixture-$1.json"
   jq '.run' "$tm/fixture-$1.json" >"$tm/run-$1.json"
   jq '.timeline' "$tm/fixture-$1.json" >"$tm/timeline-$1.json"
 }

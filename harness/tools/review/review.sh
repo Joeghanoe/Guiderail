@@ -9,11 +9,14 @@
 # The reviewer can only Read, Grep and Glob: it reads untrusted PR content (SEC.1).
 set -euo pipefail
 
+py=python3
+"$py" -c '' >/dev/null 2>&1 || py=python # Windows: python.org installs `python`, not `python3`
+
 r="${1:?usage: review.sh <review-dir>}"
 r="$(cd "$r" && pwd)"
 bundle="$(cd "$(dirname "$0")/../.." && pwd)"
 
-python3 -I "$bundle/tools/harness/bundle.py" select <"$r/changed.txt" >"$r/selected.json"
+"$py" -I "$bundle/tools/harness/bundle.py" select <"$r/changed.txt" >"$r/selected.json"
 cat >"$r/prompt.md" <<EOF
 Review this change. Follow $bundle/playbooks/review-change.md exactly and answer with only the JSON array.
 The harness bundle is $bundle; paths in selected.json starting with / are relative to it.
@@ -25,13 +28,13 @@ EOF
 
 case "${HARNESS_REVIEW_ENGINE:-claude}" in
   claude)
-    python3 -I "$bundle/tools/review/run-claude.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
+    "$py" -I "$bundle/tools/review/run-claude.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
     ;;
   copilot)
-    python3 -I "$bundle/tools/review/run-copilot.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
+    "$py" -I "$bundle/tools/review/run-copilot.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
     ;;
   agy)
-    python3 -I "$bundle/tools/review/run-agy.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
+    "$py" -I "$bundle/tools/review/run-agy.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
     ;;
   replay)
     cp "${HARNESS_REPLAY_FILE:?set HARNESS_REPLAY_FILE for the replay engine}" "$r/raw.txt"
@@ -42,4 +45,4 @@ case "${HARNESS_REVIEW_ENGINE:-claude}" in
     ;;
 esac
 
-python3 -I "$bundle/tools/harness/bundle.py" findings "$r/raw.txt" --repo . >"$r/findings.json"
+"$py" -I "$bundle/tools/harness/bundle.py" findings "$r/raw.txt" --repo . >"$r/findings.json"

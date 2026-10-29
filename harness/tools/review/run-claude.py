@@ -4,6 +4,7 @@
 import json
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -16,6 +17,7 @@ TIMEOUT_SECONDS = min(MAX_TIMEOUT_SECONDS,
 # Only what the claude CLI needs to start and reach its provider; pipeline tokens and cloud credentials stay out.
 # Keep identical to CLI_ENVIRONMENT in eval.py (tests/test_eval.py checks it).
 CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                   "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                    "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "CLAUDE_CONFIG_DIR",
                    "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_MODEL",
                    "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "AWS_REGION", "AWS_DEFAULT_REGION",
@@ -30,7 +32,7 @@ def main():
 
     prompt_path, output_path, review_dir, bundle_dir = map(pathlib.Path, sys.argv[1:])
     command = [
-        "claude", "-p", prompt_path.read_text(encoding="utf-8"),
+        shutil.which("claude") or "claude", "-p", prompt_path.read_text(encoding="utf-8"),
         "--allowedTools", "Read,Grep,Glob",
         "--max-turns", str(MAX_TURNS),
         "--add-dir", str(review_dir),

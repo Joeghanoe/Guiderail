@@ -3,6 +3,7 @@
 
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -11,6 +12,7 @@ MAX_TIMEOUT_SECONDS = 180
 TIMEOUT_SECONDS = min(MAX_TIMEOUT_SECONDS,
                       max(1, int(os.environ.get("HARNESS_REVIEW_TIMEOUT_SECONDS", MAX_TIMEOUT_SECONDS))))
 CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                   "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                    "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "COPILOT_HOME", "HTTPS_PROXY",
                    "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 
@@ -22,7 +24,7 @@ def main():
 
     prompt_path, output_path, review_dir, bundle_dir = map(pathlib.Path, sys.argv[1:])
     command = [
-        "copilot", "--prompt", prompt_path.read_text(encoding="utf-8"),
+        shutil.which("copilot") or "copilot", "--prompt", prompt_path.read_text(encoding="utf-8"),
         "--silent", "--output-format=text",
         "--available-tools=read,grep,glob",
         "--allow-tool=read", "--allow-tool=grep", "--allow-tool=glob",
