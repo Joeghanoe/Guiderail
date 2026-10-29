@@ -71,3 +71,16 @@ python3 -I harness/tools/review/eval-queue.py run --engine claude --no-advisory
 
 It cannot know your quota. It recognises the usual wording of a quota or login failure; for any other wording it
 relies on the consecutive-error stop, and always prints the engine's message.
+
+## Where results live, and what is known (2026-10-29)
+
+- The checklist is local, not in the repo: `~/.harness-evals/<engine>-<model>-<bundle hash>/checklist.md` (and
+  `checklist.json`). The hash changes when the rules or cases change, which starts a fresh checklist.
+  `eval-queue.py status` prints its path. Only a complete run on a clean commit is appended to `history.jsonl`
+  (`--append-history`); partial progress stays in the checklist.
+- Progress so far (engine `claude`, default model, bundle `3aa41de24d`): 1 of 44 scenarios checked, 1 pass
+  (`case-c-001-services-get-their-http-client-injected-bad`). 43 left, about 49 reviews.
+- `--engine copilot` on Windows: Copilot CLI 1.0.51 (WinGet) failed with `unknown option '--no-warnings'` when
+  launched by `run-copilot.py` (restricted environment); run directly it answered `402 You have exceeded your
+  monthly quota`. The cause of the first error is not found; it is not in this repo. Use `--engine claude` until fixed.
+- The flag is `--limit`, not `--run-limit`.

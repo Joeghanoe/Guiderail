@@ -1,0 +1,1 @@
+{"at": "2026-10-29T17:41:48+00:00", "bundle_hash": "27283cb0f801e908048e6b6f870a4788001c343ae332a9c7e76d7a4f61480009", "detail": "", "engine": "claude", "model": "default", "runs": 1, "runs_passed": 1, "scenario": "case-c-001-services-get-their-http-client-injected-bad", "status": "pass"}

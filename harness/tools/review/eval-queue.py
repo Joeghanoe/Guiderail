@@ -22,7 +22,9 @@ Tool contract (Vegviser AI Tool Boundary)
                    gate line eval.py prints. Exit 0 finished and the gate passes, 1 finished and it fails,
                    2 usage or the engine is unusable, 3 stopped before finishing (budget, login, repeated
                    errors, --limit, Ctrl-C): run the same command again to resume.
-  Side effects:    the checklist files; with --append-history, one line in tools/review/history.jsonl, only for a
+  Side effects:    the checklist files; every pass or fail is also written to tools/review/eval-results.jsonl, which
+                   is committed so another machine resumes from it (summary only: scenario, status, short detail,
+                   never model output; replay runs are not recorded); with --append-history, one line in tools/review/history.jsonl, only for a
                    complete run on a clean commit, as eval.py does. Raw model output is never stored.
   Review trigger:  a change to how eval.py builds or scores scenarios, or a new engine.
 
@@ -53,11 +55,12 @@ sys.dont_write_bytecode = True
 HERE = pathlib.Path(__file__).resolve().parent
 BUNDLE_ROOT = HERE.parents[1]
 DEFAULT_STATE = pathlib.Path.home() / ".harness-evals"
+DEFAULT_RESULTS = HERE / "eval-results.jsonl"   # committed, so a run started on one machine resumes on another
 ENGINES = ["claude", "copilot", "agy", "replay"]
 
 # What the reviewer is built from. A change to any of it makes earlier results about a different reviewer.
 HASHED = ("index.md", "principles", "rules", "cases", "playbooks", "templates", "tools/review", "tools/harness/bundle.py")
-SKIPPED = {"history.jsonl", ".DS_Store", "eval-queue.py"}   # the queue is not part of the reviewer it measures
+SKIPPED = {"history.jsonl", "eval-results.jsonl", ".DS_Store", "eval-queue.py"}   # the queue is not part of the reviewer it measures
 
 # The engines print free text on failure, so these are patterns, not an API. A miss only costs one more error
 # before the consecutive-error stop, and the text is always shown.
@@ -145,11 +148,57 @@ def state_paths(state_dir, engine, model, digest):
     return folder, folder / "checklist.json", folder / "checklist.md"
 
 
-def load_state(path, engine, model, digest, thresholds):
+def load_state(path, engine, model, digest, thresholds, results=None):
     if path.is_file():
-        return json.loads(path.read_text(encoding="utf-8"))
-    return {"version": 1, "engine": engine, "model": model or "default", "bundle_hash": digest, "created": now(),
-            "thresholds": thresholds, "scenarios": {}}
+        state = json.loads(path.read_text(encoding="utf-8"))
+    else:
+        state = {"version": 1, "engine": engine, "model": model or "default", "bundle_hash": digest, "created": now(),
+                 "thresholds": thresholds, "scenarios": {}}
+    import_results(state, results)
+    return state
+
+
+def read_results(path):
+    if not path or not path.is_file():
+        return []
+    lines = []
+    for text in path.read_text(encoding="utf-8").splitlines():
+        try:
+            lines.append(json.loads(text))
+        except ValueError:
+            continue   # a half-merged line must not stop the queue; it is simply not a result
+    return lines
+
+
+def import_results(state, path):
+    """Results committed from another machine count, if they describe this engine, model and bundle."""
+    for line in read_results(path):
+        if (line.get("engine"), line.get("model"), line.get("bundle_hash")) != (state["engine"], state["model"], state["bundle_hash"]):
+            continue
+        if line.get("status") in ("pass", "fail") and line.get("scenario") not in state["scenarios"]:
+            state["scenarios"][line["scenario"]] = {
+                "status": line["status"], "detail": line.get("detail", ""), "at": line.get("at", ""),
+                "runs": line.get("runs", 1), "runs_passed": line.get("runs_passed"), "attempts": 0,
+                "imported": True}
+
+
+def record_result(path, state, name, entry):
+    """Keep one line per scenario for this engine and model, and drop their lines for older bundles.
+
+    Pass and fail only, never raw model output. Sorted, so two machines' additions merge without noise."""
+    if state["engine"] == "replay" or entry["status"] not in ("pass", "fail"):
+        return
+    key = (state["engine"], state["model"])
+    kept = [line for line in read_results(path)
+            if (line.get("engine"), line.get("model")) != key]
+    kept += [line for line in read_results(path)
+             if (line.get("engine"), line.get("model")) == key and line.get("bundle_hash") == state["bundle_hash"]
+             and line.get("scenario") != name]
+    kept.append({"engine": state["engine"], "model": state["model"], "bundle_hash": state["bundle_hash"],
+                 "scenario": name, "status": entry["status"], "detail": entry["detail"], "runs": entry["runs"],
+                 "runs_passed": entry["runs_passed"], "at": entry["at"]})
+    kept.sort(key=lambda l: (l["engine"], l["model"], l["scenario"]))
+    write_atomic(path, "".join(json.dumps(l, sort_keys=True) + "\n" for l in kept))
 
 
 def write_atomic(path, text):
@@ -253,7 +302,7 @@ def context(args):
 def cmd_status(args):
     ev, thresholds, digest, pairs, folder, json_path, md_path = context(args)
     items = order([item for item, _ in pairs])
-    state = load_state(json_path, args.engine, args.model, digest, thresholds)
+    state = load_state(json_path, args.engine, args.model, digest, thresholds, args.results_file)
     print(render_markdown(state, items))
     older = [p.name for p in args.state_dir.expanduser().glob(f"{args.engine}-*") if p.is_dir() and p != folder]
     if older:
@@ -288,7 +337,7 @@ def cmd_run(args):
     if preflight:
         print(f"eval-queue: {preflight}", file=sys.stderr)
         return 2
-    state = load_state(json_path, args.engine, args.model, digest, thresholds)
+    state = load_state(json_path, args.engine, args.model, digest, thresholds, args.results_file)
     older = [p.name for p in args.state_dir.expanduser().glob(f"{args.engine}-*") if p.is_dir() and p != folder]
     if older and not json_path.is_file():
         print(f"Starting a new checklist: the bundle, engine or model changed since {', '.join(sorted(older))}, "
@@ -327,6 +376,7 @@ def cmd_run(args):
             "runs_passed": result.get("runs_passed") if status != "error" else None,
             "attempts": previous.get("attempts", 0) + 1}
         save(state, items, json_path, md_path)
+        record_result(args.results_file, state, item["name"], state["scenarios"][item["name"]])
         print(f"  -> {status}{': ' + detail if detail else ''}")
         if status != "error":
             consecutive_errors = 0
@@ -376,6 +426,8 @@ def main():
     parser.add_argument("--append-history", action="store_true",
                         help="when every gating scenario is checked, record the run in history.jsonl as eval.py does")
     parser.add_argument("--state-dir", type=pathlib.Path, default=DEFAULT_STATE)
+    parser.add_argument("--results-file", type=pathlib.Path, default=DEFAULT_RESULTS,
+                        help="committed pass/fail results shared between machines (default: eval-results.jsonl)")
     parser.add_argument("--bundle", type=pathlib.Path, default=BUNDLE_ROOT)
     parser.add_argument("--thresholds", type=pathlib.Path, default=HERE / "thresholds.json")
     args = parser.parse_args()
