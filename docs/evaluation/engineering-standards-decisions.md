@@ -31,7 +31,7 @@ This records the classification of six Loop pages supplied as exports and the us
 
 No further policy decision is required for the agreed CODE.5 scope and evaluation criteria.
 
-- Integrate the CODE.5 checker and fixtures into the existing CI/test entrypoints and document its gate coverage.
+- CODE.5 fixtures now run through tests/run.sh and CI; this gates checker regressions, not consumer-project compliance.
 - Complete the standards catalog with explicit rule versions, enforcement, exceptions and evidence references.
 - Add neutral fixtures for communication boundaries, trace propagation, store ownership and dependency health.
 - Complete the command-policy regression and bypass test run, and address any failures.

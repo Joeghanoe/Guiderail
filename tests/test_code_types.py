@@ -6,10 +6,10 @@ import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-DLL = ROOT / 'harness/tools/code/bin/Debug/net9.0/CheckTypes.dll'
+DLL = ROOT / 'harness/tools/code/bin/Debug/net10.0/CheckTypes.dll'
 
 class TypeCheckTests(unittest.TestCase):
-    def run_fixture(self, filename, source, expected, old=None):
+    def run_fixture(self, filename, source, expected, old=None, symbols=None):
         with tempfile.TemporaryDirectory() as folder:
             root = pathlib.Path(folder)
             (root / filename).write_text(source, encoding='utf-8')
@@ -19,6 +19,8 @@ class TypeCheckTests(unittest.TestCase):
                 baseline.mkdir()
                 (baseline / filename).write_text(old, encoding='utf-8')
                 args += ['--baseline', str(baseline)]
+            if symbols is not None:
+                args += ['--symbols', symbols]
             run = subprocess.run(args, cwd=root, capture_output=True, text=True, timeout=30)
             self.assertEqual(run.returncode, expected, run.stdout + run.stderr)
             return json.loads(run.stdout)
@@ -31,6 +33,7 @@ class TypeCheckTests(unittest.TestCase):
             ('Widget.cs', 'class Widget { private enum State { Ready } }', 0),
             ('Widget.cs', 'class Widget { enum State { Ready } }', 0),
             ('Widget.cs', 'class Widget { public enum State { Ready } }', 1),
+            ('Widget.cs', 'class Widget { private protected class Helper {} }', 1),
             ('Widget.Part.cs', 'partial class Widget {}', 0),
             ('Widget.Part.cs', 'class Widget {}', 1),
             ('Generated.g.cs', 'class First {} class Second {}', 0),
@@ -47,8 +50,39 @@ class TypeCheckTests(unittest.TestCase):
         old = 'class Widget {} class Legacy {}'
         data = self.run_fixture('Widget.cs', old, 0, old)
         self.assertEqual(data['findings'], [])
+        self.assertEqual([f['type'] for f in data['inheritedFindings']], ['Widget', 'Legacy'])
         data = self.run_fixture('Widget.cs', old + ' class Added {}', 1, old)
         self.assertEqual([f['type'] for f in data['findings']], ['Added'])
+
+    def test_conditional_configuration(self):
+        source = 'class Widget {}\n#if FEATURE\nclass Extra {}\n#endif'
+        data = self.run_fixture('Widget.cs', source, 2)
+        self.assertTrue(data['errors'])
+        data = self.run_fixture('Widget.cs', source, 1, symbols='FEATURE')
+        self.assertEqual(data['symbols'], ['FEATURE'])
+        self.assertEqual(data['coverage'], 'selected-configuration')
+        self.assertEqual([f['type'] for f in data['findings']], ['Widget', 'Extra'])
+        self.run_fixture('Widget.cs', source, 0, symbols='none')
+        self.run_fixture('Widget.cs', source, 0, old=source, symbols='FEATURE')
+
+    def test_changed_declaration(self):
+        data = self.run_fixture('Widget.cs', 'class Widget { int Value; } class Legacy {}', 1,
+                                old='class Widget {} class Legacy {}')
+        self.assertEqual([f['type'] for f in data['findings']], ['Widget'])
+        self.assertEqual([f['type'] for f in data['inheritedFindings']], ['Legacy'])
+
+    def test_unchanged_sibling_is_not_an_inherited_defect(self):
+        data = self.run_fixture('Widget.cs', 'class Widget {} class Added {}', 1, old='class Widget {}')
+        self.assertEqual([f['type'] for f in data['findings']], ['Added'])
+        self.assertEqual(data['inheritedFindings'], [])
+
+    def test_conditional_baseline_requires_configuration(self):
+        self.run_fixture('Widget.cs', 'class Widget {}', 2,
+                         old='#if FEATURE\nclass Widget {}\n#endif')
+
+    def test_invalid_baseline(self):
+        data = self.run_fixture('Widget.cs', 'class Widget {}', 2, old='class Widget {')
+        self.assertTrue(data['errors'])
 
 if __name__ == '__main__':
     unittest.main()
