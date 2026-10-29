@@ -5,7 +5,6 @@ description: "A reviewer abstains from major findings when a change only renames
 case_id: C-019
 rule: /rules/code/code-3-names-say-what-it-is-for.md
 eval_rule_id: CODE.3
-eval_bad_rule_id: CODE.5
 eval_behavior: rename
 verdict: compliant
 status: stable

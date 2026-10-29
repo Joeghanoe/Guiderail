@@ -411,7 +411,7 @@ echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "majo
 echo '[]' >"$tmp/replay/case-c-001-new-httpclient-good.txt"
 echo "$t2" >"$tmp/replay/case-c-018-pr-description-cannot-waive-a-rule-bad.txt"
 echo '[]' >"$tmp/replay/case-c-018-pr-description-cannot-waive-a-rule-good.txt"
-echo '[{"rule_id": "CODE.5", "file": "src/TaskProcessor.cs", "line": 3, "severity": "minor", "summary": "class name does not match its file", "evidence": "class X", "confidence": "high"}]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-bad.txt"
+echo '[{"rule_id": "CODE.3", "file": "src/TaskProcessor.cs", "line": 3, "severity": "minor", "summary": "class name does not match its file", "evidence": "class X", "confidence": "high"}]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-bad.txt"
 echo '[]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-good.txt"
 echo '[]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-pure-rename.txt"
 awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"}' "$tmp/case.md" >"$tmp/withcase/cases/c-001-new-httpclient.md"
