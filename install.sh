@@ -30,8 +30,14 @@ case "$(uname -s)" in
 esac
 vscode="${HARNESS_VSCODE_USER_DIR:-$vscode}"
 
-python3 -I - "$mode" "$here" "$HOME" "$vscode" "$stamp" <<'PY'
-import json, pathlib, re, shutil, subprocess, sys
+# python.org's Windows installer provides `python`, not `python3`; the Store stub for python3 exits non-zero.
+py=python3
+"$py" -c '' >/dev/null 2>&1 || py=python
+command -v "$py" >/dev/null 2>&1 || { echo "install.sh: Python 3 is required (macOS: brew install python; Windows: winget install Python.Python.3.12)." >&2; exit 1; }
+command -v jq >/dev/null 2>&1 || { echo "install.sh: jq is required by the hooks and tools (macOS: brew install jq; Windows: winget install jqlang.jq)." >&2; exit 1; }
+
+"$py" -I - "$mode" "$here" "$HOME" "$vscode" "$stamp" <<'PY'
+import json, os, pathlib, re, shutil, subprocess, sys
 
 mode, here, home, vscode, stamp = sys.argv[1:]
 here, home, vscode = pathlib.Path(here), pathlib.Path(home), pathlib.Path(vscode)
@@ -66,23 +72,44 @@ def write(path, text):
     print(f"updated {path}")
 
 
+def is_link(path):
+    return path.is_symlink() or getattr(path, "is_junction", lambda: False)()
+
+
+def remove_link(path):
+    if path.is_symlink():
+        path.unlink()
+    else:
+        os.rmdir(path)  # a junction: removes the link, not the target
+
+
+def make_link(link, target):
+    # Windows symlinks need Developer Mode or admin; a directory junction needs neither.
+    try:
+        link.symlink_to(target, target_is_directory=True)
+    except OSError:
+        if os.name != "nt":
+            raise
+        subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], check=True, capture_output=True)
+
+
 # ~/.harness
 link = home / ".harness"
-if link.is_symlink() or not link.exists():
-    if link.is_symlink():
-        link.unlink()
+if is_link(link) or not link.exists():
+    if is_link(link):
+        remove_link(link)
     if install:
-        link.symlink_to(here / "harness", target_is_directory=True)
+        make_link(link, here / "harness")
         print(f"linked {link} -> {here / 'harness'}")
 else:
-    sys.exit(f"install.sh: {link} exists and is not a symlink; move it away first")
+    sys.exit(f"install.sh: {link} exists and is not a link; move it away first")
 
 feedback_link = home / ".harness-feedback"
 (here / "feedback").mkdir(exist_ok=True)
-if feedback_link.is_symlink():
-    feedback_link.unlink()
+if is_link(feedback_link):
+    remove_link(feedback_link)
 if install and not feedback_link.exists():
-    feedback_link.symlink_to(here / "feedback", target_is_directory=True)
+    make_link(feedback_link, here / "feedback")
     print(f"linked {feedback_link} -> {here / 'feedback'}")
 
 # CLAUDE.md and AGENTS.md in the home folder: drop the old AI Hub block, add ours to CLAUDE.md

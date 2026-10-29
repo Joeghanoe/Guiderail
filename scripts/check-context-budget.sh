@@ -3,10 +3,13 @@
 # unless AllowContextGrowth=true. Usage: scripts/check-context-budget.sh   (CI or local; target defaults to main)
 set -euo pipefail
 
+py=python3
+"$py" -c '' >/dev/null 2>&1 || py=python # Windows: python.org installs `python`, not `python3`
+
 bundle=harness/tools/harness/bundle.py
 budget_file=harness/tools/harness/context-budget.json
 
-python3 -I "$bundle" budget
+"$py" -I "$bundle" budget
 
 base="origin/${SYSTEM_PULLREQUEST_TARGETBRANCH:-refs/heads/main}"
 base="${base/refs\/heads\//}"
@@ -17,4 +20,4 @@ fi
 baseline="$(mktemp)"
 trap 'rm -f "$baseline"' EXIT
 git show "$base:$budget_file" >"$baseline"
-python3 -I "$bundle" budget --baseline "$baseline"
+"$py" -I "$bundle" budget --baseline "$baseline"
