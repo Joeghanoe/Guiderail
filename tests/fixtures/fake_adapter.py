@@ -26,3 +26,5 @@ if args.mode != "no-entrypoint":
     (workspace / "EVAL.json").write_text(json.dumps({"command": command}), encoding="utf-8")
 (trace / "usage.json").write_text(json.dumps({"input_tokens": 10, "output_tokens": 5, "cost": None}), encoding="utf-8")
 (workspace / "REPORT.md").write_text("done", encoding="utf-8")
+import os
+(trace / "env.txt").write_text(os.environ.get("EVAL_PROBE", "unset"), encoding="utf-8")

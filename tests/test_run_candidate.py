@@ -129,6 +129,16 @@ class RunCandidateTests(unittest.TestCase):
         self.assertFalse(any("/cases/" in f or "/tools/testing/" in f or f.endswith("tools/index.md") or "__pycache__" in f for f in files))
         self.assertTrue(tree.is_dir())
 
+    def test_folder_mode_passes_env_and_reports_same_user_class(self):
+        code, report = self.run_it(self.profile(isolation={"mode": "folder"}, env={"EVAL_PROBE": "hello", "HOME": "/x/home", "SECRET": "s"}), "folder")
+        self.assertEqual((self.root / "folder/trace/env.txt").read_text(encoding="utf-8"), "hello")
+        self.assertEqual(report["run_class"], "exploratory-same-user")
+        self.assertEqual(report["policy"]["agent_env"], {"EVAL_PROBE": "<set>", "HOME": "/x/home", "SECRET": "<set>"})
+        self.assertEqual(report["policy"]["status"], "inconclusive")
+
+    def test_credential_paths_are_watched_in_folder_mode(self):
+        self.assertTrue(any(p.endswith(".ssh") for p in runner.sensitive_paths()))
+
     def test_output_inside_the_repository_is_refused(self):
         args = Args(frozen=str(self.frozen), manifest_sha256=self.manifest_sha, profile=str(self.profile()),
                     out=str(ROOT / "run-evidence"))
