@@ -51,6 +51,8 @@ expect 2 "terraform plan" bash_hook "terraform plan"
 expect 2 "kubectl" bash_hook "kubectl delete pod x"
 expect 2 "func azure publish" bash_hook "func azure functionapp publish my-func"
 expect 2 "swapping the identity" bash_hook "HARNESS_AZURE_CONFIG_DIR=~/.azure .harness/tools/cloud/cloud-read.sh az group list"
+expect 2 "widening what the local reader may open" bash_hook "HARNESS_DEV_LOG_DIRS=/ .harness/tools/dev/dev-read.sh logfile /etc/passwd"
+expect 0 "dev-read wrapper is allowed" bash_hook "~/.harness/tools/dev/dev-read.sh ports 5000"
 expect 0 "sonar-read wrapper is allowed" bash_hook "~/.harness/tools/sonar/sonar-read.sh issues/search componentKeys=teamvalue_X"
 expect 2 "curl to Sonar directly" bash_hook "curl -s https://sonarcloud.io/api/issues/search"
 expect 2 "agent handles the Sonar token" bash_hook "echo \$SONAR_TOKEN"
@@ -509,6 +511,15 @@ expect 0 "/example and /tv-review for Claude, /example for Copilot" bash -c "tes
 expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' | grep -vq updated"
 expect 0 "uninstall runs" inst --uninstall
 expect 0 "uninstall removes links and the import" bash -c "test ! -e '$tmp/home/.harness' && test ! -e '$tmp/home/.harness-feedback' && ! grep -q 'TeamValue harness' '$tmp/home/.claude/CLAUDE.md'"
+
+source "$here/tests/compare-ui.sh"
+source "$here/tests/coverage-impact.sh"
+source "$here/tests/dep-read.sh"
+source "$here/tests/ado-run-timing.sh"
+source "$here/tests/dev-read.sh"
+source "$here/tests/spec-note.sh"
+source "$here/tests/scaffold.sh"
+source "$here/tests/density.sh"
 
 echo
 echo "$pass passed, $fail failed"

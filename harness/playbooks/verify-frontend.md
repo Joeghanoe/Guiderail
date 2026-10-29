@@ -25,7 +25,7 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
 1. **Run the app on synthetic data.** Start it the way `AGENTS.md` says and wait until it answers. Never point this
    at a page with real personal data (SEC.2). If the screen needs a login or a role, use a seeded test account or
    the repo's mock mode, and never type a real credential.
-2. **Capture.** One call, own line (the guard hook refuses `|`, `;` and `&&`):
+2. **Capture the baseline.** This is the screen as it is before you fix anything the checks find. One call, own line (the guard hook refuses `|`, `;` and `&&`):
    `node ~/.harness/tools/frontend/screenshot.mjs --url http://localhost:<port>/<path> --name <screen>`
    The run is saved in `~/.harness-screenshots/<repo>/<timestamp>/`, outside every repo, and the tool deletes runs
    older than 7 days or beyond 200 MB (oldest first) before each capture (`--keep-days`, `--max-mb`). Screenshots are
@@ -33,7 +33,8 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
    Repeat `--url` for several screens. Add `--scheme both` when the product has a dark mode and `--full-page`
    when the screen scrolls. The tool needs Chrome, Edge or Chromium and Node 22+; it opens only localhost unless
    you pass `--allow-remote`, which only the user may ask for. If the repo has `axe-core` installed, the tool runs
-   it too; if not, say that axe did not run.
+   it too; if not, say that axe did not run. Note the run folder the tool prints: it is the baseline for step 7. Use
+   the same `--url`, `--viewports` and `--scheme` flags every time, or the runs cannot be compared.
 3. **Read the findings.** The tool prints each finding once, with the viewports where it occurs. Treat them as
    leads: a contrast finding on text over an image is probably noise; a missing label or a 20 px button is real.
 4. **Look at every screenshot.** Open each PNG with the Read tool; do not skip the 320 px one. Check what the tool
@@ -50,11 +51,34 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
 6. **Keyboard and focus.** Where the page has controls, check by reading the markup and styles: logical tab order,
    a visible focus style (not `outline: none` without a replacement), no keyboard trap, `prefers-reduced-motion`
    respected for animation. If you cannot test it, list it as not checked.
-7. **Fix, then capture again.** Fix what you found, within the repo's style guide (no new colours, fonts or radii
-   without asking), re-run step 2 and look again. Stop after three rounds and report what is left.
-8. **Report.** Conclusion first: "looked at N screens at 320, 390, 768 and 1280 px; M findings fixed, K open".
-   Then the evidence: the tool's remaining findings, what you saw that a tool cannot, the audience judgement, and
-   what was not checked (screen reader, real devices, states you could not reach). Never write "WCAG compliant":
+7. **Fix, capture again, compare.** Fix what you found, within the repo's style guide (no new colours, fonts or radii
+   without asking). Re-run step 2 with the same flags, then compare the new run folder with the baseline, one call,
+   own line:
+   `node ~/.harness/tools/frontend/compare-ui.mjs --before <baseline run folder> --after <new run folder>`
+   It matches findings by screen, size, colour scheme and check, and prints what is fixed, new, reduced and
+   unchanged, with totals per size, so "better at 1280 px, worse at 320 px" shows. Exit 0: no regression. Exit 2:
+   a regression, meaning at least one new finding or one whose node count rose. Exit 1: it could not compare
+   (a missing report, or the two runs cover different screens or differ on axe); fix the capture, do not read
+   the numbers.
+   - **Regressions (exit 2) come first.** A fix that trades one violation for another looks like progress in the
+     findings list and is a regression here. Read each one, find the change that caused it, and fix it or
+     undo that change, before you touch anything still open. Do not count a round as progress while it adds a finding.
+   - **Reduced is not fixed.** The same finding with fewer nodes (axe: 7 nodes, then 3) is still open. The same
+     finding with more nodes is a regression, and the tool exits 2 for it: more violations of a check the
+     baseline already had is not a smaller problem than a brand-new one.
+   - **Then look again.** Open the new screenshots and repeat steps 4 and 5 for what you changed. The comparison
+     cannot tell a screen that is merely stacked from one that is designed for the phone, or that it shows too much
+     (UI.2); only looking can.
+   - **Stop on one of two conditions.** (a) The last comparison had no new findings, and what is still open is
+     not worth fixing: say why each one stays (noise such as contrast over an image, or a repo decision). (b) You
+     have done three rounds of fix and compare; report what is left, and any new findings from the last round
+     first. Otherwise do another round, with the latest run as the new baseline.
+   The number bounds the regression risk; it does not score the design. A delta of zero, or a long list of fixed
+   findings, is not evidence that the UI improved: the checks cover part of WCAG 2.2 AA and nothing about whether
+   the screen is usable. The judgement in steps 4 and 5 stays the thing that decides.
+8. **Report.** Conclusion first: "looked at N screens at 320, 390, 768 and 1280 px; M findings fixed, K open, J new
+   (compared with the baseline in R rounds)". Then the evidence: the last comparison's totals per size, the tool's
+   remaining findings, what you saw that a tool cannot, the audience judgement, and what was not checked (screen reader, real devices, states you could not reach). Never write "WCAG compliant":
    automated checks cover part of WCAG 2.2 AA. Give the human the run folder the tool printed; do not
    copy the PNGs into the repo unless it already keeps screenshots.
 

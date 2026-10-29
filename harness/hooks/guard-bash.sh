@@ -43,9 +43,11 @@ if grep -Eq '(^|[;&|[:space:]])(az|azd)[[:space:]]+(login|logout|account[[:space
   block CLD.1 "logging in or switching accounts. The user runs this; tell them the command."
 fi
 
-# CLD.1: cloud CLIs only through the wrapper, and the wrapper's identity cannot be swapped
-if grep -Eq '(harness_azure_config_dir|azure_config_dir|harness_kubeconfig|kubeconfig)=' <<<"$lc"; then
-  block CLD.1 "changing which cloud identity the CLI uses."
+# CLD.1: cloud CLIs only through the wrapper, and the wrapper's identity cannot be swapped. The local
+# reader's log-directory variable belongs here too: it widens which files dev-read.sh may open (SEC.2),
+# and the tool itself cannot tell whether the agent or the user set it.
+if grep -Eq '(harness_azure_config_dir|azure_config_dir|harness_kubeconfig|kubeconfig|harness_dev_log_dirs)=' <<<"$lc"; then
+  block CLD.1 "changing which cloud identity the CLI uses, or which files the local reader may open."
 fi
 if word 'az|azd|terraform|tofu|kubectl|hcloud|helm' || grep -Eq '(^|[[:space:]])func[[:space:]]+azure' <<<"$lc"; then
   if via_wrapper; then
