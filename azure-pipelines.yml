@@ -23,6 +23,12 @@ steps:
   - bash: python3 -I harness/tools/harness/bundle.py privacy-check
     displayName: "Reject private feedback and raw eval artifacts"
 
+  - task: UseDotNet@2
+    displayName: "Install .NET SDK for structural checker fixtures"
+    inputs:
+      packageType: sdk
+      version: 10.0.x
+
   - bash: tests/run.sh
     displayName: "Tool and hook tests"
 

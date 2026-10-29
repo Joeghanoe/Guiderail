@@ -37,6 +37,10 @@ shim() {
 bash_hook() { jq -n --arg c "$1" '{tool_input: {command: $c}}' | "$h/hooks/guard-bash.sh"; }
 read_hook() { jq -n --arg p "$1" '{tool_name: "Read", tool_input: {file_path: $p}}' | "$h/hooks/guard-read.sh"; }
 
+echo "== CODE.5 structural checker"
+expect 0 "CODE.5 checker builds" dotnet build "$h/tools/code/CheckTypes.csproj"
+expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test_code_types.py
+
 echo "== guard-bash"
 expect 0 "dotnet test is allowed" bash_hook "dotnet test Bizure.Backup.slnx -c Release"
 expect 0 "git status is allowed" bash_hook "git status"
