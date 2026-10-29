@@ -24,7 +24,7 @@ py="$(command -v python3)"
 mode() { echo "$1" >"$qd/mode"; }
 calls() { wc -l <"$qd/calls" | tr -d ' '; }
 # q <state dir> <queue args...>: the real copilot engine, with the stub first on PATH
-q() { local sd="$1"; shift; PATH="$qbin:$PATH" "$py" -I "$eq" "$@" --state-dir "$sd" --results-file "$qd/results.jsonl" --engine copilot; }
+q() { local sd="$1"; shift; PATH="$qbin:$PATH" "$py" -I "$eq" "$@" --state-dir "$sd" --results-file "$sd/results.jsonl" --engine copilot; }
 sheet() { cat "$1"/copilot-default-*/checklist.md; }
 has() { # has <description> <extended pattern>: the last expect's output matches
   if grep -Eq -- "$2" "$tmp/out"; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: $1"; sed 's/^/    /' "$tmp/out"; fi
@@ -123,10 +123,11 @@ expect 0 "reset removes a checklist" q "$qd/s1" reset
 expect 1 "and it is gone" bash -c "test -e $qd/s1/copilot-default-*/checklist.md"
 
 # Results are shared through a committed file: a fresh state dir (another machine) resumes from it.
-expect 0 "passes and fails are recorded in the results file" test "$(grep -c . "$qd/results.jsonl")" -ge 3
-expect 1 "could-not-run scenarios are never recorded" grep -q '"status": "error"' "$qd/results.jsonl"
+expect 0 "passes and fails are recorded in the results file" test "$(grep -c . "$qd/s1/results.jsonl")" -ge 3
+expect 1 "could-not-run scenarios are never recorded" grep -q '"status": "error"' "$qd/s2/results.jsonl"
 mode ok
 : >"$qd/calls"
+mkdir -p "$qd/s8" && cp "$qd/s1/results.jsonl" "$qd/s8/results.jsonl"
 expect 1 "a fresh state dir resumes from the results file" q "$qd/s8" run "${ONLY[@]}"
 has "it finds the results already there" '[0-9]+ of 3 scenarios already have a result'
 expect 0 "and ran no new review for them" test "$(calls)" = 0
