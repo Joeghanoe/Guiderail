@@ -45,6 +45,7 @@ import os
 import pathlib
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 
@@ -223,7 +224,8 @@ def append_history(ev, state, result):
                else "the harness has uncommitted changes")
         print(f"history.jsonl not appended: {why}. Only a complete run on a clean commit counts as evidence.")
         return
-    version = subprocess.run([state["engine"], "--version"], capture_output=True, text=True).stdout.strip()
+    cli = shutil.which(state["engine"]) or state["engine"]
+    version = subprocess.run([cli, "--version"], capture_output=True, text=True).stdout.strip()
     line = {"harness": commit, "engine_version": version, "model": state["model"], "at": now()}
     line.update({k: result[k] for k in ("scenarios", "passed", "pass_rate", "critical_failures", "partial", "advisory", "gate")},
                 failed=result["failed"])

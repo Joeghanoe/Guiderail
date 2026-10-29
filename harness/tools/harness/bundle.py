@@ -150,7 +150,7 @@ def index_dirs(root):
 def cmd_index(root, _args):
     for d in index_dirs(root):
         (d / INDEX).write_text(generated_index(d, root), encoding="utf-8")
-        print(d.relative_to(root) / INDEX)
+        print((d.relative_to(root) / INDEX).as_posix())
     return 0
 
 
@@ -272,7 +272,7 @@ def check_links(root, rel, meta, body):
 
 
 def check_concept(root, path, meta, body, ids):
-    rel = "/" + str(path.relative_to(root))
+    rel = "/" + path.relative_to(root).as_posix()
     if meta is None:
         return [f"{rel}: no frontmatter (OKF requires it)"]
     kind = unquote(meta.get("type", ""))
@@ -308,7 +308,7 @@ def check_indexes(root):
     for d in index_dirs(root):
         index = d / INDEX
         if not index.is_file() or index.read_text(encoding="utf-8") != generated_index(d, root):
-            errors.append(f"/{index.relative_to(root)}: out of date, run bundle.py index")
+            errors.append(f"/{index.relative_to(root).as_posix()}: out of date, run bundle.py index")
     root_index = (root / INDEX).read_text(encoding="utf-8") if (root / INDEX).is_file() else ""
     errors += [f"/index.md: does not link {top}/" for top in TYPES_IN_DIR
                if (root / top).is_dir() and f"]({top}/)" not in root_index]
@@ -486,7 +486,7 @@ def cmd_select(root, _args):
         if not meta:
             continue
         kind = unquote(meta.get("type", ""))
-        rel = "/" + str(path.relative_to(root))
+        rel = "/" + path.relative_to(root).as_posix()
         if kind == "Rule":
             globs = [glob_to_regex(g) for g in json.loads(meta.get("applies_to", "[]"))]
             if any(g.match(f) for g in globs for f in changed):

@@ -18,6 +18,7 @@ case "\$(cat "$qd/mode")" in
 esac
 STUB
 chmod +x "$qbin/copilot"
+shim "$qbin/copilot"
 
 py="$(command -v python3)"
 mode() { echo "$1" >"$qd/mode"; }

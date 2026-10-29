@@ -26,16 +26,19 @@ BUNDLE_ROOT = HERE.parents[1]
 DEFAULT_BUNDLE = BUNDLE_ROOT
 # Keep identical to CLI_ENVIRONMENT in run-claude.py (tests/test_eval.py checks it).
 CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                   "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                    "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "CLAUDE_CONFIG_DIR",
                    "ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_MODEL",
                    "CLAUDE_CODE_USE_BEDROCK", "CLAUDE_CODE_USE_VERTEX", "AWS_REGION", "AWS_DEFAULT_REGION",
                    "AWS_BEARER_TOKEN_BEDROCK", "ANTHROPIC_VERTEX_PROJECT_ID", "CLOUD_ML_REGION",
                    "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 COPILOT_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                           "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                            "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "COPILOT_HOME", "HTTPS_PROXY",
                            "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 # Keep identical to CLI_ENVIRONMENT in run-agy.py.
 AGY_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                       "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                        "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
                        "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 LANG_EXT = {"csharp": "cs", "cs": "cs", "bicep": "bicep", "hcl": "tf", "terraform": "tf", "typescript": "ts",
@@ -256,7 +259,7 @@ def engine_preflight_error(args):
     if args.engine != "claude":
         return None
     try:
-        result = subprocess.run(["claude", "auth", "status"], capture_output=True, text=True,
+        result = subprocess.run([shutil.which("claude") or "claude", "auth", "status"], capture_output=True, text=True,
                                 timeout=15, env=review_environment(args, "auth-check"))
     except FileNotFoundError:
         return "Claude CLI was not found on PATH."
@@ -394,7 +397,7 @@ def main():
 
     commit = subprocess.run(["git", "-C", str(BUNDLE_ROOT), "describe", "--always", "--dirty"], capture_output=True, text=True).stdout.strip()
     engine_cli = None if args.engine == "replay" else args.engine
-    engine_version = subprocess.run([engine_cli, "--version"], capture_output=True, text=True).stdout.strip() \
+    engine_version = subprocess.run([shutil.which(engine_cli) or engine_cli, "--version"], capture_output=True, text=True).stdout.strip() \
         if engine_cli else "replay"
     record = {"harness": commit, "engine": args.engine, "engine_version": engine_version, "model": args.model or "default",
               "at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),

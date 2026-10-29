@@ -3,6 +3,9 @@
 # Usage: tests/run.sh
 set -uo pipefail
 
+# Git Bash copies instead of linking unless asked; the symlink-escape tests need real links (Windows Developer Mode).
+case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) export MSYS=winsymlinks:nativestrict ;; esac
+
 here="$(cd "$(dirname "$0")/.." && pwd)"
 h="$here/harness"
 tmp="$(mktemp -d)"
@@ -22,6 +25,13 @@ expect() { # expect <exit code> <description> <command...>
     echo "FAIL: $what (exit $got, want $want)"
     sed 's/^/    /' "$tmp/out"
   fi
+}
+
+# shim <stub>: on Windows a program launched from Python is found by extension, so give a bash stub a .cmd launcher.
+shim() {
+  case "$(uname -s)" in
+    MINGW* | MSYS* | CYGWIN*) printf '@bash "%s" %%*\r\n' "$(cygpath -m "$1")" >"$1.cmd" ;;
+  esac
 }
 
 bash_hook() { jq -n --arg c "$1" '{tool_input: {command: $c}}' | "$h/hooks/guard-bash.sh"; }
@@ -377,6 +387,7 @@ printf '%s\n' "${SYSTEM_ACCESSTOKEN:-missing}" >"$test_tmp/claude-env"
 printf '{"result":"[]"}\n'
 STUB
 chmod +x "$tmp/bin/claude"
+shim "$tmp/bin/claude"
 expect 0 "Claude invocation is bounded and returns its result" env PATH="$tmp/bin:$PATH" \
   SYSTEM_ACCESSTOKEN=do-not-pass \
   python3 -I "$h/tools/review/run-claude.py" \
@@ -390,6 +401,7 @@ sleep 2
 printf '{"result":"[]"}\n'
 STUB
 chmod +x "$tmp/bin/claude"
+shim "$tmp/bin/claude"
 expect 124 "Claude invocation times out" env PATH="$tmp/bin:$PATH" HARNESS_REVIEW_TIMEOUT_SECONDS=1 \
   python3 -I "$h/tools/review/run-claude.py" "$tmp/prompt.md" "$tmp/raw.txt" "$tmp" "$h"
 
@@ -501,11 +513,12 @@ echo "== install (throwaway home)"
 mkdir -p "$tmp/home/.claude" "$tmp/home/vscode"
 printf '@RTK.md\n\n# TeamValue AI Hub (managed by install.ps1)\n@import /old/global.instructions.md\n# end TeamValue AI Hub\n' >"$tmp/home/.claude/CLAUDE.md"
 echo '{"permissions": {"allow": ["Bash(az group list *)", "Bash(git status)"]}}' >"$tmp/home/.claude/settings.json"
+native_here="$(cygpath -w "$here" 2>/dev/null || printf %s "$here")"   # install.sh writes the import path in the OS's own form
 inst() { HOME="$tmp/home" HARNESS_VSCODE_USER_DIR="$tmp/home/vscode" "$here/install.sh" "$@"; }
 expect 0 "install runs" inst
 expect 0 "~/.harness points at this repo's bundle" test "$(readlink "$tmp/home/.harness")" = "$here/harness"
 expect 0 "~/.harness-feedback points at this repo's feedback folder" test "$(readlink "$tmp/home/.harness-feedback")" = "$here/feedback"
-expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -q '@$here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
+expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -qF '@$native_here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
 expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 2) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
 expect 0 "/example and /tv-review for Claude, /example for Copilot" bash -c "test -f '$tmp/home/.claude/skills/example/SKILL.md' && test -f '$tmp/home/.claude/skills/tv-review/SKILL.md' && test -f '$tmp/home/vscode/prompts/example.prompt.md'"
 expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' | grep -vq updated"
