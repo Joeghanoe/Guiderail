@@ -18,3 +18,13 @@ Vegviser is the authority for this principle; this file only points to it.[^vegv
 finding depends on the exact wording. A deviation follows Vegviser's Exception and Risk Acceptance playbook.
 
 [^vegviser]: Vegviser Principles, P2
+
+# Application to solution guidance
+
+Architecture guidance states its scope and the trade-off it protects. A solution's selected broker,
+gateway, package or endpoint is an implementation decision within that scope. Record those decisions
+separately so another solution can meet the same intent with a justified implementation.
+
+The supplied Loop page "Architectural Principles" (A.8-A.20) and Loop page "IntegrationHub Principles"
+(IH1-IH6) provide supporting context. Service autonomy, stable contracts and loose coupling
+guide design; product choices and file-layout conventions require their own scoped standards.
