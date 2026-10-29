@@ -1,6 +1,5 @@
 # Playbooks
 
-* [Add an example case](add-example.md) - Turn real code that follows or breaks a rule into a case with a concrete good and bad example.
 * [Analyse ServiceNow configuration](analyse-servicenow.md) - Answer "why does ServiceNow do X" or "what breaks in this migration" by reading configuration through the read wrapper, and write down any change as steps for a human.
 * [Classify a test failure](classify-test-failure.md) - Sort a failing test into product, test, environment or flaky before anyone changes code.
 * [Compress harness prose without losing reviewer behaviour](compress-harness-prose.md) - Shorten rules and playbooks against the eval suite, keeping an edit only when the pass rate holds and no critical scenario regressed.

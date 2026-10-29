@@ -84,11 +84,6 @@ integration suite can reach comes with a scenario (T.5). A defect found in DEV o
   into `~/.harness-feedback/` (`status: draft`, no `verified`) and carry on. Defend principles and hard rules
   with their ID and the existing cases; when the case shows a rule does not fit, propose a boundary, not a
   removal (H.1).
-- Examples make the rules concrete. When code clearly follows or breaks a rule, propose it as a candidate
-  example in your summary; write it with `/example` (`~/.harness/playbooks/add-example.md`) when the user
-  agrees. Check for a requirement before you call anything a violation. Examples are project-agnostic:
-  when the input is specific to one project, challenge it and propose a generalized version; a
-  one-project design decision belongs in that repo's ADR.
 - The second time you do the same task, propose a playbook; a playbook that is mostly commands becomes a
   script (H.2). Name what you proposed in your summary.
 

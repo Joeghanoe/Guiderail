@@ -125,7 +125,7 @@ So: **a flat pass rate licenses a cut, it does not prove the cut was free.** Tex
 most dangerous thing to compress, not the safest. Two consequences:
 
 - When a cut in uncovered text seems worth making, the cheaper move is to write the case first
-  ([add-example.md](add-example.md), `/example`). Then the eval can speak, and the harness keeps the
+  (see `templates/case.md`). Then the eval can speak, and the harness keeps the
   precedent whether or not the compression happens.
 - A duplicate is the one exception. De-duplicating does not remove the instruction from the bundle, it
   removes a copy; the definition site still carries it, and `bundle.py select` still returns that rule. Its

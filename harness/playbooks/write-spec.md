@@ -17,7 +17,7 @@ status: stable
 
 Not for a decision ("which queue", "one service or two"): that is an ADR, step 3. Not for a test plan a
 business owner runs: that is [write-business-test-plan](write-business-test-plan.md), and it comes after the
-criteria exist. Not for an exception to a rule: that is a boundary case, [add-example](add-example.md).
+criteria exist.
 
 # Input
 

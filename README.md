@@ -44,7 +44,7 @@ harness/              the bundle (~/.harness after install.sh)
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
 feedback/             draft cases from every repo (~/.harness-feedback), reviewed weekly
-adapters/             /example for Claude Code and Copilot, installed by install.sh
+adapters/             /tv-review for Claude Code, installed by install.sh
 templates/repo/       what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
                       BannedSymbols.txt, .harness-scenarios.json
 pipelines/ai-review.yml   Azure DevOps steps template: pin, verify, T.5, AI review, receipt, clean-up
@@ -60,8 +60,8 @@ tests/run.sh          tests for the tools, hooks and install; no network
 
 - links `~/.harness` to `harness/` and `~/.harness-feedback` to `feedback/`;
 - imports `AGENTS.base.md` from `~/.claude/CLAUDE.md`;
-- adds the guard hooks, the Stop verify and `/example` for Claude Code;
-- adds the instructions and the `/example` prompt for Copilot in VS Code;
+- adds the guard hooks, the Stop verify and `/tv-review` for Claude Code;
+- adds the instructions for Copilot in VS Code;
 - removes the old AI Hub import, marketplace and `Bash(az ...)` allow rules.
 
 Every changed file is backed up first.
@@ -119,11 +119,6 @@ the same. Engines, gate thresholds, evidence and options: [harness/tools/review/
 
 ## How the harness learns
 
-- **Examples.** `/example` follows `playbooks/add-example.md`: pick the rule, check whether a requirement
-  explains the code, then turn real code into a project-agnostic bad and good snippet that solve the same
-  problem. Cases teach a way of working; a design decision for one project belongs in that project's ADR,
-  and the agent challenges input that is specific to one project. `bundle.py` rejects known project and
-  customer names (`harness/templates/project-terms.txt`).
 - **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft case in
   `~/.harness-feedback/` (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into
   `harness/cases/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13
@@ -158,7 +153,7 @@ the harness can vouch for, `~/.config/harness/models.json` adds yours, and no pr
 
 ## Not built yet
 
-- Trigger and non-trigger evals for `/example`, and precision per rule over many PRs.
+- Trigger and non-trigger evals for `/tv-review`, and precision per rule over many PRs.
 - A scheduled job that collects resolved PR threads into draft cases.
 - A GitHub Actions variant of `pipelines/ai-review.yml`.
 - A deterministic attester for the review receipt (`receipt.json` is published as an artifact today).

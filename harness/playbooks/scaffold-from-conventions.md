@@ -98,7 +98,7 @@ not evidence that the code is right:
 - Matching the repo's shape is not the same as following the rules. A repo can consistently do something
   CODE.5 or T.2 forbids; the brief will report that shape as a convention, because it is one. Judge the
   convention against the rules, and when the repo's own convention breaks a rule, say so rather than
-  copying it. That is a candidate case (`playbooks/add-example.md`), not something to reproduce.
+  copying it. That is not something to reproduce.
 
 # Where it will mislead you
 

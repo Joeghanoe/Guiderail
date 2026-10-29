@@ -5,10 +5,10 @@
   "options": {"cli": "claude -p", "setting_sources": "project", "permission_mode": "acceptEdits"},
   "adapter_version": "claude_code.py@<harness commit>",
   "adapter": {
-    "argv": ["python3", "<harness>/harness/tools/testing/adapters/claude_code.py", "--workspace", "{workspace}",
+    "argv": ["python3", ".harness/harness/tools/testing/adapters/claude_code.py", "--workspace", "{workspace}",
              "--prompt-file", "{prompt}", "--trace-dir", "{trace_dir}", "--model", "claude-sonnet-5-5"]
   },
-  "env": {"HOME": "/Users/<you>/.harness-evaluation/home", "CLAUDE_CONFIG_DIR": "/Users/<you>/.harness-evaluation/claude"},
+  "env": {"HOME": "/Users/joeghanoe/.harness-evaluation/home", "CLAUDE_CONFIG_DIR": "/Users/joeghanoe/.harness-evaluation/claude"},
   "isolation": {"mode": "folder", "evidence": null},
   "protected_paths": [],
   "human_interventions": 0,

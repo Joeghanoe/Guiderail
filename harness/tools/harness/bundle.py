@@ -136,7 +136,7 @@ def generated_index(directory, root):
             lines.append(f"* [{title}]({p.name}) - {unquote(meta.get('description', ''))}{extra}")
         lines.append("")
     if not lines:
-        lines = [f"# {heading}\n", "None yet. Add one with the add-example playbook (/example).", ""]
+        lines = [f"# {heading}\n", "None yet.", ""]
     return "\n".join(lines)
 
 
@@ -197,7 +197,7 @@ def project_terms(root, extra=None):
 def check_agnostic(rel, meta, body, terms):
     text = " ".join([meta.get("title", ""), meta.get("description", ""), body])
     hits = sorted({t for t in terms if re.search(rf"(?<![\w.]){re.escape(t)}(?![\w])", text, flags=re.I)})
-    return [f"{rel}: project-specific name(s) {hits}; generalize the case (see /playbooks/add-example.md)"] if hits else []
+    return [f"{rel}: project-specific name(s) {hits}; generalize the case"] if hits else []
 
 
 # A "Good" / "Bad" comment starting a line in a variant code block; the colon is optional.

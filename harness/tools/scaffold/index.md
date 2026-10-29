@@ -3,7 +3,7 @@
 Scaffolding here means **reading the target repo's conventions, not writing files from a template**. The
 folder is named for the task an agent has ("scaffold a new service"); the tool is read-only and writes
 nothing. A generator would have to carry one team's project shape inside a project-agnostic bundle, which
-is what `playbooks/add-example.md` and `templates/project-terms.txt` exist to prevent, and it would rot
+is what `templates/project-terms.txt` exists to prevent, and it would rot
 silently as the repo moved. An extractor cannot rot: it reads the repo as it is today.
 
 Playbook: [scaffold-from-conventions.md](../../playbooks/scaffold-from-conventions.md).
