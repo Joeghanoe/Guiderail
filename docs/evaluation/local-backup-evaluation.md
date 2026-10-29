@@ -86,12 +86,54 @@ runs its build and tests, invokes the frozen grader, runs the CODE.5 audit over 
 re-verifies the package and protected paths. `report.json` and `report.md` keep functional, build/tests,
 architecture, policy, behavior and usage separate. Exit 1 is a fail, 2 inconclusive, 3 preflight failure.
 
-Limits: the runner is not a sandbox. A run is `exploratory` unless the profile declares an isolation
-mechanism with an evidence reference (`isolation.mode: declared`), and even then policy stays inconclusive
+## Container runs (Rancher Desktop, recommended)
+
+`isolation.mode: container` (profile `run-profile.claude-sonnet-5-5.container.json`) runs the agent, the
+candidate's build and tests, the grader and CODE.5 in throwaway `docker run --rm` containers. Use Rancher
+Desktop with the moby (dockerd) engine; on a Mac keep run folders under `/Users` so the VM can mount them.
+
+1. `harness/tools/testing/container/build.sh` builds `harness-eval:local` (.NET 10 SDK, git, Python, Node, pinned
+   `claude` and `codex`, non-root user). The CLI versions default to the ones installed on the host; the runner
+   records the image ID with each run.
+2. One-time subscription login into a dedicated volume (no API keys; your personal logins are not mounted):
+   `run_candidate.py login --profile <profile> --tool claude` (then `/login`), and `--tool codex`.
+   The volume is mounted only into the agent container, never into build, grade or CODE.5 containers.
+   Codex's login callback needs port 1455, which the helper publishes on 127.0.0.1.
+3. `run_candidate.py run ...` as before. Each phase sees only its mounts: agent gets workspace, trace dir,
+   the adapters (read-only) and the login volume; build and tests get the workspace; the grader gets the workspace,
+   the frozen package (read-only) and an output folder with no network; CODE.5 gets the workspace and the checker
+   source (read-only), no network. Containers run with all capabilities dropped, no-new-privileges, memory, CPU and
+   pid limits, and are killed on timeout. The report records image, limits and the exact mounts of every phase.
+   Host git commands against the agent's repository run with hooks and fsmonitor disabled.
+
+The container is constructed by the runner, so the mounts are known, but policy stays inconclusive: what the agent
+ran inside is not observed, and the network is open for the model API. Subscription runs report no dollar cost, and
+subscription rate limits can end a run early; treat that as infrastructure, not model, failure. The login volume
+persists between runs; the adapters disable session persistence, but start comparisons from the same volume state.
+
+## Rescoring a saved run
+
+`run_candidate.py rescore --run <run dir> --frozen <dir> --manifest-sha256 <hash> --profile <profile>` re-runs the
+entrypoint build, tests, grader and CODE.5 on a copy of the saved workspace and writes `rescore-<time>/report.json`
+inside the run directory. The agent is not rerun: execution, usage, behavior and agent-phase violations
+(frozen-package, protected-path) are carried over, and the report records the previous status and grader hash.
+Use it after improving a grader or the CODE.5 check, with a new frozen package built from the new commit. The
+original run evidence is never modified.
+
+Limits: outside container mode the runner is not a sandbox. A run is `exploratory` unless the profile declares an
+isolation mechanism with an evidence reference (`isolation.mode: declared`), and even then policy stays inconclusive
 because the runner cannot verify the declaration. It observes only protected-path and frozen-package
-modification. Provider adapters themselves (Claude Code, Codex, others) are not shipped or verified; tests use
-a stand-in. Behavior and truthfulness of `REPORT.md` need human review of the trace.
-Candidate context is the workspace only: `AGENTS.md` (from `AGENTS.base.md`, `~/.harness` rewritten to `.harness`), `CLAUDE.md` importing it, and a copy of the harness bundle at `.harness/` without cases, hooks, review and testing tools. Adapters live in `harness/tools/testing/adapters/` (`claude_code.py`, `codex.py`; run them without `-I`). They narrow access but do not isolate; `protected_paths` appearing in the trace is a hard gate. Example profiles: `greenfield-001/run-profile.claude-sonnet-5-5.json` (Windows) and `...mac-folder.json`. `isolation.mode: folder` is a same-user run in `~/.harness-evaluation` (`scripts/eval-home-setup.sh`): the agent gets its own HOME, Claude/Codex config and subscription logins through the profile `env`, and any mention of your credential directories (`~/.ssh`, `~/.aws`, `~/.claude` and similar) in the trace is a hard gate. It is reported as `exploratory-same-user`. Keep reference solutions and source PDFs off that machine.
+modification. Provider adapters (Claude Code, Codex) have only been tested against stand-in CLIs, and the container
+backend only against a stand-in `docker`; the first real run should be a short smoke test. Behavior and truthfulness
+of `REPORT.md` need human review of the trace.
+Candidate context is the workspace only: `AGENTS.md` (from `AGENTS.base.md`, `~/.harness` rewritten to `.harness`),
+`CLAUDE.md` importing it, and a copy of the harness bundle at `.harness/` without cases, hooks, review and testing tools.
+Adapters live in `harness/tools/testing/adapters/` (`claude_code.py`, `codex.py`; run them without `-I`).
+Example profiles: `greenfield-001/run-profile.claude-sonnet-5-5.container.json`, `...json` (Windows, no isolation) and
+`...mac-folder.json`. `isolation.mode: folder` is a same-user run in `~/.harness-evaluation` (`scripts/eval-home-setup.sh`):
+the agent gets its own HOME and config through the profile `env`, and any mention of your credential directories
+(`~/.ssh`, `~/.aws`, `~/.claude` and similar) in the trace is a hard gate. Keep reference solutions and source PDFs
+off the machine that runs the agent.
 
 ## Coverage limits
 

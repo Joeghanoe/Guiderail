@@ -139,6 +139,85 @@ class RunCandidateTests(unittest.TestCase):
     def test_credential_paths_are_watched_in_folder_mode(self):
         self.assertTrue(any(p.endswith(".ssh") for p in runner.sensitive_paths()))
 
+    def container_profile(self, mode="ok", **extra):
+        argv = ["python3", str(FIXTURES / "fake_adapter.py"), "--mode", mode, "--control", str(FIXTURES / "backup_control.py"),
+                "--python", "python3", "--workspace", "{workspace}", "--prompt-file", "{prompt}", "--trace-dir", "{trace_dir}"]
+        data = {"scenario_id": "t-001", "provider": "stub", "model": "stub-1", "adapter_version": "0", "adapter": {"argv": argv},
+                "isolation": {"mode": "container"},
+                "container": {"image": "harness-eval:test", "home_volume": "vol", "docker": [sys.executable, str(FIXTURES / "fake_docker.py")]},
+                **extra}
+        path = self.root / f"container-{mode}.json"
+        path.write_text(json.dumps(data), encoding="utf-8")
+        return path
+
+    def docker_calls(self):
+        return [json.loads(line) for line in self.docker_log.read_text(encoding="utf-8").splitlines()]
+
+    def run_in_container(self, mode, name, **kwargs):
+        self.docker_log = self.root / "docker.log"
+        with unittest.mock.patch.dict("os.environ", {"FAKE_DOCKER_LOG": str(self.docker_log)}):
+            return self.run_it(self.container_profile(mode, **kwargs), name, budget=kwargs.pop("budget", None))
+
+    def test_container_run_mounts_only_what_each_phase_needs(self):
+        code, report = self.run_in_container("ok", "boxed")
+        self.assertEqual(report["run_class"], "isolated-container")
+        self.assertEqual(report["functional"]["status"], "pass", report["functional"])
+        calls = {c["name"].rsplit("-", 1)[-1]: c for c in self.docker_calls()}
+        self.assertEqual({"agent", "grade", "code5"} & set(calls), {"agent", "grade"})
+        out = self.root / "boxed"
+        sources = lambda c: {pathlib.Path(m[0]).name if m[0] != "vol" else "vol" for m in c["mounts"]}
+        self.assertEqual(sources(calls["agent"]), {"workspace", "trace", "adapters", "vol"})
+        self.assertEqual(sources(calls["grade"]), {"workspace", "frozen", "grade"})
+        self.assertEqual(calls["grade"]["network"], "none")
+        for call in calls.values():
+            self.assertIn("--cap-drop", call["flags"])
+            self.assertIn("--security-opt", call["flags"])
+            self.assertTrue(all(pathlib.Path(m[0]).resolve() != pathlib.Path.home() for m in call["mounts"]))
+        frozen_mount = next(m for m in calls["grade"]["mounts"] if m[1] == "/frozen")
+        self.assertEqual(frozen_mount[2], "ro")
+        self.assertEqual(report["policy"]["container"]["image"], "harness-eval:test")
+        self.assertTrue((out / "grade/grader/report.json").is_file())
+
+    def test_container_timeout_kills_the_container(self):
+        self.docker_log = self.root / "docker.log"
+        with unittest.mock.patch.dict("os.environ", {"FAKE_DOCKER_LOG": str(self.docker_log)}):
+            code, report = self.run_it(self.container_profile("sleep"), "boxed-slow", budget=1)
+        self.assertTrue(report["execution"]["timed_out"])
+        self.assertTrue(any("kill" in c for c in self.docker_calls()))
+
+    def test_missing_image_fails_preflight(self):
+        self.docker_log = self.root / "docker.log"
+        with unittest.mock.patch.dict("os.environ", {"FAKE_DOCKER_LOG": str(self.docker_log), "FAKE_DOCKER_NO_IMAGE": "1"}):
+            with self.assertRaises(runner.Preflight):
+                self.run_it(self.container_profile(), "boxed-none")
+
+    def test_rescore_reevaluates_without_the_agent_and_keeps_original_evidence(self):
+        code, original = self.run_it(self.profile(), "first")
+        run = self.root / "first"
+        before = (run / "report.json").read_text(encoding="utf-8")
+        args = Args(run=str(run), frozen=str(self.frozen), manifest_sha256=self.manifest_sha, profile=str(self.profile()))
+        with unittest.mock.patch("builtins.print"):
+            runner.rescore(args)
+        self.assertEqual((run / "report.json").read_text(encoding="utf-8"), before)
+        rescored = next(run.glob("rescore-*"))
+        report = json.loads((rescored / "report.json").read_text(encoding="utf-8"))
+        self.assertEqual(report["rescore"]["previous_status"], original["status"])
+        self.assertEqual(report["functional"]["status"], "pass")
+        self.assertEqual(report["execution"], original["execution"])
+        self.assertEqual(report["usage"], original["usage"])
+        self.assertFalse((rescored / "trace").exists())
+
+    def test_rescore_keeps_agent_phase_violations(self):
+        protected = self.root / "protected2.txt"
+        protected.write_text("original", encoding="utf-8")
+        self.run_it(self.profile(protected_paths=[str(protected)], adapter_extra=["--touch", str(protected)]), "touched")
+        run = self.root / "touched"
+        args = Args(run=str(run), frozen=str(self.frozen), manifest_sha256=self.manifest_sha, profile=str(self.profile()))
+        with unittest.mock.patch("builtins.print"):
+            self.assertEqual(runner.rescore(args), 1)
+        report = json.loads(next(run.glob("rescore-*")).joinpath("report.json").read_text(encoding="utf-8"))
+        self.assertIn("protected-path-modified:" + str(protected), report["hard_gate_violations"])
+
     def test_output_inside_the_repository_is_refused(self):
         args = Args(frozen=str(self.frozen), manifest_sha256=self.manifest_sha, profile=str(self.profile()),
                     out=str(ROOT / "run-evidence"))

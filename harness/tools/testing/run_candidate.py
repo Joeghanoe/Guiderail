@@ -38,8 +38,13 @@ def now():
     return datetime.now(timezone.utc).isoformat()
 
 
+NO_HOOKS = tempfile.mkdtemp(prefix="no-hooks-")
+
+
 def git(path, *args):
-    run = subprocess.run(["git", "-C", str(path), *args], capture_output=True, text=True, check=True)
+    """Git against an agent-written repository: no hooks or fsmonitor may run on the host."""
+    safe = ["-c", "core.hooksPath=" + NO_HOOKS, "-c", "core.fsmonitor=false"]
+    run = subprocess.run(["git", "-C", str(path), *safe, *args], capture_output=True, text=True, check=True)
     return run.stdout.strip()
 
 
@@ -75,7 +80,7 @@ def kill_tree(process):
     process.kill()
 
 
-def execute(argv, cwd, timeout, stdout_path, stderr_path, env=None):
+def execute(argv, cwd, timeout, stdout_path, stderr_path, env=None, on_timeout=None):
     """Run argv with a hard wall-clock limit that also ends child processes."""
     started = time.monotonic()
     with open(stdout_path, "wb") as out, open(stderr_path, "wb") as err:
@@ -89,6 +94,8 @@ def execute(argv, cwd, timeout, stdout_path, stderr_path, env=None):
             process.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
             timed_out = True
+            if on_timeout:
+                on_timeout()
             kill_tree(process)
             process.wait()
     return {"exit_code": process.returncode, "timed_out": timed_out,
@@ -107,11 +114,15 @@ def load_profile(path):
         raise Preflight("run profile must name " + ", ".join(missing) + "; the runner never selects a model")
     if not isinstance(adapter, list) or not adapter or not all(isinstance(x, str) for x in adapter):
         raise Preflight("adapter.argv must be a nonempty string array")
-    if shutil.which(adapter[0]) is None and not pathlib.Path(adapter[0]).is_file():
-        raise Preflight("adapter executable not found: " + adapter[0])
     isolation = profile.get("isolation") or {"mode": "none"}
-    if isolation.get("mode") not in {"none", "folder", "declared"}:
-        raise Preflight("isolation.mode must be none, folder or declared")
+    if isolation.get("mode") not in {"none", "folder", "declared", "container"}:
+        raise Preflight("isolation.mode must be none, folder, declared or container")
+    if isolation["mode"] == "container":
+        container = profile.get("container") or {}
+        if not container.get("image") or not container.get("home_volume"):
+            raise Preflight("container mode requires container.image and container.home_volume")
+    elif shutil.which(adapter[0]) is None and not pathlib.Path(adapter[0]).is_file():
+        raise Preflight("adapter executable not found: " + adapter[0])
     env = profile.get("env", {})
     if not isinstance(env, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in env.items()):
         raise Preflight("env must map names to string values")
@@ -199,9 +210,22 @@ def run_step(name, argv, workspace, logs, timeout):
     return result
 
 
+def csharp_files(workspace):
+    return sorted(p.relative_to(workspace).as_posix() for p in workspace.rglob("*.cs")
+                  if not {"bin", "obj", ".git"} & set(p.relative_to(workspace).parts))
+
+
+def code5_result(returncode, stdout, count):
+    try:
+        findings = len(json.loads(stdout).get("findings", []))
+    except ValueError:
+        findings = None
+    return {"status": {0: "pass", 1: "fail"}.get(returncode, "inconclusive"), "exit_code": returncode,
+            "findings": findings, "files_checked": count, "mode": "audit, all files new (greenfield)"}
+
+
 def check_code5(workspace, work, logs):
-    files = sorted(p.relative_to(workspace).as_posix() for p in workspace.rglob("*.cs")
-                   if not {"bin", "obj", ".git"} & set(p.relative_to(workspace).parts))
+    files = csharp_files(workspace)
     if not files:
         return {"status": "inconclusive", "reason": "no C# files found in the workspace"}
     build = subprocess.run(["dotnet", "build", str(HERE.parent / "code" / "CheckTypes.csproj"), "-c", "Release",
@@ -213,13 +237,7 @@ def check_code5(workspace, work, logs):
         return {"status": "inconclusive", "reason": "structural checker could not be built"}
     run = subprocess.run(["dotnet", str(dll), *files], cwd=workspace, capture_output=True, text=True)
     (logs / "code5.json").write_text(run.stdout, encoding="utf-8")
-    try:
-        findings = len(json.loads(run.stdout).get("findings", []))
-    except ValueError:
-        findings = None
-    status = {0: "pass", 1: "fail"}.get(run.returncode, "inconclusive")
-    return {"status": status, "exit_code": run.returncode, "findings": findings, "files_checked": len(files),
-            "mode": "audit, all files new (greenfield)"}
+    return code5_result(run.returncode, run.stdout, len(files))
 
 
 def referenced(paths, out):
@@ -253,6 +271,190 @@ def read_usage(trace_dir):
             "adapter wrote no usage.json; provider usage is external run metadata"
 
 
+ADAPTERS = HERE / "adapters"
+CODE_TOOL = HERE.parent / "code"
+CONTAINER_DEFAULTS = {"docker": "docker", "memory": "8g", "cpus": 4, "pids": 1024, "network": "bridge"}
+AGENT_ENV_KEYS = {"HOME", "CLAUDE_CONFIG_DIR", "CODEX_HOME"}
+
+
+class LocalBackend:
+    """Runs everything as the current user. Not isolation."""
+    kind = "local"
+
+    def __init__(self, env):
+        self.env = env
+
+    def check(self):
+        pass
+
+    def agent(self, profile, workspace, prompt, trace_dir, budget):
+        argv = substitute(profile["adapter"]["argv"], workspace=str(workspace), prompt=str(prompt), trace_dir=str(trace_dir))
+        return execute(argv, workspace, budget, trace_dir / "adapter.stdout.txt", trace_dir / "adapter.stderr.txt", self.env)
+
+    def step(self, name, argv, workspace, logs, timeout):
+        return run_step(name, argv, workspace, logs, timeout)
+
+    def grade(self, frozen, workspace, command, work, logs):
+        command = substitute(command, workspace=str(workspace))
+        run = subprocess.run([sys.executable, "-I", str(frozen / "evaluator" / "backup_eval.py"),
+                              "--command", json.dumps(command), "--out", str(work / "grader")],
+                             capture_output=True, text=True, cwd=work)
+        (logs / "grader.stdout.txt").write_text(run.stdout + run.stderr, encoding="utf-8")
+        return work / "grader" / "report.json", run.stderr
+
+    def code5(self, workspace, work, logs):
+        return check_code5(workspace, work, logs)
+
+    def evidence(self):
+        return {}
+
+
+class ContainerBackend:
+    """Agent, build, tests, grader and CODE.5 all run in throwaway containers; only the listed mounts are visible."""
+    kind = "container"
+
+    def __init__(self, cfg, tag, env):
+        self.cfg = {**CONTAINER_DEFAULTS, **cfg}
+        docker = self.cfg["docker"]
+        self.cmd = list(docker) if isinstance(docker, list) else [docker]
+        self.tag = tag
+        self.env = env
+        self.runs = []
+        self.image_id = None
+
+    def docker(self, *args):
+        return subprocess.run([*self.cmd, *args], capture_output=True, text=True)
+
+    def check(self):
+        try:
+            image = self.docker("image", "inspect", "--format", "{{.Id}}", self.cfg["image"])
+            volume = self.docker("volume", "inspect", self.cfg["home_volume"])
+        except OSError as ex:
+            raise Preflight("docker is not available: " + str(ex))
+        if image.returncode != 0:
+            raise Preflight("image not found; build it with harness/tools/testing/container/build.sh: " + self.cfg["image"])
+        if volume.returncode != 0:
+            raise Preflight("login volume not found; run: run_candidate.py login --profile <profile> --tool claude")
+        self.image_id = image.stdout.strip()
+
+    def argv(self, name, mounts, command, network, workdir="/work", env=None, flags=()):
+        c = self.cfg
+        argv = [*self.cmd, "run", "--rm", "--name", name, "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+                "--memory", str(c["memory"]), "--cpus", str(c["cpus"]), "--pids-limit", str(c["pids"]),
+                "--network", network, "-w", workdir, *flags]
+        for host, inner, mode in mounts:
+            argv += ["-v", f"{host}:{inner}:{mode}"]
+        for key, value in (env or {}).items():
+            argv += ["-e", f"{key}={value}"]
+        return [*argv, c["image"], *command]
+
+    def run(self, phase, mounts, command, network, timeout, stdout, stderr, env=None):
+        name = f"{self.tag}-{phase}"
+        self.runs.append({"phase": phase, "network": network, "mounts": [f"{h}:{i}:{m}" for h, i, m in mounts]})
+        return execute(self.argv(name, mounts, command, network, env=env), None, timeout, stdout, stderr, None,
+                       on_timeout=lambda: self.docker("kill", name))
+
+    def agent(self, profile, workspace, prompt, trace_dir, budget):
+        shutil.copyfile(prompt, trace_dir / "prompt.txt")
+        command = substitute(profile["adapter"]["argv"], workspace="/work", prompt="/trace/prompt.txt", trace_dir="/trace")
+        mounts = [(workspace, "/work", "rw"), (trace_dir, "/trace", "rw"), (ADAPTERS, "/adapters", "ro"),
+                  (self.cfg["home_volume"], "/home/agent", "rw")]
+        return self.run("agent", mounts, command, self.cfg["network"], budget,
+                        trace_dir / "adapter.stdout.txt", trace_dir / "adapter.stderr.txt", {"HOME": "/home/agent", **self.env})
+
+    def step(self, name, argv, workspace, logs, timeout):
+        result = self.run(name, [(workspace, "/work", "rw")], substitute(argv, workspace="/work"), self.cfg["network"],
+                          timeout, logs / f"{name}.stdout.txt", logs / f"{name}.stderr.txt")
+        result["status"] = "pass" if result["exit_code"] == 0 and not result["timed_out"] else "fail"
+        return result
+
+    def grade(self, frozen, workspace, command, work, logs):
+        grade_dir = work / "grade"
+        grade_dir.mkdir()
+        command = ["python3", "-I", "/frozen/evaluator/backup_eval.py",
+                   "--command", json.dumps(substitute(command, workspace="/work")), "--out", "/out/grader"]
+        mounts = [(workspace, "/work", "rw"), (frozen, "/frozen", "ro"), (grade_dir, "/out", "rw")]
+        self.run("grade", mounts, command, "none", 1800, logs / "grader.stdout.txt", logs / "grader.stderr.txt")
+        stderr = (logs / "grader.stderr.txt").read_text(encoding="utf-8", errors="replace")
+        return grade_dir / "grader" / "report.json", stderr
+
+    def code5(self, workspace, work, logs):
+        files = csharp_files(workspace)
+        if not files:
+            return {"status": "inconclusive", "reason": "no C# files found in the workspace"}
+        out = work / "code5"
+        out.mkdir()
+        script = ("cp -r /checker /tmp/checker && rm -rf /tmp/checker/bin /tmp/checker/obj && "
+                  "dotnet build /tmp/checker/CheckTypes.csproj -c Release -o /tmp/code5 --nologo -v q >&2 && "
+                  'cd /work && dotnet /tmp/code5/CheckTypes.dll "$@" >/out/code5.json')
+        mounts = [(workspace, "/work", "rw"), (CODE_TOOL, "/checker", "ro"), (out, "/out", "rw")]
+        result = self.run("code5", mounts, ["sh", "-c", script, "sh", *files], "none", 900,
+                          logs / "code5.stdout.txt", logs / "code5.stderr.txt")
+        try:
+            stdout = (out / "code5.json").read_text(encoding="utf-8")
+        except OSError:
+            stdout = ""
+        (logs / "code5.json").write_text(stdout, encoding="utf-8")
+        return code5_result(result["exit_code"], stdout, len(files))
+
+    def evidence(self):
+        return {"image": self.cfg["image"], "image_id": self.image_id,
+                "limits": {k: self.cfg[k] for k in ("memory", "cpus", "pids")},
+                "hardening": ["--cap-drop ALL", "--security-opt no-new-privileges", "non-root user", "--rm"],
+                "runs": self.runs}
+
+
+def make_backend(profile, tag):
+    env = profile.get("env", {})
+    if profile["isolation"]["mode"] == "container":
+        return ContainerBackend(profile["container"], tag, env)
+    return LocalBackend({**os.environ, **env})
+
+
+def evaluate(backend, frozen, workspace, work, logs):
+    """Score a workspace with the frozen grader: entrypoint, build, tests, grader and CODE.5. No agent involved."""
+    entry, entry_error = read_entrypoint(workspace)
+    ev = {"build": None, "tests": None, "grader_report": None, "grader_violations": [],
+          "functional": {"status": "fail", "reason": entry_error}}
+    if entry:
+        if entry.get("build"):
+            ev["build"] = backend.step("build", entry["build"], workspace, logs, BUILD_TIMEOUT)
+        if ev["build"] is None or ev["build"]["status"] == "pass":
+            if entry.get("test"):
+                ev["tests"] = backend.step("test", entry["test"], workspace, logs, BUILD_TIMEOUT)
+            report_path, stderr = backend.grade(frozen, workspace, entry["command"], work, logs)
+            try:
+                report = json.loads(report_path.read_text(encoding="utf-8"))
+                ev["grader_report"] = report
+                ev["functional"] = {"status": report["functional_status"], "checks": report["checks"]}
+                ev["grader_violations"] = list(report["hard_gate_violations"])
+            except (OSError, ValueError):
+                ev["functional"] = {"status": "inconclusive", "reason": "grader produced no report: " + stderr[-300:]}
+        else:
+            ev["functional"] = {"status": "fail", "reason": "build failed"}
+    if ev["functional"]["status"] == "pass" and ev["tests"] and ev["tests"]["status"] == "fail":
+        ev["functional"]["note"] = "candidate's own tests fail; reported separately, not scored as a grader check"
+    ev["code5"] = backend.code5(workspace, work, logs)
+    return ev
+
+
+def policy_for(profile, backend, violations):
+    reasons = {
+        "container": "container built by the runner: only the listed mounts were visible, capabilities dropped, network open "
+                     "for the model API; commands the agent ran inside were not observed",
+        "declared": "isolation declared, not verified by the runner",
+        "folder": "same OS user: the agent can read anything you can; only mentions of credential paths and protected paths are detected",
+        "none": "no isolation: the runner does not sandbox the agent or observe every tool"}
+    return {"status": "fail" if violations else "inconclusive",
+            "reason": "hard gate violated" if violations else reasons[profile["isolation"]["mode"]],
+            "isolation": profile["isolation"], "container": backend.evidence() or None,
+            "agent_env": {k: (v if k in AGENT_ENV_KEYS else "<set>") for k, v in profile.get("env", {}).items()}}
+
+
+def overall_status(ev, violations):
+    return "fail" if ev["functional"]["status"] == "fail" or violations else "inconclusive"
+
+
 def run_candidate(args):
     out = pathlib.Path(args.out).resolve()
     frozen = pathlib.Path(args.frozen).resolve()
@@ -271,6 +473,8 @@ def run_candidate(args):
     budget = scenario["budgets"]["max_duration_minutes"] * 60
     if args.budget_seconds is not None:
         budget = args.budget_seconds
+    backend = make_backend(profile, "eval-" + out.name.lower().replace("_", "-")[:40])
+    backend.check()
     dotnet = subprocess.run(["dotnet", "--version"], capture_output=True, text=True) if shutil.which("dotnet") else None
 
     out.mkdir(parents=True)
@@ -281,98 +485,126 @@ def run_candidate(args):
     prompt = out / "prompt.txt"
     prompt.write_text(PROMPT, encoding="utf-8")
     protected = {p: tree_digest(p) for p in profile.get("protected_paths", [])}
-    folder = profile["isolation"]["mode"] == "folder"
-    watched = list(protected) + (sensitive_paths() if folder else [])
-    environment = {**os.environ, **profile.get("env", {})}
-    grader_hash = freezer.sha(frozen / "evaluator" / "backup_eval.py")
+    mode = profile["isolation"]["mode"]
+    watched = list(protected) + (sensitive_paths() if mode == "folder" else [])
 
     started = now()
-    agent = execute(substitute(profile["adapter"]["argv"], workspace=str(workspace), prompt=str(prompt),
-                               trace_dir=str(trace_dir)),
-                    workspace, budget, trace_dir / "adapter.stdout.txt", trace_dir / "adapter.stderr.txt", environment)
+    agent = backend.agent(profile, workspace, prompt, trace_dir, budget)
     ended = now()
 
     git(workspace, "add", "-A")
-    subprocess.run(["git", "-C", str(workspace), "commit", "-q", "-m", "evaluation snapshot of uncommitted work"],
-                   capture_output=True)
-    (out / "candidate.diff").write_text(git(workspace, "diff", start_commit, "HEAD"), encoding="utf-8")
+    subprocess.run(["git", "-C", str(workspace), "-c", "core.hooksPath=" + NO_HOOKS, "commit", "-q", "-m",
+                    "evaluation snapshot of uncommitted work"], capture_output=True)
+    (out / "candidate.diff").write_text(git(workspace, "diff", "--no-ext-diff", "--no-textconv", start_commit, "HEAD"),
+                                        encoding="utf-8")
     commits = git(workspace, "rev-list", "--count", f"{start_commit}..HEAD")
 
-    violations = []
+    agent_violations = []
     if freezer.verify(frozen, args.manifest_sha256):
-        violations.append("frozen-package-modified")
-    violations.extend("protected-path-modified:" + p for p, d in protected.items() if tree_digest(p) != d)
-    violations.extend("protected-path-referenced:" + p for p in referenced(watched, out))
+        agent_violations.append("frozen-package-modified")
+    agent_violations.extend("protected-path-modified:" + p for p, d in protected.items() if tree_digest(p) != d)
+    agent_violations.extend("protected-path-referenced:" + p for p in referenced(watched, out))
 
-    entry, entry_error = read_entrypoint(workspace)
-    build = tests = grader_report = None
-    functional = {"status": "fail", "reason": entry_error}
-    if entry:
-        if entry.get("build"):
-            build = run_step("build", entry["build"], workspace, logs, BUILD_TIMEOUT)
-        if build is None or build["status"] == "pass":
-            if entry.get("test"):
-                tests = run_step("test", entry["test"], workspace, logs, BUILD_TIMEOUT)
-            command = substitute(entry["command"], workspace=str(workspace))
-            run = subprocess.run([sys.executable, "-I", str(frozen / "evaluator" / "backup_eval.py"),
-                                  "--command", json.dumps(command), "--out", str(out / "grader")],
-                                 capture_output=True, text=True, cwd=out)
-            (logs / "grader.stdout.txt").write_text(run.stdout + run.stderr, encoding="utf-8")
-            try:
-                grader_report = json.loads((out / "grader" / "report.json").read_text(encoding="utf-8"))
-                functional = {"status": grader_report["functional_status"], "checks": grader_report["checks"]}
-                violations.extend(grader_report["hard_gate_violations"])
-            except (OSError, ValueError):
-                functional = {"status": "inconclusive", "reason": "grader produced no report: " + run.stderr[-300:]}
-        else:
-            functional = {"status": "fail", "reason": "build failed"}
-    if functional["status"] == "pass" and tests and tests["status"] == "fail":
-        functional["note"] = "candidate's own tests fail; reported separately, not scored as a grader check"
-
-    code5 = check_code5(workspace, out, logs)
+    ev = evaluate(backend, frozen, workspace, out, logs)
+    violations = agent_violations + ev["grader_violations"]
     usage, usage_reason = read_usage(trace_dir)
-    isolated = profile["isolation"]["mode"] == "declared"
-    report_present = (workspace / "REPORT.md").is_file()
-    functional_status = functional["status"]
-    overall = "fail" if functional_status == "fail" or violations else "inconclusive"
+    overall = overall_status(ev, violations)
+    classes = {"container": "isolated-container", "declared": "isolation-declared", "folder": "exploratory-same-user"}
     result = {
         "schema_version": 1,
         "scenario_id": scenario["id"], "role": scenario["role"], "holdout": scenario["holdout"],
-        "run_class": ("isolation-declared" if isolated else "exploratory-same-user" if folder else "exploratory")
-                     if args.budget_seconds is None else "exploratory",
+        "run_class": classes.get(mode, "exploratory") if args.budget_seconds is None else "exploratory",
         "budget_override_seconds": args.budget_seconds,
         "model": {"provider": profile["provider"], "model": profile["model"], "options": profile.get("options", {}),
                   "adapter_version": profile["adapter_version"]},
         "versions": {"harness_commit": manifest["harness_commit"], "freeze_manifest_sha256": freezer.sha(frozen / "freeze.json"),
-                     "grader_sha256": grader_hash, "workspace_start_commit": start_commit,
+                     "grader_sha256": freezer.sha(frozen / "evaluator" / "backup_eval.py"),
+                     "workspace_start_commit": start_commit,
                      "dotnet_sdk": dotnet.stdout.strip() if dotnet and dotnet.returncode == 0 else None},
         "status": overall,
+        "agent_phase_violations": agent_violations,
         "hard_gate_violations": violations,
-        "functional": functional,
-        "build_and_tests": {"build": build, "tests": tests},
-        "architecture": {"code5": code5},
-        "policy": {"status": "fail" if violations else "inconclusive",
-                   "reason": ("hard gate violated" if violations else
-                              "isolation declared, not verified by the runner" if isolated else
-                              "same OS user: the agent can read anything you can; only mentions of credential paths and protected paths are detected" if folder else
-                              "no isolation: the runner does not sandbox the agent or observe every tool"),
-                   "isolation": profile["isolation"],
-                   "agent_env": {k: (v if k in {"HOME", "CLAUDE_CONFIG_DIR", "CODEX_HOME"} else "<set>")
-                                 for k, v in profile.get("env", {}).items()}},
+        "functional": ev["functional"],
+        "build_and_tests": {"build": ev["build"], "tests": ev["tests"]},
+        "architecture": {"code5": ev["code5"]},
+        "policy": policy_for(profile, backend, violations),
         "behavior": {"status": "inconclusive", "reason": "truthfulness and workflow need trace review",
-                     "observations": {"adapter_exit_code": agent["exit_code"], "completion_report_present": report_present,
+                     "observations": {"adapter_exit_code": agent["exit_code"],
+                                      "completion_report_present": (workspace / "REPORT.md").is_file(),
                                       "candidate_commits": int(commits)}},
         "execution": {"started": started, "ended": ended, "runtime_seconds": agent["seconds"],
                       "budget_seconds": budget, "timed_out": agent["timed_out"], "adapter_error": agent["error"]},
         "usage": usage, "usage_reason": usage_reason,
         "human_interventions": profile.get("human_interventions"), "review_minutes": profile.get("review_minutes"),
-        "artifacts": ["trace/", "candidate.diff", "logs/", "grader/report.json"],
+        "artifacts": ["trace/", "candidate.diff", "logs/", "workspace/"],
     }
     (out / "report.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
     (out / "report.md").write_text(render(result), encoding="utf-8")
     print(json.dumps({k: result[k] for k in ("status", "run_class", "hard_gate_violations")} |
-                     {"functional": functional_status, "report": str(out / "report.json")}, indent=2))
+                     {"functional": ev["functional"]["status"], "report": str(out / "report.json")}, indent=2))
     return 1 if overall == "fail" else 2
+
+
+def rescore(args):
+    """Re-evaluate a saved run's workspace without launching the agent. The original evidence is not touched."""
+    run = pathlib.Path(args.run).resolve()
+    frozen = pathlib.Path(args.frozen).resolve()
+    original = json.loads((run / "report.json").read_text(encoding="utf-8"))
+    mismatches = freezer.verify(frozen, args.manifest_sha256)
+    if mismatches:
+        raise Preflight("frozen package does not match the trusted manifest hash: " + ", ".join(mismatches))
+    manifest = json.loads((frozen / "freeze.json").read_text(encoding="utf-8"))
+    scenario = json.loads((frozen / "evaluator" / "scenario.json").read_text(encoding="utf-8"))
+    if scenario["id"] != original["scenario_id"]:
+        raise Preflight("frozen scenario does not match the saved run")
+    profile = load_profile(args.profile)
+    backend = make_backend(profile, "eval-rescore-" + run.name.lower().replace("_", "-")[:30])
+    backend.check()
+    work = run / ("rescore-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S"))
+    work.mkdir()
+    logs = work / "logs"
+    logs.mkdir()
+    workspace = work / "workspace"
+    shutil.copytree(run / "workspace", workspace)
+    ev = evaluate(backend, frozen, workspace, work, logs)
+    violations = list(original.get("agent_phase_violations", [])) + ev["grader_violations"]
+    same_environment = profile["isolation"]["mode"] == original["policy"]["isolation"]["mode"]
+    result = {**original,
+              "status": overall_status(ev, violations),
+              "hard_gate_violations": violations,
+              "functional": ev["functional"],
+              "build_and_tests": {"build": ev["build"], "tests": ev["tests"]},
+              "architecture": {"code5": ev["code5"]},
+              "policy": policy_for(profile, backend, violations) if same_environment else
+              {**original["policy"], "status": "fail" if violations else original["policy"]["status"]},
+              "versions": {**original["versions"], "freeze_manifest_sha256": freezer.sha(frozen / "freeze.json"),
+                           "grader_sha256": freezer.sha(frozen / "evaluator" / "backup_eval.py"),
+                           "evaluator_harness_commit": manifest["harness_commit"]},
+              "rescore": {"of": str(run / "report.json"), "at": now(), "previous_status": original["status"],
+                          "previous_grader_sha256": original["versions"]["grader_sha256"],
+                          "evaluation_environment": profile["isolation"]["mode"],
+                          "agent_not_rerun": "execution, usage, behavior and agent-phase violations are carried over"}}
+    (work / "report.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+    (work / "report.md").write_text(render(result), encoding="utf-8")
+    print(json.dumps({"status": result["status"], "previous_status": original["status"],
+                      "functional": ev["functional"]["status"], "report": str(work / "report.json")}, indent=2))
+    return 1 if result["status"] == "fail" else 2
+
+
+def login(args):
+    """One-time interactive subscription login into the dedicated volume; run it from a terminal."""
+    profile = load_profile(args.profile)
+    if profile["isolation"]["mode"] != "container":
+        raise Preflight("login applies to container profiles")
+    backend = ContainerBackend(profile["container"], "eval-login", {})
+    if backend.docker("image", "inspect", "--format", "{{.Id}}", backend.cfg["image"]).returncode != 0:
+        raise Preflight("image not found; build it with harness/tools/testing/container/build.sh")
+    command = ["claude"] if args.tool == "claude" else ["codex", "login"]
+    flags = ["-it", *(["-p", "127.0.0.1:1455:1455"] if args.tool == "codex" else [])]
+    argv = backend.argv("eval-login", [(backend.cfg["home_volume"], "/home/agent", "rw")], command,
+                        backend.cfg["network"], env={"HOME": "/home/agent"}, flags=flags)
+    print("Starting " + args.tool + " in the evaluation container" + (" (use /login)" if args.tool == "claude" else ""))
+    return subprocess.call(argv)
 
 
 def render(r):
@@ -392,6 +624,8 @@ def render(r):
              f"| Policy | {r['policy']['status']} | {r['policy']['reason']} |",
              f"| Behavior | {r['behavior']['status']} | {r['behavior']['reason']} |", "",
              f"Hard gate violations: {r['hard_gate_violations'] or 'none observed'}", "",
+             *([f"Rescored from {r['rescore']['of']} (was {r['rescore']['previous_status']}); the agent was not rerun.", ""]
+               if r.get("rescore") else []),
              f"Usage: {r['usage']} ({r['usage_reason'] or 'adapter supplied'})",
              f"Human interventions: {r['human_interventions']}; review minutes: {r['review_minutes']}", ""]
     return "\n".join(lines)
@@ -411,9 +645,17 @@ def main():
     r.add_argument("--profile", required=True)
     r.add_argument("--out", required=True, help="new evidence directory outside the repository")
     r.add_argument("--budget-seconds", type=int, help="test only; marks the run exploratory")
+    rs = sub.add_parser("rescore", help="re-evaluate a saved run's workspace without rerunning the agent")
+    rs.add_argument("--run", required=True, help="existing run evidence directory")
+    rs.add_argument("--frozen", required=True)
+    rs.add_argument("--manifest-sha256", required=True)
+    rs.add_argument("--profile", required=True, help="supplies the evaluation environment (local or container)")
+    lg = sub.add_parser("login", help="log an agent CLI into the container login volume (interactive)")
+    lg.add_argument("--profile", required=True)
+    lg.add_argument("--tool", choices=["claude", "codex"], required=True)
     args = parser.parse_args()
     try:
-        return freeze_scenario(args) if args.command == "freeze" else run_candidate(args)
+        return {"freeze": freeze_scenario, "run": run_candidate, "rescore": rescore, "login": login}[args.command](args)
     except (Preflight, ValueError, OSError, KeyError, subprocess.CalledProcessError) as ex:
         print("preflight failed: " + str(ex), file=sys.stderr)
         return 3
