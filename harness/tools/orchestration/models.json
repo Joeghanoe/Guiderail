@@ -1,0 +1,10 @@
+{
+  "providers": {
+    "anthropic": {
+      "reviewed": "2026-10-28",
+      "economy": "claude-haiku-5-5",
+      "builder": "claude-sonnet-5-5",
+      "reasoner": "claude-opus-5-5"
+    }
+  }
+}

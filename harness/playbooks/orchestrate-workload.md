@@ -34,11 +34,21 @@ Break down the work into decoupled, single-responsibility roles:
 ### 2. Apply Model Tiering & Token Budgets
 For each subagent, select the model tier that minimizes token spend while satisfying task complexity:
 
-| Tier | When to use | Model Examples | Relative Cost |
-|---|---|---|---|
-| **Economy** | Lint rules, regex checks, boilerplate, mechanical translations, directory verification | `gemini-2.0-flash-lite`, `claude-3-5-haiku`, `gpt-4o-mini` | ~0.1x - 0.25x |
-| **Builder** | Feature code, React views, EF Core models, ASP.NET endpoints, Bicep modules, unit tests | `gemini-2.5-flash`, `claude-3-7-sonnet`, `gpt-4o` | ~1.0x |
-| **Reasoner** | Security & auth design, data model architecture, multi-agent conflict resolution, final review | `gemini-2.5-pro`, `claude-3-opus`, `o1` | ~3.0x - 5.0x |
+| Tier | When to use | Relative Cost |
+|---|---|---|
+| **Economy** | Lint rules, regex checks, boilerplate, mechanical translations, directory verification | ~0.1x - 0.25x |
+| **Builder** | Feature code, React views, EF Core models, ASP.NET endpoints, Bicep modules, unit tests | ~1.0x |
+| **Reasoner** | Security & auth design, data model architecture, multi-agent conflict resolution, final review | ~3.0x - 5.0x |
+
+Assign the tier, never a vendor's model name: the tier is the decision, the name is a lookup that differs per
+platform and goes stale. Take the tier to whatever model your platform offers for it, the cheapest one that
+reliably passes the work package's verification command. If the platform offers one model, the tier still decides
+how much context and review the work gets.
+
+To resolve tiers to names for a provider, pass `--provider <name>` (or set `HARNESS_MODEL_PROVIDER`).
+`orchestrate.py` reads `models.json` beside it, then `~/.config/harness/models.json`, then `--models FILE`; add
+any vendor there, with the date you checked its names. No provider is the default, a provider that is not
+configured is an error, and a name older than 120 days is flagged as stale.
 
 Use `python3 ~/.harness/tools/orchestration/orchestrate.py tier --task "<subtask>"` to verify the recommended tier.
 

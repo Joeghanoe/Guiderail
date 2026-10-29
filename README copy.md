@@ -37,9 +37,11 @@ harness/              the bundle (~/.harness after install.sh)
   rules/              security, cloud, iac, delivery, testing, harness: each says what enforces it
   cases/              worked examples with good and bad code; human-reviewed cases are precedent and evals
   gates/              registration of each deterministic check (tool, owner, coverage, blind spots)
-  playbooks/          review a change, add an example, process feedback, classify a test failure, write a business test plan
-  templates/          case.md, finding.md, project-terms.txt, business-testplan.spec.json
-  tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/, sonar/, frontend/
+  playbooks/          review a change, add an example, process feedback, classify a test failure, write a business test plan,
+                      write a spec, scaffold from a repo's conventions, optimize build duration, compress harness prose
+  templates/          case.md, finding.md, spec.md, project-terms.txt, business-testplan.spec.json
+  tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/,
+                      sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
 feedback/             draft cases from every repo (~/.harness-feedback), reviewed weekly
 adapters/             /example for Claude Code and Copilot, installed by install.sh
@@ -145,6 +147,14 @@ python3 -I harness/tools/review/eval.py  # the reviewer, when rules, cases or th
 
 Git history is the change log; write the why in the commit message. CI (`azure-pipelines.yml`) runs the same
 checks plus shellcheck, and the evals when the review changed.
+
+## Model-agnostic
+
+The harness does not assume a vendor. Rules, playbooks and tools speak in tiers (`economy`, `builder`, `reasoner`);
+a model name is a lookup that differs per platform and goes stale. `tools/orchestration/models.json` holds the names
+the harness can vouch for, `~/.config/harness/models.json` adds yours, and no provider is the default
+([details](harness/tools/orchestration/index.md)). The review runs on Claude Code, Copilot or Agy
+(`HARNESS_REVIEW_ENGINE`); Claude is today's default engine, not a requirement.
 
 ## Not built yet
 
