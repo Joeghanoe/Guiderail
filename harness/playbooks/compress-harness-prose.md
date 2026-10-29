@@ -8,7 +8,7 @@ status: stable
 
 # When
 
-- The always-loaded context is at or near its budget (`scripts/check-context-budget.sh` fails, or
+- The always-loaded context is at or near its budget (`infra/scripts/check-context-budget.sh` fails, or
   `bundle.py budget` reports a value close to the recorded one) and text has to come out before text goes in.
 - A rule or playbook has grown by accretion and reads as if it were written for a human to be persuaded.
 - Never because prose is long. Length is not a defect; cost without value is.
@@ -105,7 +105,7 @@ sizes from `python3 -I harness/tools/harness/bundle.py budget`. Everything later
    the budget in the same commit:
    ```bash
    python3 -I harness/tools/harness/bundle.py budget --update
-   scripts/check-context-budget.sh
+   infra/scripts/check-context-budget.sh
    ```
    A budget that only ever ratchets up is not a budget. Leave
    [`context-budget.json`](/tools/harness/context-budget.json) alone when only rules or playbooks changed:

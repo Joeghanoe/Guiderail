@@ -65,12 +65,12 @@ Phase 3 completion. Compare models only under equivalent conditions; otherwise c
 
 ## Running a candidate
 
-The scenario package is `docs/evaluation/greenfield-001/` (`task.md`, `criteria.md`, `scenario.json`,
+The scenario package is `evaluations/greenfield-001/` (`task.md`, `criteria.md`, `scenario.json`,
 `run-profile.template.json`); the contract above is delivered to the candidate as `CONTRACT.md`.
 `harness/tools/testing/run_candidate.py` does the rest.
 
 1. Commit the files named in `scenario.json`, then
-   `run_candidate.py freeze --scenario docs/evaluation/greenfield-001/scenario.json --approval <recorded approval> --out <new dir>`.
+   `run_candidate.py freeze --scenario evaluations/greenfield-001/scenario.json --approval <recorded approval> --out <new dir>`.
    It refuses uncommitted sources unless `--allow-dirty`, which is recorded and makes the freeze non-authoritative.
    Keep the printed manifest SHA-256 outside the frozen directory.
 2. Copy `run-profile.template.json`, fill in provider, model, options, adapter version and the adapter argv
@@ -129,8 +129,8 @@ of `REPORT.md` need human review of the trace.
 Candidate context is the workspace only: `AGENTS.md` (from `AGENTS.base.md`, `~/.harness` rewritten to `.harness`),
 `CLAUDE.md` importing it, and a copy of the harness bundle at `.harness/` without cases, hooks, review and testing tools.
 Adapters live in `harness/tools/testing/adapters/` (`claude_code.py`, `codex.py`; run them without `-I`).
-Example profiles: `greenfield-001/run-profile.claude-sonnet-5-5.container.json`, `...json` (Windows, no isolation) and
-`...mac-folder.json`. `isolation.mode: folder` is a same-user run in `~/.harness-evaluation` (`scripts/eval-home-setup.sh`):
+Example profiles: `../../evaluations/greenfield-001/run-profile.claude-sonnet-5-5.container.json`, `...json` (Windows, no isolation) and
+`...mac-folder.json`. `isolation.mode: folder` is a same-user run in `~/.harness-evaluation` (`infra/scripts/eval-home-setup.sh`):
 the agent gets its own HOME and config through the profile `env`, and any mention of your credential directories
 (`~/.ssh`, `~/.aws`, `~/.claude` and similar) in the trace is a hard gate. Keep reference solutions and source PDFs
 off the machine that runs the agent.

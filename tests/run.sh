@@ -466,7 +466,7 @@ mkdir -p "$tmp/ci/origin" && (
   mkdir -p harness/rules harness/tools/harness && echo a >harness/rules/r.md && echo '{"agentsBaseBytes": 1}' >harness/tools/harness/context-budget.json
   git add -A && git commit -qm base && git update-ref refs/remotes/origin/main HEAD && git checkout -qb pr
 )
-ci() { (cd "$tmp/ci/origin" && "$here/scripts/$1"); }
+ci() { (cd "$tmp/ci/origin" && "$here/infra/scripts/$1"); }
 expect 0 "review-changed on an unchanged branch" ci review-changed.sh
 echo b >>"$tmp/ci/origin/harness/rules/r.md"; git -C "$tmp/ci/origin" commit -qam change
 ci review-changed.sh | grep -q "EvalsNeeded" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: review-changed did not flag a rules change"; }
@@ -526,11 +526,16 @@ inst() { HOME="$tmp/home" HARNESS_VSCODE_USER_DIR="$tmp/home/vscode" "$here/inst
 expect 0 "install runs" inst
 expect 0 "~/.harness points at this repo's bundle" test "$(readlink "$tmp/home/.harness")" = "$here/harness"
 expect 0 "~/.harness-feedback points at this repo's feedback folder" test "$(readlink "$tmp/home/.harness-feedback")" = "$here/feedback"
+expect 0 "~/.golden-path-harness links the bundle and feedback" test "$(readlink "$tmp/home/.golden-path-harness/harness")" = "$here/harness" -a "$(readlink "$tmp/home/.golden-path-harness/feedback")" = "$here/feedback"
+expect 0 "~/.golden-path-harness has the runtime dirs" bash -c "cd '$tmp/home/.golden-path-harness' && test -d config -a -d cache -a -d state -a -d workspaces -a -d logs"
+echo keep >"$tmp/home/.golden-path-harness/state/marker"
 expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -qF '@$native_here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
 expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 2) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
 expect 0 "/tv-review for Claude" test -f "$tmp/home/.claude/skills/tv-review/SKILL.md" 
 expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' | grep -vq updated"
 expect 0 "uninstall runs" inst --uninstall
+expect 0 "uninstall keeps runtime state, removes links" bash -c "test -f '$tmp/home/.golden-path-harness/state/marker' && test ! -e '$tmp/home/.golden-path-harness/harness' && test ! -e '$tmp/home/.golden-path-harness/feedback'"
+expect 0 "GOLDEN_PATH_HOME relocates the root" bash -c "GOLDEN_PATH_HOME='$tmp/gp' HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' >/dev/null && test -d '$tmp/gp/state' && test -L '$tmp/gp/harness' && GOLDEN_PATH_HOME='$tmp/gp' HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' --uninstall >/dev/null"
 expect 0 "uninstall removes links and the import" bash -c "test ! -e '$tmp/home/.harness' && test ! -e '$tmp/home/.harness-feedback' && ! grep -q 'TeamValue harness' '$tmp/home/.claude/CLAUDE.md'"
 
 source "$here/tests/compare-ui.sh"

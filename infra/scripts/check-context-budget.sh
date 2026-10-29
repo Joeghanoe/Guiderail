@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # The always-loaded text stays within its budget, and a PR may not raise the budget above the target branch's
-# unless AllowContextGrowth=true. Usage: scripts/check-context-budget.sh   (CI or local; target defaults to main)
+# unless AllowContextGrowth=true. Usage: infra/scripts/check-context-budget.sh   (CI or local; target defaults to main)
 set -euo pipefail
 
 py=python3

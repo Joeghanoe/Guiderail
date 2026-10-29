@@ -6,8 +6,11 @@
 #          ./install.sh --uninstall
 #
 # Installs:
-#   ~/.harness                  symlink to this repo's harness/ (bundle, tools, hooks, templates)
-#   ~/.harness-feedback         symlink to this repo's feedback/: draft cases from every repo land here
+#   ~/.golden-path-harness/     the one harness-owned root (override with GOLDEN_PATH_HOME):
+#     harness, feedback         links to this repo's harness/ and feedback/
+#     config cache state workspaces logs   mutable runtime state; never touched by update or uninstall
+#   ~/.harness                  legacy link to harness/ (the hooks, settings and docs still address it; deprecated)
+#   ~/.harness-feedback         legacy link to feedback/: draft cases from every repo land here (deprecated)
 #   ~/.claude/CLAUDE.md         a marked block that imports AGENTS.base.md
 #   ~/.claude/settings.json     the guard hooks, the Stop verify, an allow rule for cloud-read.sh
 #   ~/.claude/skills/tv-review/ /tv-review for Claude Code
@@ -92,7 +95,28 @@ def make_link(link, target):
         subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], check=True, capture_output=True)
 
 
-# ~/.harness
+# One root for everything the harness owns; ~/.harness and ~/.harness-feedback stay as deprecated aliases
+gp_home = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or home / ".golden-path-harness")
+(here / "feedback").mkdir(exist_ok=True)
+if install:
+    for name in ("config", "cache", "state", "workspaces", "logs"):
+        (gp_home / name).mkdir(parents=True, exist_ok=True)
+for name, target in (("harness", here / "harness"), ("feedback", here / "feedback")):
+    root_link = gp_home / name
+    if is_link(root_link):
+        remove_link(root_link)
+    if install:
+        if root_link.exists():
+            sys.exit(f"install.sh: {root_link} exists and is not a link; move it away first")
+        make_link(root_link, target)
+        print(f"linked {root_link} -> {target}")
+if not install:
+    try:
+        gp_home.rmdir()  # only when no runtime state is left
+    except OSError:
+        pass
+
+# ~/.harness (legacy alias)
 link = home / ".harness"
 if is_link(link) or not link.exists():
     if is_link(link):
@@ -104,7 +128,6 @@ else:
     sys.exit(f"install.sh: {link} exists and is not a link; move it away first")
 
 feedback_link = home / ".harness-feedback"
-(here / "feedback").mkdir(exist_ok=True)
 if is_link(feedback_link):
     remove_link(feedback_link)
 if install and not feedback_link.exists():

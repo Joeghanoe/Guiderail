@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Did this change touch what shapes the AI review (rules, playbooks, cases, templates, review tools)?
-# Prints a yes/no line; in Azure DevOps it also sets EvalsNeeded=true. Usage: scripts/review-changed.sh
+# Prints a yes/no line; in Azure DevOps it also sets EvalsNeeded=true. Usage: infra/scripts/review-changed.sh
 set -euo pipefail
 
 base="origin/${SYSTEM_PULLREQUEST_TARGETBRANCH:-refs/heads/main}"

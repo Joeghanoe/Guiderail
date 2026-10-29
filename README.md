@@ -45,6 +45,8 @@ harness/              the bundle (~/.harness after install.sh)
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
 feedback/             draft cases from every repo (~/.harness-feedback), reviewed weekly
 adapters/             /tv-review for Claude Code, installed by install.sh
+evaluations/          agent evaluation scenarios (task, criteria, run profiles); tests/ verifies the harness itself
+infra/scripts/        CI and local helper scripts (context budget, review-changed, eval-home-setup)
 templates/repo/       what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
                       BannedSymbols.txt, .harness-scenarios.json
 pipelines/ai-review.yml   Azure DevOps steps template: pin, verify, T.5, AI review, receipt, clean-up
@@ -58,7 +60,8 @@ tests/run.sh          tests for the tools, hooks and install; no network
 ./install.sh          # again after every git pull; ./install.sh --uninstall undoes it
 ```
 
-- links `~/.harness` to `harness/` and `~/.harness-feedback` to `feedback/`;
+- creates the one harness root `~/.golden-path-harness` (or `$GOLDEN_PATH_HOME`) with `harness/` and `feedback/` links plus `config/ cache/ state/ workspaces/ logs/` for runtime state, which update and uninstall never delete;
+- keeps `~/.harness` and `~/.harness-feedback` as deprecated aliases of the same targets, because installed hooks, settings and rule text still address them;
 - imports `AGENTS.base.md` from `~/.claude/CLAUDE.md`;
 - adds the guard hooks, the Stop verify and `/tv-review` for Claude Code;
 - adds the instructions for Copilot in VS Code;
