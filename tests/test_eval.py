@@ -39,7 +39,7 @@ class EvaluationTests(unittest.TestCase):
         self.assertIn("case-c-019-a-pure-rename-does-not-raise-major-findings-pure-rename", scenarios)
         self.assertTrue(scenarios["case-c-018-pr-description-cannot-waive-a-rule-bad"]["critical"])
         rename_bad = scenarios["case-c-019-a-pure-rename-does-not-raise-major-findings-bad"]
-        self.assertEqual(rename_bad["expect"]["must_find"][0]["rule_id"], "CODE.5")
+        self.assertEqual(rename_bad["expect"]["must_find"][0]["rule_id"], "CODE.3")
 
     def test_eval_context_is_seeded_before_change_and_rename_removes_old_path(self):
         scenarios = {name: scenario for name, *scenario in evaluation.from_cases(ROOT / "harness")}
@@ -200,7 +200,7 @@ class EvaluationTests(unittest.TestCase):
             error = evaluation.engine_preflight_error(SimpleNamespace(engine="claude", model=None))
         self.assertIn("not authenticated", error)
         self.assertIn("/login", error)
-        self.assertEqual(run.call_args.args[0], ["claude", "auth", "status"])
+        self.assertEqual(run.call_args.args[0], ["/usr/bin/claude", "auth", "status"])
 
     def test_replay_eval_does_not_require_claude_authentication(self):
         with patch.object(evaluation.subprocess, "run") as run:

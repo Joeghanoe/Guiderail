@@ -55,5 +55,5 @@ def write_usage(args, usage):
 
 def drive_form(path):
     """/d/x style used by Claude Code path rules."""
-    p = pathlib.Path(path).as_posix()
+    p = (pathlib.PureWindowsPath(path) if len(str(path)) > 1 and str(path)[1] == ":" else pathlib.Path(path)).as_posix()
     return "/" + p[0].lower() + p[2:] if len(p) > 2 and p[1] == ":" else p

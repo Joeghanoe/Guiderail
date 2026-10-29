@@ -27,7 +27,7 @@ class AdapterTests(unittest.TestCase):
         return run, root
 
     def test_claude_adapter_pins_model_restricts_tools_and_reports_usage(self):
-        run, root = self.invoke("claude_code.py", "fake_claude.py", "--deny-path", "D:\Prototypes\TV", model="claude-sonnet-5-5")
+        run, root = self.invoke("claude_code.py", "fake_claude.py", "--deny-path", r"D:\Prototypes\TV", model="claude-sonnet-5-5")
         self.assertEqual(run.returncode, 0, run.stderr)
         seen = json.loads((root / "ws/seen.json").read_text(encoding="utf-8"))
         argv = seen["argv"]
