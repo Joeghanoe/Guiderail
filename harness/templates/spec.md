@@ -37,7 +37,7 @@ needs a scenario, not a promise (T.5); behaviour it cannot reach names the unit 
 
 # Work packages
 
-Only when this spec feeds `~/.harness/playbooks/orchestrate-workload.md`: one row per work package, each
+Only when this spec feeds `~/.golden-path-harness/harness/playbooks/orchestrate-workload.md`: one row per work package, each
 with its file paths, the criteria it must satisfy, and the verification command that must pass.
 
 | Package | Files | Criteria | Verification |

@@ -6,7 +6,7 @@ Read-only: only GET requests through `az rest`. Run it yourself, logged in with 
 
 One row per review thread whose root comment is by --author (default: every author). Names, emails,
 identity mentions, URLs and token-like strings are scrubbed; other people become "colleague-N".
-The CSV still contains code and prose from your repos: keep it outside git (default: ~/.harness-feedback/mined/).
+The CSV still contains code and prose from your repos: keep it outside git (default: ~/.golden-path-harness/feedback/mined/).
 
 Usage:
   ado-mine-review-comments.py --org https://dev.azure.com/<org> --project "<project>" --author "Joost-Jan"
@@ -20,6 +20,7 @@ file, line_from, line_to, comment, replies, reply_count
 import argparse
 import csv
 import json
+import os
 import re
 import subprocess
 import sys
@@ -158,7 +159,7 @@ def main():
     ap.add_argument("--author", default="", help="substring of the reviewer's name or login; empty = everyone")
     ap.add_argument("--years", type=float, default=3)
     ap.add_argument("--repo", help="only this repository")
-    ap.add_argument("--out", default=str(Path.home() / ".harness-feedback" / "mined"))
+    ap.add_argument("--out", default=str(Path(os.getenv("GOLDEN_PATH_HOME") or Path.home() / ".golden-path-harness") / "feedback" / "mined"))
     ap.add_argument("--redact", default="", help="comma-separated names to blank out of the text (people not on the PR)")
     ap.add_argument("--workers", type=int, default=8)
     a = ap.parse_args()

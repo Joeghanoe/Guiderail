@@ -22,6 +22,7 @@ Example:
 import argparse
 import datetime
 import json
+import os
 import pathlib
 import re
 import shutil
@@ -430,7 +431,7 @@ def cmd_submit_feedback(root, args):
 
     slug = re.sub(r"[^a-z0-9]+", "-", f"{case_id}-{source.stem}".lower()).strip("-")[:100].rstrip("-")
     branch = f"feedback/{slug}"
-    destination = pathlib.Path(args.worktree_dir or pathlib.Path.home() / ".harness-feedback-worktrees" / slug)
+    destination = pathlib.Path(args.worktree_dir or pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or pathlib.Path.home() / ".golden-path-harness") / "workspaces" / "feedback" / slug)
     destination = destination.expanduser()
     if destination.exists() or destination.is_symlink():
         print(f"submit-feedback: worktree path already exists: {destination}", file=sys.stderr)

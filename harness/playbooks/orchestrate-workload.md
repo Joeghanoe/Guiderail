@@ -19,7 +19,7 @@ Splitting the workload among focused subagents coordinated by a lead orchestrati
 
 - The requirement, epic, or issue description (e.g., from backlog or user prompt).
 - The repository structure, affected files, and existing verification commands (`dotnet test`, `pnpm test`, etc.).
-- Optional: run `python3 ~/.harness/tools/orchestration/orchestrate.py plan --spec "<description>" --format markdown`.
+- Optional: run `python3 ~/.golden-path-harness/harness/tools/orchestration/orchestrate.py plan --spec "<description>" --format markdown`.
 
 # Steps
 
@@ -50,7 +50,7 @@ To resolve tiers to names for a provider, pass `--provider <name>` (or set `HARN
 any vendor there, with the date you checked its names. No provider is the default, a provider that is not
 configured is an error, and a name older than 120 days is flagged as stale.
 
-Use `python3 ~/.harness/tools/orchestration/orchestrate.py tier --task "<subtask>"` to verify the recommended tier.
+Use `python3 ~/.golden-path-harness/harness/tools/orchestration/orchestrate.py tier --task "<subtask>"` to verify the recommended tier.
 
 ### 3. Dispatch & Supervise
 Launch each subagent with:

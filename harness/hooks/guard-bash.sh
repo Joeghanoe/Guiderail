@@ -22,7 +22,7 @@ unquoted() {
 }
 
 via_wrapper() {
-  grep -Eq '^[[:space:]]*(\./|~/|\$HOME/|"?\$HOME/|/[^[:space:]]*/)?\.harness/tools/cloud/cloud-read\.sh"?[[:space:]]' <<<"$cmd" &&
+  grep -Eq '^[[:space:]]*(\./|~/|\$HOME/|"?\$HOME/|/[^[:space:]]*/)?(\.harness|\.golden-path-harness/harness)/tools/cloud/cloud-read\.sh"?[[:space:]]' <<<"$cmd" &&
     ! grep -Eq '[;&|`]|\$\(' <<<"$(unquoted "$cmd")"
 }
 
@@ -130,8 +130,8 @@ if grep -Eq '(^|[[:space:]])sudo[[:space:]]|rm[[:space:]]+-[a-z]*r[a-z]*f?[[:spa
 fi
 
 # The harness is changed through cases and the harness repo, never by an agent in a session (H.1)
-if grep -Eq "(>|tee|sed[[:space:]]+-i|perl[[:space:]]+-i|(^|[[:space:]])(mv|cp|rm|chmod|truncate|ln)[[:space:]])[^|;&]*\.harness/" <<<"$lc"; then
-  block H.1 "editing the harness. Propose a case in ~/.harness-feedback/ instead."
+if grep -Eq "(>|tee|sed[[:space:]]+-i|perl[[:space:]]+-i|(^|[[:space:]])(mv|cp|rm|chmod|truncate|ln)[[:space:]])[^|;&]*(\.harness|\.golden-path-harness/harness)/" <<<"$lc"; then
+  block H.1 "editing the harness. Propose a case in ~/.golden-path-harness/feedback/ instead."
 fi
 
 exit 0

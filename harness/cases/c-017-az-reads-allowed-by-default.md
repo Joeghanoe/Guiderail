@@ -39,15 +39,15 @@ real boundary; add the missed verb to the list and a test when you find one.
 ## Good example
 
 ```bash
-~/.harness/tools/cloud/cloud-read.sh az monitor metrics list --resource <id> --metric Requests
-~/.harness/tools/cloud/cloud-read.sh az webapp log tail -n <app> -g <rg>
+~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor metrics list --resource <id> --metric Requests
+~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az webapp log tail -n <app> -g <rg>
 ```
 
 ## Bad example
 
 ```bash
 # refused (exit 3), also with options first: az --subscription <id> group delete
-~/.harness/tools/cloud/cloud-read.sh az group delete -n rg-dev
+~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az group delete -n rg-dev
 ```
 
 # Not verified

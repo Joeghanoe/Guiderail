@@ -120,10 +120,10 @@ case "$(uname -s)" in MINGW* | MSYS* | CYGWIN*) nodotnet_path=/usr/bin ;; esac  
 expect 4 "a CLI that is not installed asks the user" env PATH="$nodotnet_path" "$h/tools/deps/dep-read.sh" dotnet --list-sdks
 
 # the guard hook lets the wrapper through the way it lets cloud-read through
-expect 0 "hook allows dep-read via ~/.harness" bash_hook "~/.harness/tools/deps/dep-read.sh dotnet list package --outdated"
+expect 0 "hook allows dep-read via ~/.golden-path-harness/harness" bash_hook "~/.golden-path-harness/harness/tools/deps/dep-read.sh dotnet list package --outdated"
 expect 0 "hook allows dep-read via .harness" bash_hook ".harness/tools/deps/dep-read.sh dotnet --list-sdks"
-expect 0 "hook allows dep-read with --allow-network" bash_hook "~/.harness/tools/deps/dep-read.sh --allow-network npm audit --json"
-expect 0 "hook allows dep-read with output redirected to a file" bash_hook "~/.harness/tools/deps/dep-read.sh dotnet list package --outdated --format json > outdated.json"
+expect 0 "hook allows dep-read with --allow-network" bash_hook "~/.golden-path-harness/harness/tools/deps/dep-read.sh --allow-network npm audit --json"
+expect 0 "hook allows dep-read with output redirected to a file" bash_hook "~/.golden-path-harness/harness/tools/deps/dep-read.sh dotnet list package --outdated --format json > outdated.json"
 expect 0 "hook allows the currency gate" bash_hook "python3 .harness/tools/deps/check-currency.py --current currency.json --dotnet-outdated outdated.json"
 
 # the currency gate (DEL.2)

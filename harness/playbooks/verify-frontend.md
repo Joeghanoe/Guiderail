@@ -26,8 +26,8 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
    at a page with real personal data (SEC.2). If the screen needs a login or a role, use a seeded test account or
    the repo's mock mode, and never type a real credential.
 2. **Capture the baseline.** This is the screen as it is before you fix anything the checks find. One call, own line (the guard hook refuses `|`, `;` and `&&`):
-   `node ~/.harness/tools/frontend/screenshot.mjs --url http://localhost:<port>/<path> --name <screen>`
-   The run is saved in `~/.harness-screenshots/<repo>/<timestamp>/`, outside every repo, and the tool deletes runs
+   `node ~/.golden-path-harness/harness/tools/frontend/screenshot.mjs --url http://localhost:<port>/<path> --name <screen>`
+   The run is saved in `~/.golden-path-harness/cache/screenshots/<repo>/<timestamp>/`, outside every repo, and the tool deletes runs
    older than 7 days or beyond 200 MB (oldest first) before each capture (`--keep-days`, `--max-mb`). Screenshots are
    1x by default; use `--scale 2` only to inspect fine detail.
    Repeat `--url` for several screens. Add `--scheme both` when the product has a dark mode and `--full-page`
@@ -54,7 +54,7 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
 7. **Fix, capture again, compare.** Fix what you found, within the repo's style guide (no new colours, fonts or radii
    without asking). Re-run step 2 with the same flags, then compare the new run folder with the baseline, one call,
    own line:
-   `node ~/.harness/tools/frontend/compare-ui.mjs --before <baseline run folder> --after <new run folder>`
+   `node ~/.golden-path-harness/harness/tools/frontend/compare-ui.mjs --before <baseline run folder> --after <new run folder>`
    It matches findings by screen, size, colour scheme and check, and prints what is fixed, new, reduced and
    unchanged, with totals per size, so "better at 1280 px, worse at 320 px" shows. Exit 0: no regression. Exit 2:
    a regression, meaning at least one new finding or one whose node count rose. Exit 1: it could not compare

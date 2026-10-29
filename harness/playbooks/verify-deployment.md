@@ -20,30 +20,30 @@ status: draft
 1. **Confirm the target.** State the branch, environment (DEV, TST, ACC, or PRD) and pipeline in one sentence. Ask the user to
    confirm before reading anything.
 2. **Check the pipeline run.** If the run is still in progress, follow it:
-   `~/.harness/tools/azure-devops/ado-run-watch.sh <org-url> <project> latest:<branch>`
+   `~/.golden-path-harness/harness/tools/azure-devops/ado-run-watch.sh <org-url> <project> latest:<branch>`
    The guard hook refuses a command that contains `|`, `;` or `&&`; keep the wrapper call on its own.
    Monitor runs for at most 30 minutes; re-arm it for a longer run.
    If the run has already finished and failed, read the failure:
-   `~/.harness/tools/azure-devops/ado-run-failure.sh <org-url> <project> <runId>`
+   `~/.golden-path-harness/harness/tools/azure-devops/ado-run-failure.sh <org-url> <project> <runId>`
    A failed run is diagnosed with `diagnose-pipeline-failure.md`; stop this playbook until the pipeline
    succeeds. If the run succeeded, continue.
 3. **Check the deployed version.** Read the workload through `cloud-read.sh` to verify the commit or version that landed:
    - For App Services / Function Apps / Container Apps:
-     `~/.harness/tools/cloud/cloud-read.sh az <webapp|functionapp|containerapp> show --name <app> --resource-group <rg>`
+     `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az <webapp|functionapp|containerapp> show --name <app> --resource-group <rg>`
    - For Kubernetes:
-     `~/.harness/tools/cloud/cloud-read.sh kubectl get pods -n <env> -l app=<app> -o jsonpath='{..image}'`
+     `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh kubectl get pods -n <env> -l app=<app> -o jsonpath='{..image}'`
    Compare the version, commit SHA or image tag with the source version of the succeeded pipeline run.
 4. **Hit the health endpoint.** Call the health URL through the read wrapper:
-   `~/.harness/tools/cloud/cloud-read.sh az rest --method get --url <health-url>`
+   `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az rest --method get --url <health-url>`
    Health must reflect reality (OBS.1): an HTTP 200 with a body that says healthy is a pass; anything else
    is a fail. If the app uses a private endpoint or VNET integration that the agent cannot reach, report
    "not reachable from here" and ask the user to check manually.
 5. **Check App Insights for errors.** Query exceptions in the last 10 minutes:
-   `~/.harness/tools/cloud/cloud-read.sh az monitor app-insights query --app <app-insights> --analytics-query "exceptions | where timestamp > ago(10m) | summarize count() by type | order by count_ desc"`
+   `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app <app-insights> --analytics-query "exceptions | where timestamp > ago(10m) | summarize count() by type | order by count_ desc"`
    A spike compared to the previous 10-minute window or a new exception type is a signal. Zero exceptions
    is the happy path.
 6. **Check App Insights for recent requests.** Query request volume and failures:
-   `~/.harness/tools/cloud/cloud-read.sh az monitor app-insights query --app <app-insights> --analytics-query "requests | where timestamp > ago(10m) | summarize total=count(), failed=countif(success == false) by name | order by total desc"`
+   `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app <app-insights> --analytics-query "requests | where timestamp > ago(10m) | summarize total=count(), failed=countif(success == false) by name | order by total desc"`
    Traffic flowing with a low failure rate confirms the app is serving. No traffic at all is worth noting
    (new environment, or something is wrong).
 7. **Report.** Conclusion first: deployed version X from commit Y, health OK or NOK, N exceptions in the
@@ -55,7 +55,7 @@ status: draft
 
 # Boundaries
 
-- All reads go through `~/.harness/tools/cloud/cloud-read.sh` and the ADO tools (`ado-run-watch.sh`,
+- All reads go through `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh` and the ADO tools (`ado-run-watch.sh`,
   `ado-run-failure.sh`). Never `curl` with a token.
 - The agent never promotes, swaps slots, reruns pipelines, or changes app settings (CLD.2).
 - Environment promotion follows Segregation of Duties: only the Product Owner (or delegate) approves PRD deployment; the agent never self-promotes or bypasses approval gates.

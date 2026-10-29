@@ -4,11 +4,11 @@ Generate draw.io diagrams from a small JSON spec instead of writing a new script
 Stdlib Python 3 only. An agent should write **only the spec**, never new drawing code.
 Playbook: draw-integration-diagram.
 
-    ~/.harness/tools/diagrams/dk build spec.json -o "Name.drawio" --png "Name.preview.png"   # also writes Name.preview.svg
-    ~/.harness/tools/diagrams/dk icons "logic apps"                                          # real draw.io icon paths, do not guess
+    ~/.golden-path-harness/harness/tools/diagrams/dk build spec.json -o "Name.drawio" --png "Name.preview.png"   # also writes Name.preview.svg
+    ~/.golden-path-harness/harness/tools/diagrams/dk icons "logic apps"                                          # real draw.io icon paths, do not guess
 
-    ~/.harness/tools/diagrams/dk logo "Salesforce" -d logos            # look up and download one logo (--candidates: dry run)
-    ~/.harness/tools/diagrams/dk build spec.json -o X.drawio --fetch-logos   # download a logo for every system that has none
+    ~/.golden-path-harness/harness/tools/diagrams/dk logo "Salesforce" -d logos            # look up and download one logo (--candidates: dry run)
+    ~/.golden-path-harness/harness/tools/diagrams/dk build spec.json -o X.drawio --fetch-logos   # download a logo for every system that has none
 
 ## Logo lookup
 

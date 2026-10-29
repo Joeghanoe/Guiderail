@@ -31,7 +31,7 @@ a security boundary. Prefer starting the editor/agent from a shell without sensi
 
 ```text
 AGENTS.base.md        the base instructions every agent loads
-harness/              the bundle (~/.harness after install.sh)
+harness/              the bundle (~/.golden-path-harness/harness after install.sh)
   index.md            the entry point; git history is the change log
   principles/         P1-P13: pointers to Vegviser, which is the authority
   rules/              security, cloud, iac, delivery, testing, harness: each says what enforces it
@@ -43,13 +43,13 @@ harness/              the bundle (~/.harness after install.sh)
   tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/,
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
-feedback/             draft cases from every repo (~/.harness-feedback), reviewed weekly
+feedback/             draft cases from every repo (~/.golden-path-harness/feedback), reviewed weekly
 adapters/             /tv-review for Claude Code, installed by install.sh
 evaluations/          agent evaluation scenarios (task, criteria, run profiles); tests/ verifies the harness itself
 infra/scripts/        CI and local helper scripts (context budget, review-changed, eval-home-setup)
-templates/repo/       what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
+infra/templates/repo/  what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
                       BannedSymbols.txt, .harness-scenarios.json
-pipelines/ai-review.yml   Azure DevOps steps template: pin, verify, T.5, AI review, receipt, clean-up
+infra/pipelines/ai-review.yml   Azure DevOps steps template: pin, verify, T.5, AI review, receipt, clean-up
 install.sh            installs the harness for your user; removes the old AI Hub wiring
 tests/run.sh          tests for the tools, hooks and install; no network
 ```
@@ -61,7 +61,7 @@ tests/run.sh          tests for the tools, hooks and install; no network
 ```
 
 - creates the one harness root `~/.golden-path-harness` (or `$GOLDEN_PATH_HOME`) with `harness/` and `feedback/` links plus `config/ cache/ state/ workspaces/ logs/` for runtime state, which update and uninstall never delete;
-- keeps `~/.harness` and `~/.harness-feedback` as deprecated aliases of the same targets, because installed hooks, settings and rule text still address them;
+- removes the old top-level `~/.harness` and `~/.harness-feedback` links if present (run it once after pulling this change; the hooks and allow rules in `~/.claude/settings.json` are rewritten to the new root);
 - imports `AGENTS.base.md` from `~/.claude/CLAUDE.md`;
 - adds the guard hooks, the Stop verify and `/tv-review` for Claude Code;
 - adds the instructions for Copilot in VS Code;
@@ -90,15 +90,15 @@ Requirements: bash, jq, python3 and git. On Windows, Claude Code runs hooks thro
 Only what is specific to the repo:
 
 - `AGENTS.md`: the repo's own instructions, including its naming convention (IAC.6). Claude Code, Copilot and
-  Codex read it natively. Start from `templates/repo/AGENTS.md`.
+  Codex read it natively. Start from `infra/templates/repo/AGENTS.md`.
 - `scripts/verify.sh`: the repo's format, analyzer, build and test steps; `--fast` for the Stop hook.
 - Optional: `.harness-scenarios.json` (components and their scenario folders, T.5), and for .NET
   `Directory.Build.props` with `BannedSymbols.txt`.
-- The PR pipeline: add `pipelines/ai-review.yml` as a template; see its header. Pin a tag and pass its commit
+- The PR pipeline: add `infra/pipelines/ai-review.yml` as a template; see its header. Pin a tag and pass its commit
   SHA as `harnessCommit`; a tag can move, the SHA cannot. The run links the checkout as `.harness/` and
   removes it at the end, also after a failure.
 
-Copilot code review on GitHub runs on GitHub's servers and cannot see `~/.harness`; for a GitHub repo, the
+Copilot code review on GitHub runs on GitHub's servers and cannot see `~/.golden-path-harness/harness`; for a GitHub repo, the
 review runs through the pipeline instead.
 
 ## Is it loaded? (adapter check)
@@ -123,7 +123,7 @@ the same. Engines, gate thresholds, evidence and options: [harness/tools/review/
 ## How the harness learns
 
 - **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft case in
-  `~/.harness-feedback/` (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into
+  `~/.golden-path-harness/feedback/` (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into
   `harness/cases/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13
   (rule H.1).
 - **Trust.** A case with `verified: { by: human:<id>, ... }` is precedent for the reviewer and an eval; an
@@ -158,5 +158,5 @@ the harness can vouch for, `~/.config/harness/models.json` adds yours, and no pr
 
 - Trigger and non-trigger evals for `/tv-review`, and precision per rule over many PRs.
 - A scheduled job that collects resolved PR threads into draft cases.
-- A GitHub Actions variant of `pipelines/ai-review.yml`.
+- A GitHub Actions variant of `infra/pipelines/ai-review.yml`.
 - A deterministic attester for the review receipt (`receipt.json` is published as an artifact today).

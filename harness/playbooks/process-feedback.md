@@ -28,9 +28,9 @@ status: stable
 | Contradicts a principle or a hard rule (SEC.*, CLD.*) | A `rejected` case with the reason, so it is not raised again. |
 | The same task again | An `automation-candidate` case: the playbook or script it should become. |
 
-3. Write the case from `/templates/case.md` into `~/.harness-feedback/`: `status: draft`,
+3. Write the case from `/templates/case.md` into `~/.golden-path-harness/feedback/`: `status: draft`,
    `generated` with your actor, no `verified`. A human reviews it and can run
-   `python3 -I ~/.harness/tools/harness/bundle.py submit-feedback <draft.md>` to prepare a local branch and
+   `python3 -I ~/.golden-path-harness/harness/tools/harness/bundle.py submit-feedback <draft.md>` to prepare a local branch and
    worktree. A human reviews, commits, pushes and opens the PR.
 4. Check it does not contradict a human-reviewed case. If it does, say which one and why this differs; never
    overwrite it.

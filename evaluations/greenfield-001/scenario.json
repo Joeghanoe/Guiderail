@@ -9,8 +9,8 @@
   "candidate_files": [
     {"source": "evaluations/greenfield-001/task.md", "path": "candidate/TASK.md"},
     {"source": "evaluations/greenfield-001/criteria.md", "path": "candidate/CRITERIA.md"},
-    {"source": "docs/evaluation/local-backup-contract.md", "path": "candidate/CONTRACT.md"},
-    {"source": "AGENTS.base.md", "path": "candidate/AGENTS.md", "replace": {"~/.harness": ".harness"}},
+    {"source": "evaluations/local-backup-contract.md", "path": "candidate/CONTRACT.md"},
+    {"source": "AGENTS.base.md", "path": "candidate/AGENTS.md", "replace": {"~/.golden-path-harness/harness": ".harness"}},
     {"source": "evaluations/greenfield-001/CLAUDE.md", "path": "candidate/CLAUDE.md"}
   ],
   "candidate_trees": [

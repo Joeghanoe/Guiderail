@@ -31,7 +31,7 @@ criteria exist.
   shows its evidence and solves one problem).
 - The vault: `HARNESS_VAULT`, or `--vault`. The folder this work belongs to is the customer or product folder
   the user names; never guess one and never create one (`tools/spec/index.md`).
-- What is already there: `python3 ~/.harness/tools/spec/spec-note.py list --customer <folder>`.
+- What is already there: `python3 ~/.golden-path-harness/harness/tools/spec/spec-note.py list --customer <folder>`.
 
 # Steps
 
@@ -81,7 +81,7 @@ criteria exist.
    ("p95 under 500 ms on the list endpoint, measured by <command>", "a 409 shows the user <message>", judged
    by eye against UI.1 with a screenshot) or move it down and name who answers it. **When no criterion
    survives, stop:** the spec is not ready, and say which question blocks it.
-7. **Place the note.** `python3 ~/.harness/tools/spec/spec-note.py new --customer <folder> --title "<title>"
+7. **Place the note.** `python3 ~/.golden-path-harness/harness/tools/spec/spec-note.py new --customer <folder> --title "<title>"
    --work-item <id> --source-note "<the note it came from>"` writes
    `<vault>/<customer>/specs/<slug>.md` from `templates/spec.md`. It refuses to overwrite without `--force`,
    so re-running is safe; when a spec for this work already exists, edit that one instead of adding a second.

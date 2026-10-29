@@ -126,11 +126,11 @@ because the runner cannot verify the declaration. It observes only protected-pat
 modification. Provider adapters (Claude Code, Codex) have only been tested against stand-in CLIs, and the container
 backend only against a stand-in `docker`; the first real run should be a short smoke test. Behavior and truthfulness
 of `REPORT.md` need human review of the trace.
-Candidate context is the workspace only: `AGENTS.md` (from `AGENTS.base.md`, `~/.harness` rewritten to `.harness`),
+Candidate context is the workspace only: `AGENTS.md` (from `AGENTS.base.md`, `~/.golden-path-harness/harness` rewritten to `.harness`),
 `CLAUDE.md` importing it, and a copy of the harness bundle at `.harness/` without cases, hooks, review and testing tools.
 Adapters live in `harness/tools/testing/adapters/` (`claude_code.py`, `codex.py`; run them without `-I`).
 Example profiles: `../../evaluations/greenfield-001/run-profile.claude-sonnet-5-5.container.json`, `...json` (Windows, no isolation) and
-`...mac-folder.json`. `isolation.mode: folder` is a same-user run in `~/.harness-evaluation` (`infra/scripts/eval-home-setup.sh`):
+`...mac-folder.json`. `isolation.mode: folder` is a same-user run in `~/.golden-path-harness/evaluation` (`infra/scripts/eval-home-setup.sh`):
 the agent gets its own HOME and config through the profile `env`, and any mention of your credential directories
 (`~/.ssh`, `~/.aws`, `~/.claude` and similar) in the trace is a hard gate. Keep reference solutions and source PDFs
 off the machine that runs the agent.

@@ -36,7 +36,7 @@ Stop and do the obvious thing instead when:
 2. **Find the word the repo uses** when you are not sure:
 
    ```bash
-   python3 ~/.harness/tools/scaffold/read-conventions.py kinds --repo .
+   python3 ~/.golden-path-harness/harness/tools/scaffold/read-conventions.py kinds --repo .
    ```
 
    It lists what this repo names things after. A repo that calls them `providers` or `gateways` will not
@@ -45,7 +45,7 @@ Stop and do the obvious thing instead when:
 3. **Get the brief:**
 
    ```bash
-   python3 ~/.harness/tools/scaffold/read-conventions.py brief --repo . --kind service
+   python3 ~/.golden-path-harness/harness/tools/scaffold/read-conventions.py brief --repo . --kind service
    ```
 
    Add `--alias <word>` for another word this repo uses for the same thing. Exit 2 means there was not

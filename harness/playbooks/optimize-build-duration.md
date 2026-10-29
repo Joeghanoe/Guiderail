@@ -27,7 +27,7 @@ named the critical path, and no change is called a success before step 7 has re-
    (CLD.1). Write the stage dependencies from the pipeline YAML into a scratch file (not committed), because the
    build timeline does not carry `dependsOn`: `{"Build": [], "Test": ["Build"], "Publish": ["Test", "Scan"]}`.
    A stage without `dependsOn` in the YAML depends on the stage above it; `[]` only where the YAML says so. Then:
-   `~/.harness/tools/azure-devops/ado-run-timing.sh <org-url> <project> pipeline:<id|name> --last 10 --branch <branch> --deps deps.json --json > baseline.json`
+   `~/.golden-path-harness/harness/tools/azure-devops/ado-run-timing.sh <org-url> <project> pipeline:<id|name> --last 10 --branch <branch> --deps deps.json --json > baseline.json`
    and run it again without `--json` to read the table. Use at least 5 completed runs, 10 when there are that
    many. Without `--deps` the tool infers the path from timing and says so; treat that as a first look only.
    For one run you are already looking at: `... <org-url> <project> <runId>`. A run still going exits 2 and its
@@ -64,7 +64,7 @@ named the critical path, and no change is called a success before step 7 has re-
    command a human runs. It is not committed, pushed or queued (CLD.2).
 6. **Hand over.** Stop and wait for the human to review, land and let the pipeline run on the new definition. Say
    which runs are the "after": the first run after a cache-key change is cold and is discarded; the "after"
-   window starts at the first run that carried the change, found with `~/.harness/tools/cloud/cloud-read.sh az pipelines runs list ...`,
+   window starts at the first run that carried the change, found with `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az pipelines runs list ...`,
    and must not straddle the change. Never queue a run to get data faster, not even one: the pipeline runs on the
    team's schedule and pushes.
 7. **Measure again and say whether the prediction held.** Same command, same branch, same pool, at least 5 runs

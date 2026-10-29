@@ -32,7 +32,7 @@ steps:
   - bash: tests/run.sh
     displayName: "Tool and hook tests"
 
-  - bash: shellcheck install.sh tests/run.sh infra/scripts/*.sh harness/hooks/*.sh harness/tools/*/*.sh templates/repo/scripts/verify.sh
+  - bash: shellcheck install.sh tests/run.sh infra/scripts/*.sh harness/hooks/*.sh harness/tools/*/*.sh infra/templates/repo/scripts/verify.sh
     displayName: "shellcheck"
 
   # Reviewer evals: only when something that shapes the review changed, and only with an API key.

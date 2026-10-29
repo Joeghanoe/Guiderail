@@ -9,8 +9,7 @@
 #   ~/.golden-path-harness/     the one harness-owned root (override with GOLDEN_PATH_HOME):
 #     harness, feedback         links to this repo's harness/ and feedback/
 #     config cache state workspaces logs   mutable runtime state; never touched by update or uninstall
-#   ~/.harness                  legacy link to harness/ (the hooks, settings and docs still address it; deprecated)
-#   ~/.harness-feedback         legacy link to feedback/: draft cases from every repo land here (deprecated)
+# Removes the legacy ~/.harness and ~/.harness-feedback links (and their hook/allow entries) when it finds them.
 #   ~/.claude/CLAUDE.md         a marked block that imports AGENTS.base.md
 #   ~/.claude/settings.json     the guard hooks, the Stop verify, an allow rule for cloud-read.sh
 #   ~/.claude/skills/tv-review/ /tv-review for Claude Code
@@ -49,15 +48,13 @@ if mode not in ("install", "--uninstall"):
 
 OLD_BLOCK = re.compile(r"\n?# TeamValue AI Hub \(managed by install\.ps1\)\n.*?# end TeamValue AI Hub\n?", re.S)
 NEW_BLOCK = re.compile(r"\n?# TeamValue harness \(managed by install\.sh\)\n.*?# end TeamValue harness\n?", re.S)
-HOOK_MARK = "/.harness/hooks/"
-CLOUD_READ = [
-    f"Bash({home}/.harness/tools/cloud/cloud-read.sh *)", "Bash(~/.harness/tools/cloud/cloud-read.sh *)",
-    f"Bash({home}/.harness/tools/sonar/sonar-read.sh *)", "Bash(~/.harness/tools/sonar/sonar-read.sh *)",
-    f"Bash({home}/.harness/tools/servicenow/sn-get.sh *)", "Bash(~/.harness/tools/servicenow/sn-get.sh *)",
-    f"Bash({home}/.harness/tools/servicenow/sn-access-check.sh)", "Bash(~/.harness/tools/servicenow/sn-access-check.sh)",
-]
-# allow rules from before tools/ was grouped by domain; drop them so only the current paths stay allowed
-LEGACY_CLOUD_READ = [a.replace("tools/cloud/", "tools/").replace("tools/sonar/", "tools/") for a in CLOUD_READ]
+HOOK_MARKS = ("/.harness/hooks/", "/.golden-path-harness/harness/hooks/")
+gp_home = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or home / ".golden-path-harness")
+TOOLS = ("cloud/cloud-read.sh *", "sonar/sonar-read.sh *", "servicenow/sn-get.sh *", "servicenow/sn-access-check.sh")
+CLOUD_READ = [f"Bash({base}/harness/tools/{t})" for t in TOOLS for base in (gp_home, "~/.golden-path-harness")]
+# allow rules from earlier layouts (~/.harness, tools/ before it was grouped by domain); drop them
+LEGACY_CLOUD_READ = [f"Bash({base}/.harness/tools/{t})" for t in TOOLS for base in (home, "~")] + \
+                    [f"Bash({base}/.harness/tools/{t.split('/', 1)[1]})" for t in TOOLS for base in (home, "~")]
 
 
 def backup(path):
@@ -95,8 +92,7 @@ def make_link(link, target):
         subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)], check=True, capture_output=True)
 
 
-# One root for everything the harness owns; ~/.harness and ~/.harness-feedback stay as deprecated aliases
-gp_home = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or home / ".golden-path-harness")
+# One root for everything the harness owns
 (here / "feedback").mkdir(exist_ok=True)
 if install:
     for name in ("config", "cache", "state", "workspaces", "logs"):
@@ -110,29 +106,16 @@ for name, target in (("harness", here / "harness"), ("feedback", here / "feedbac
             sys.exit(f"install.sh: {root_link} exists and is not a link; move it away first")
         make_link(root_link, target)
         print(f"linked {root_link} -> {target}")
+# Legacy top-level links from before the single root: remove them, never anything that is not a link
+for old in (".harness", ".harness-feedback"):
+    if is_link(home / old):
+        remove_link(home / old)
+        print(f"removed legacy link {home / old}")
 if not install:
     try:
         gp_home.rmdir()  # only when no runtime state is left
     except OSError:
         pass
-
-# ~/.harness (legacy alias)
-link = home / ".harness"
-if is_link(link) or not link.exists():
-    if is_link(link):
-        remove_link(link)
-    if install:
-        make_link(link, here / "harness")
-        print(f"linked {link} -> {here / 'harness'}")
-else:
-    sys.exit(f"install.sh: {link} exists and is not a link; move it away first")
-
-feedback_link = home / ".harness-feedback"
-if is_link(feedback_link):
-    remove_link(feedback_link)
-if install and not feedback_link.exists():
-    make_link(feedback_link, here / "feedback")
-    print(f"linked {feedback_link} -> {here / 'feedback'}")
 
 # CLAUDE.md and AGENTS.md in the home folder: drop the old AI Hub block, add ours to CLAUDE.md
 for path, ours in ((home / ".claude" / "CLAUDE.md", True), (home / "AGENTS.md", False)):
@@ -153,9 +136,9 @@ before = json.dumps(settings, indent=2)
 hooks = settings.setdefault("hooks", {})
 for event in ("PreToolUse", "Stop"):
     hooks[event] = [g for g in hooks.get(event, [])
-                    if not any(HOOK_MARK in h.get("command", "") for h in g.get("hooks", []))]
+                    if not any(m in h.get("command", "") for h in g.get("hooks", []) for m in HOOK_MARKS)]
 if install:
-    hook = lambda name: {"type": "command", "command": f'"$HOME"/.harness/hooks/{name}'}
+    hook = lambda name: {"type": "command", "command": f'"{gp_home}/harness/hooks/{name}"'}
     hooks["PreToolUse"] += [{"matcher": "Bash", "hooks": [hook("guard-bash.sh")]},
                             {"matcher": "Read|Grep|Glob", "hooks": [hook("guard-read.sh")]}]
     hooks["Stop"] += [{"hooks": [hook("stop-verify.sh")]}]
@@ -174,7 +157,7 @@ settings.get("extraKnownMarketplaces", {}).pop("teamvalue-aihub", None)
 if json.dumps(settings, indent=2) != before:
     write(settings_path, json.dumps(settings, indent=2) + "\n")
 for a in removed:
-    print(f"removed allow rule {a} (CLD.1: use ~/.harness/tools/cloud/cloud-read.sh)")
+    print(f"removed allow rule {a} (CLD.1: use ~/.golden-path-harness/harness/tools/cloud/cloud-read.sh)")
 
 # Claude's own plugin state for the old AI Hub
 for name in ("known_marketplaces.json", "installed_plugins.json"):

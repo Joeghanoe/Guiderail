@@ -23,7 +23,7 @@ Placeholders the tool does not fill stay as `{{...}}`, so the open spots are vis
 Exit: 0 done, 1 refused (bad input, no vault, outside the vault, no such note), 2 the note exists (--force).
 
 Example:
-  python3 ~/.harness/tools/spec/spec-note.py new --customer <folder> --title "Partner order sync" \\
+  python3 ~/.golden-path-harness/harness/tools/spec/spec-note.py new --customer <folder> --title "Partner order sync" \\
       --work-item AB-12 --source-note "AB-12 Analysis" --tag orders
 """
 

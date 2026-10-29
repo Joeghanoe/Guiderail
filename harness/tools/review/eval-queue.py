@@ -11,7 +11,7 @@ timeout). It stays unchecked and is retried, so running out of tokens never turn
 
 Tool contract (Vegviser AI Tool Boundary)
   Classification:  Write, local only. Reads the bundle; writes its checklist under --state-dir (default
-                   ~/.harness-evals), outside every repo. It also SPENDS MODEL TOKENS: each scenario is a real
+                   ~/.golden-path-harness/state/evals), outside every repo. It also SPENDS MODEL TOKENS: each scenario is a real
                    review through the chosen engine, and a critical scenario runs critical_repeats times.
   Owner:           team:teamvalue-aicoe. Version: the harness commit in .harness/VERSION.
   Caller identity: the engine CLI's own login, done by the user. This tool never logs in; on an authentication
@@ -54,7 +54,7 @@ import sys
 sys.dont_write_bytecode = True
 HERE = pathlib.Path(__file__).resolve().parent
 BUNDLE_ROOT = HERE.parents[1]
-DEFAULT_STATE = pathlib.Path.home() / ".harness-evals"
+DEFAULT_STATE = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or pathlib.Path.home() / ".golden-path-harness") / "state" / "evals"
 DEFAULT_RESULTS = HERE / "eval-results.jsonl"   # committed, so a run started on one machine resumes on another
 ENGINES = ["claude", "copilot", "agy", "replay"]
 

@@ -8,7 +8,7 @@ status: draft
 
 # Why
 
-The PR pipeline (`pipelines/ai-review.yml`) runs the deterministic gate first, then the review, and a human reads
+The PR pipeline (`infra/pipelines/ai-review.yml`) runs the deterministic gate first, then the review, and a human reads
 the end result: the diff next to the findings and what happened to them. This playbook runs the same flow on a
 local branch, before the PR, so the human reviews fixed code and open questions instead of a list of comments.
 
@@ -29,7 +29,7 @@ local branch, before the PR, so the human reviews fixed code and open questions 
    instead of after the next pipeline run:
    - the project key comes from `sonar-project.properties`, the pipeline YAML, or the repo's `AGENTS.md`; if none
      names it, say that Sonar was not checked rather than guess;
-   - `~/.harness/tools/sonar/sonar-read.sh qualitygates/project_status projectKey=<key> pullRequest=<pr>` and
+   - `~/.golden-path-harness/harness/tools/sonar/sonar-read.sh qualitygates/project_status projectKey=<key> pullRequest=<pr>` and
      `issues/search componentKeys=<key> pullRequest=<pr> resolved=false impactSoftwareQualities=RELIABILITY,SECURITY ps=500`
      (not `types=BUG`; see C-016). Add `hotspots/search` for security hotspots;
    - keep only issues on files the diff touches. Each becomes a finding in the review's JSON shape, with the rule

@@ -14,7 +14,7 @@ status: stable
 # Rule
 
 When a user corrects output that came from a rule (a wrong finding, a missed issue, a rule that does not fit),
-the agent writes a case following `/templates/case.md` into `~/.harness-feedback/`, with
+the agent writes a case following `/templates/case.md` into `~/.golden-path-harness/feedback/`, with
 `status: draft` and no `verified` key, and goes on with the task. It does not edit rules or principles.
 
 | Level | Who changes it | How |

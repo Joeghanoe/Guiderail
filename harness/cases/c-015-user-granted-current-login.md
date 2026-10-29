@@ -40,14 +40,14 @@ read-only, so layer 2 alone carries that.
 
 ```bash
 # the user did `az login`; the agent reads for diagnosis
-~/.harness/tools/cloud/cloud-read.sh az monitor log-analytics query -w <workspace> -a "<query>"
+~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor log-analytics query -w <workspace> -a "<query>"
 ```
 
 ## Bad example
 
 ```bash
 # a write verb through the wrapper is refused (exit 3), whoever is logged in
-~/.harness/tools/cloud/cloud-read.sh az group delete -n rg-dev
+~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az group delete -n rg-dev
 ```
 
 # Not verified

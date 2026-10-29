@@ -7,7 +7,7 @@
 //          [--viewports 320x640,390x844,768x1024,1280x800] [--scheme light|dark|both] [--wait <ms>] [--full-page]
 //          [--scale 1] [--keep-days 7] [--max-mb 200] [--allow-remote]
 // Output: <out>/<name>-<w>x<h>[-dark].png and <out>/report.json; a one-line-per-finding summary on stdout.
-//         Without --out the run goes to ~/.harness-screenshots/<repo>/<timestamp>/, outside every repo, and runs older
+//         Without --out the run goes to ~/.golden-path-harness/cache/screenshots/<repo>/<timestamp>/, outside every repo, and runs older
 //         than --keep-days, or beyond --max-mb in total (oldest first), are deleted before the capture. Only run
 //         folders that hold this tool's report.json are ever deleted; an explicit --out is never pruned.
 // Exit:   0 captured (findings are information, the reviewer decides), 1 usage or capture error.
@@ -17,7 +17,7 @@ import { createRequire } from "node:module";
 import { homedir, tmpdir } from "node:os";
 import { basename, join } from "node:path";
 
-const SHOTS_ROOT = join(homedir(), ".harness-screenshots");
+const SHOTS_ROOT = join(process.env.GOLDEN_PATH_HOME || join(homedir(), ".golden-path-harness"), "cache", "screenshots");
 const DEFAULT_VIEWPORTS = "320x640,390x844,768x1024,1280x800";
 const BROWSERS = [
   process.env.HARNESS_BROWSER,

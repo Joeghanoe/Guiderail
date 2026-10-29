@@ -16,13 +16,13 @@ status: draft
 # Steps
 
 1. Find the run, read-only. The user's `az` login is already in place; never log in (CLD.1).
-   `~/.harness/tools/cloud/cloud-read.sh az pipelines runs list --organization <org> --project <project> --branch <branch> --result failed --top 3 --query "[].{runId:id,num:buildNumber,sha:sourceVersion}" -o table`
+   `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az pipelines runs list --organization <org> --project <project> --branch <branch> --result failed --top 3 --query "[].{runId:id,num:buildNumber,sha:sourceVersion}" -o table`
    The guard hook refuses a command that contains `|`, `;` or `&&`; keep the wrapper call on its own.
    A run that is still going is followed, not polled by hand: start the Monitor tool on
-   `~/.harness/tools/azure-devops/ado-run-watch.sh <org-url> <project> latest:<branch>` (or a run id). Each
+   `~/.golden-path-harness/harness/tools/azure-devops/ado-run-watch.sh <org-url> <project> latest:<branch>` (or a run id). Each
    stage, job and failed task change is one event; the last line is `DONE run <id>: <result>`, and on a
    failure a `NEXT` line names step 2. Monitor runs for at most 30 minutes, so re-arm it for a longer run.
-2. Read the failure: `~/.harness/tools/azure-devops/ado-run-failure.sh <org-url> <project> <runId> [tail-lines]`.
+2. Read the failure: `~/.golden-path-harness/harness/tools/azure-devops/ado-run-failure.sh <org-url> <project> <runId> [tail-lines]`.
    It prints the run, the failed stage/job/task, the error issues and the tail of each failed task's log. The
    error issue is often only "Bash exited with code 1"; the cause is a few lines above the end of the log,
    so raise `tail-lines` (default 80, at most 400) before concluding there is nothing there.

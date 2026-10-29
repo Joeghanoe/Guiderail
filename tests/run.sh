@@ -51,31 +51,31 @@ expect 0 "git status is allowed" bash_hook "git status"
 expect 0 "func start is allowed" bash_hook "func start --port 7071"
 expect 0 "terraform fmt is allowed" bash_hook "terraform -chdir=infra fmt -check"
 expect 0 "cloud-read wrapper is allowed" bash_hook ".harness/tools/cloud/cloud-read.sh az resource list -g rg-dev"
-expect 0 "global cloud-read wrapper is allowed" bash_hook "~/.harness/tools/cloud/cloud-read.sh az resource list -g rg-dev"
+expect 0 "global cloud-read wrapper is allowed" bash_hook "~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az resource list -g rg-dev"
 expect 2 "az login is for the user" bash_hook "az login --tenant x"
-expect 2 "az account set is for the user" bash_hook "~/.harness/tools/cloud/cloud-read.sh az account set -s x"
+expect 2 "az account set is for the user" bash_hook "~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az account set -s x"
 expect 2 "Connect-AzAccount is for the user" bash_hook "pwsh -c Connect-AzAccount"
 expect 0 ".env.example can be read" bash_hook "cat .env.example"
 expect 2 "az outside the wrapper" bash_hook "az group delete -n rg-dev --yes"
 expect 2 "az chained after the wrapper" bash_hook ".harness/tools/cloud/cloud-read.sh az group list; az group delete -n x"
-expect 0 "KQL pipe inside double quotes is data" bash_hook '~/.harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "exceptions | where timestamp > ago(10m) | take 5"'
-expect 0 "KQL pipe inside single quotes is data" bash_hook "~/.harness/tools/cloud/cloud-read.sh az monitor log-analytics query -w ws -a 'AzureDiagnostics | take 1'"
-expect 0 "multi-line KQL inside quotes" bash_hook $'~/.harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "requests\n| where success == false\n| take 5"'
-expect 2 "chain after a quoted KQL query" bash_hook '~/.harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "requests | take 1"; az group delete -n x'
-expect 2 "pipe outside quotes after the wrapper" bash_hook '~/.harness/tools/cloud/cloud-read.sh az group list | sh'
-expect 2 "command substitution inside double quotes" bash_hook '~/.harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "$(az group delete -n x)"'
+expect 0 "KQL pipe inside double quotes is data" bash_hook '~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "exceptions | where timestamp > ago(10m) | take 5"'
+expect 0 "KQL pipe inside single quotes is data" bash_hook "~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor log-analytics query -w ws -a 'AzureDiagnostics | take 1'"
+expect 0 "multi-line KQL inside quotes" bash_hook $'~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "requests\n| where success == false\n| take 5"'
+expect 2 "chain after a quoted KQL query" bash_hook '~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "requests | take 1"; az group delete -n x'
+expect 2 "pipe outside quotes after the wrapper" bash_hook '~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az group list | sh'
+expect 2 "command substitution inside double quotes" bash_hook '~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "$(az group delete -n x)"'
 expect 2 "terraform apply" bash_hook "terraform -chdir=infra apply -auto-approve"
 expect 2 "terraform plan" bash_hook "terraform plan"
 expect 2 "kubectl" bash_hook "kubectl delete pod x"
 expect 2 "func azure publish" bash_hook "func azure functionapp publish my-func"
 expect 2 "swapping the identity" bash_hook "HARNESS_AZURE_CONFIG_DIR=~/.azure .harness/tools/cloud/cloud-read.sh az group list"
 expect 2 "widening what the local reader may open" bash_hook "HARNESS_DEV_LOG_DIRS=/ .harness/tools/dev/dev-read.sh logfile /etc/passwd"
-expect 0 "dev-read wrapper is allowed" bash_hook "~/.harness/tools/dev/dev-read.sh ports 5000"
-expect 0 "sonar-read wrapper is allowed" bash_hook "~/.harness/tools/sonar/sonar-read.sh issues/search componentKeys=teamvalue_X"
+expect 0 "dev-read wrapper is allowed" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh ports 5000"
+expect 0 "sonar-read wrapper is allowed" bash_hook "~/.golden-path-harness/harness/tools/sonar/sonar-read.sh issues/search componentKeys=teamvalue_X"
 expect 2 "curl to Sonar directly" bash_hook "curl -s https://sonarcloud.io/api/issues/search"
 expect 2 "agent handles the Sonar token" bash_hook "echo \$SONAR_TOKEN"
 expect 2 "curl to ServiceNow directly" bash_hook "curl -s https://x.service-now.com/api/now/table/incident"
-expect 0 "sn-get wrapper is allowed" bash_hook "~/.harness/tools/servicenow/sn-get.sh sys_script collection=incident"
+expect 0 "sn-get wrapper is allowed" bash_hook "~/.golden-path-harness/harness/tools/servicenow/sn-get.sh sys_script collection=incident"
 expect 2 "Az write cmdlet" bash_hook "pwsh -c 'Remove-AzResourceGroup -Name rg-dev'"
 expect 2 "curl to ARM" bash_hook "curl -X PUT https://management.azure.com/subscriptions/x"
 expect 2 "reading .env" bash_hook "cat .env"
@@ -508,7 +508,7 @@ expect 1 "screenshot refuses a remote host" node "$shot" --url https://example.c
 expect 1 "screenshot refuses a non-http url" node "$shot" --url file:///etc/hosts
 expect 1 "screenshot refuses a bad viewport" node "$shot" --url http://localhost:1/ --viewports 390
 expect 1 "screenshot refuses an unknown option" node "$shot" --url http://localhost:1/ --bogus
-expect 0 "guard allows the screenshot tool" bash_hook "node ~/.harness/tools/frontend/screenshot.mjs --url http://localhost:5173/ --name home"
+expect 0 "guard allows the screenshot tool" bash_hook "node ~/.golden-path-harness/harness/tools/frontend/screenshot.mjs --url http://localhost:5173/ --name home"
 
 echo "== orchestrate tool"
 orch="$h/tools/orchestration/orchestrate.py"
@@ -523,9 +523,10 @@ printf '@RTK.md\n\n# TeamValue AI Hub (managed by install.ps1)\n@import /old/glo
 echo '{"permissions": {"allow": ["Bash(az group list *)", "Bash(git status)"]}}' >"$tmp/home/.claude/settings.json"
 native_here="$(cygpath -w "$here" 2>/dev/null || printf %s "$here")"   # install.sh writes the import path in the OS's own form
 inst() { HOME="$tmp/home" HARNESS_VSCODE_USER_DIR="$tmp/home/vscode" "$here/install.sh" "$@"; }
+ln -s "$tmp/old-bundle" "$tmp/home/.harness"; ln -s "$tmp/old-feedback" "$tmp/home/.harness-feedback"   # a pre-migration install
 expect 0 "install runs" inst
-expect 0 "~/.harness points at this repo's bundle" test "$(readlink "$tmp/home/.harness")" = "$here/harness"
-expect 0 "~/.harness-feedback points at this repo's feedback folder" test "$(readlink "$tmp/home/.harness-feedback")" = "$here/feedback"
+expect 0 "legacy ~/.harness links are removed" bash -c "test ! -e '$tmp/home/.harness' && test ! -L '$tmp/home/.harness' && test ! -L '$tmp/home/.harness-feedback'"
+expect 0 "hooks point at the single root" jq -e '[.hooks.PreToolUse[].hooks[].command] | all(contains("/.golden-path-harness/harness/hooks/"))' "$tmp/home/.claude/settings.json"
 expect 0 "~/.golden-path-harness links the bundle and feedback" test "$(readlink "$tmp/home/.golden-path-harness/harness")" = "$here/harness" -a "$(readlink "$tmp/home/.golden-path-harness/feedback")" = "$here/feedback"
 expect 0 "~/.golden-path-harness has the runtime dirs" bash -c "cd '$tmp/home/.golden-path-harness' && test -d config -a -d cache -a -d state -a -d workspaces -a -d logs"
 echo keep >"$tmp/home/.golden-path-harness/state/marker"
@@ -536,7 +537,7 @@ expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_D
 expect 0 "uninstall runs" inst --uninstall
 expect 0 "uninstall keeps runtime state, removes links" bash -c "test -f '$tmp/home/.golden-path-harness/state/marker' && test ! -e '$tmp/home/.golden-path-harness/harness' && test ! -e '$tmp/home/.golden-path-harness/feedback'"
 expect 0 "GOLDEN_PATH_HOME relocates the root" bash -c "GOLDEN_PATH_HOME='$tmp/gp' HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' >/dev/null && test -d '$tmp/gp/state' && test -L '$tmp/gp/harness' && GOLDEN_PATH_HOME='$tmp/gp' HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' --uninstall >/dev/null"
-expect 0 "uninstall removes links and the import" bash -c "test ! -e '$tmp/home/.harness' && test ! -e '$tmp/home/.harness-feedback' && ! grep -q 'TeamValue harness' '$tmp/home/.claude/CLAUDE.md'"
+expect 0 "uninstall removes the import" bash -c "! grep -q 'TeamValue harness' '$tmp/home/.claude/CLAUDE.md'"
 
 source "$here/tests/compare-ui.sh"
 source "$here/tests/coverage-impact.sh"

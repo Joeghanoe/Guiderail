@@ -27,7 +27,7 @@ top-level types in MenuService.cs. The good example complies. Report the violati
 The approved rule covers C#, TypeScript and TSX. Private helpers nested inside their only user may
 remain in that user's file; small sibling types may not. On a touched mixed file, split out only types
 added or changed. Generated C# files are excluded; partial declarations may use Type.cs or Type.Part.cs.
-These scope decisions were accepted on 2026-10-29 in docs/evaluation/engineering-standards-decisions.md.
+These scope decisions were accepted on 2026-10-29 in evaluations/engineering-standards-decisions.md.
 
 # Compliant pattern
 

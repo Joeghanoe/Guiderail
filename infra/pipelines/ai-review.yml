@@ -14,7 +14,7 @@
 #       variables:
 #         - group: teamvalue.harness             # AnthropicApiKey (secret)
 #       steps:
-#         - template: pipelines/ai-review.yml@harness
+#         - template: infra/pipelines/ai-review.yml@harness
 #           parameters:
 #             harnessCommit: <full commit SHA of that tag>
 #             claudeCodeVersion: <exact npm version of @anthropic-ai/claude-code>

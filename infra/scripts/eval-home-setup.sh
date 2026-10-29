@@ -4,11 +4,7 @@
 # It is not isolation: the agent still runs as you. Keep reference solutions and source PDFs off this machine.
 set -euo pipefail
 
-# Legacy ~/.harness-evaluation is kept when it already exists (its logins live there).
-gp="${GOLDEN_PATH_HOME:-$HOME/.golden-path-harness}"
-legacy="$HOME/.harness-evaluation"
-if [[ -d "$legacy" ]]; then default="$legacy"; else default="$gp/evaluation"; fi
-root="${HARNESS_EVAL_HOME:-$default}"
+root="${HARNESS_EVAL_HOME:-${GOLDEN_PATH_HOME:-$HOME/.golden-path-harness}/evaluation}"
 mkdir -p "$root"/{home,claude,codex,frozen,runs}
 chmod 700 "$root"
 

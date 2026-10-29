@@ -416,11 +416,11 @@ expect 3 "func is not a subcommand" dr func start
 expect 3 "sh is not a subcommand" dr sh -c id
 
 # --- guard-bash ---------------------------------------------------------------------------------------------
-expect 0 "guard allows dev-read http get" bash_hook "~/.harness/tools/dev/dev-read.sh http get http://localhost:5000/health"
+expect 0 "guard allows dev-read http get" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh http get http://localhost:5000/health"
 expect 0 "guard allows dev-read docker ps" bash_hook ".harness/tools/dev/dev-read.sh docker ps"
-expect 0 "guard allows dev-read docker logs" bash_hook "~/.harness/tools/dev/dev-read.sh docker logs --tail 100 --since 10m api"
-expect 0 "guard allows dev-read logfile" bash_hook "~/.harness/tools/dev/dev-read.sh logfile logs/app.log --tail 200"
-expect 0 "guard allows dev-read ports" bash_hook "~/.harness/tools/dev/dev-read.sh ports 5000"
-expect 2 "guard still blocks a cloud CLI chained after dev-read" bash_hook "~/.harness/tools/dev/dev-read.sh docker ps; az group delete -n rg-dev"
-expect 2 "guard still blocks the environment file through dev-read" bash_hook "~/.harness/tools/dev/dev-read.sh logfile .e""nv"
-expect 2 "guard still blocks a direct call to a cloud API next to dev-read" bash_hook "~/.harness/tools/dev/dev-read.sh http get http://localhost:5000/ && curl https://management.azure.com/subscriptions"
+expect 0 "guard allows dev-read docker logs" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh docker logs --tail 100 --since 10m api"
+expect 0 "guard allows dev-read logfile" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh logfile logs/app.log --tail 200"
+expect 0 "guard allows dev-read ports" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh ports 5000"
+expect 2 "guard still blocks a cloud CLI chained after dev-read" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh docker ps; az group delete -n rg-dev"
+expect 2 "guard still blocks the environment file through dev-read" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh logfile .e""nv"
+expect 2 "guard still blocks a direct call to a cloud API next to dev-read" bash_hook "~/.golden-path-harness/harness/tools/dev/dev-read.sh http get http://localhost:5000/ && curl https://management.azure.com/subscriptions"

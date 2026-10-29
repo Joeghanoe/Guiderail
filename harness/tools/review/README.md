@@ -61,7 +61,7 @@ python3 -I harness/tools/review/eval-queue.py run --engine claude --no-advisory
 - **Cheapest first.** One cheap gating scenario goes first as a smoke test, then the critical ones (three reviews
   each), then the rest, then the drafts. `--no-advisory` skips the drafts, which cannot fail the gate.
 - **The checklist** is `checklist.md` (readable, with `[x]` pass, `[!]` fail, `[?]` could not run) and
-  `checklist.json`, under `~/.harness-evals/<engine>-<model>-<bundle hash>/`, outside every repo. It belongs to one
+  `checklist.json`, under `~/.golden-path-harness/state/evals/<engine>-<model>-<bundle hash>/`, outside every repo. It belongs to one
   engine, one model and one state of the rules, cases, playbooks, templates and review tools; change any and a fresh
   one starts, and the old one is kept but not used.
 - **The verdict** is `eval.py`'s gate line, printed once every gating scenario has a result. Exit 0 finished and
@@ -74,7 +74,7 @@ relies on the consecutive-error stop, and always prints the engine's message.
 
 ## Where results live, and what is known (2026-10-29)
 
-- The checklist is local, not in the repo: `~/.harness-evals/<engine>-<model>-<bundle hash>/checklist.md` (and
+- The checklist is local, not in the repo: `~/.golden-path-harness/state/evals/<engine>-<model>-<bundle hash>/checklist.md` (and
   `checklist.json`). The hash changes when the rules or cases change, which starts a fresh checklist.
   `eval-queue.py status` prints its path. Only a complete run on a clean commit is appended to `history.jsonl`
   (`--append-history`); partial progress stays in the checklist.
