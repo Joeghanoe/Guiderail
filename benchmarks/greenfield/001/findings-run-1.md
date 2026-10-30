@@ -72,3 +72,16 @@ number of C# files written before `docs/solution-design.md`, from the trace.
   harness's own rules, not a hidden test; F01-F16 stay hidden.
 - DEL.4, CODE.8, OBS.3, the playbook and the gate are `status: draft`; a human verifies them (H.1).
 - The reference has no `scripts/verify.sh`, so it fails D04. Decide whether D04 stays.
+
+## Improvement loops 2 to 5 (same model, container, exploratory)
+
+| Run | Harness | Result | What it showed |
+|---|---|---|---|
+| `l2a`, `l2b` | 85769aa | l2a F01-F16 pass, Design 9/9; l2b Design 9/9, F06 fail | l2b wrote 47 source files before its design; F06 failed because the contract said "points" where the grader expects ids (benchmark bug, fixed) |
+| `l3a-c` | 62424c6 | stopped at ~3 min, no code | The design-only gate was a `python3 -I` command that headless mode refuses; agents obeyed the gate and stopped |
+| `l4a-c` | + `scripts/verify.sh --design` | cut off, no `EVAL.json` | The subscription behind the container hit its usage limit mid-run; not a harness result |
+| `l5a-c` | + event sink role in CODE.8, OBS.3, D06 | all three: F01-F16 pass, CODE.5 0, Design 9/9 | 6-9 interfaces each incl. `IEventSink`; 33-36 tests; 3 ADRs; source files before design 0, 0 and not measured (l5c) |
+
+Still short of the reference (Bizure.Backup): 3 ADRs against 11, about 35 tests against about 315, and a design
+and repo `AGENTS.md` a fraction of its length. Samples are 3 per configuration; the design checks prove structure,
+not quality.
