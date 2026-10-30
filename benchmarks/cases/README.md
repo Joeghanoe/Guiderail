@@ -34,3 +34,14 @@ python3 harness/tools/testing/run_brownfield.py grade --case ... --run ~/.harnes
 - CODE.5 runs in change mode against the snapshot, so introduced findings are scored and inherited ones are
   only counted. Build and tests stay inconclusive because the snapshot is a subset of the project.
 - Rubric verdicts are LLM-judged; treat a single run as one sample (ADR 0005: repeat where feasible).
+
+## Diagnosing a run
+
+```bash
+python3 harness/tools/testing/diagnose_run.py propose --run ~/.harness-evaluation/runs/<name>
+python3 harness/tools/testing/diagnose_run.py record --run ... --finding D01 --class evaluator-defect --by <reviewer> --note "..."
+```
+
+`propose` reads the report and writes `diagnosis.json` with a suggested class per doubtful result: project defect,
+evaluator defect, incomplete principle, model or harness failure, or insufficient evidence. Suggestions are leads;
+only `record` by a named person classifies. Nothing here edits rules, criteria or graders (those changes go through review).
