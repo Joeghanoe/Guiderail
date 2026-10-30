@@ -30,8 +30,8 @@ All requests contain `operation`. Backup and restore use `store` and `run_id`.
 - `schedule`: `now`, `last_success_at` (UTC timestamp or null). Return `due`: true when no prior successful
   run exists or its UTC calendar date is earlier than now's date. This exercises daily scheduling logic,
   not a production scheduler or an RPO guarantee.
-- `retention`: `now`, `retention_days`, `points: [{id, created_at}]`. Return `eligible` containing exactly
-  points whose creation plus retention_days is <= now. This is a simulation; perform no deletion.
+- `retention`: `now`, `retention_days`, `points: [{id, created_at}]`. Return `eligible` as a list of the `id`s of exactly
+  the points whose creation plus retention_days is <= now. This is a simulation; perform no deletion.
 
 ## Responses
 

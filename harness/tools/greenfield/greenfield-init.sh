@@ -39,6 +39,8 @@ Next, before any file under src/:
   1. Fill docs/solution-design.md: every heading, no template prompt left (DEL.4).
   2. Write one ADR per hard-to-reverse decision in docs/adr/NNNN-title.md: context, decision, consequences.
   3. Fill AGENTS.md: layout, vocabulary, decisions, change map, verifying, when to ask.
-  4. Run scripts/verify.sh. It fails while the design is unfinished or the code does not follow it, and it
+  4. Run: python3 -I ~/.golden-path-harness/harness/tools/greenfield/design-check.py . --profile $profile --design-only
+     It must say "pass" before you create any file under src/. Do not write code first and the design after.
+  5. Build, then run scripts/verify.sh. It fails while the design is unfinished or the code does not follow it, and it
      must pass before you call the work done (T.1). Gate profile: $profile.
 EOF

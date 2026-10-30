@@ -164,10 +164,14 @@ def test_layers(root):
                  f"{through_main} reference the entry point")
 
 
-def run(root, profile="service"):
+def run(root, profile="service", design_only=False):
     service = profile == "service"
-    checks = [design_document(root), adrs(root, 2 if service else 1), repo_agents(root), verify_command(root),
-              composition_root(root), concrete_construction(root), test_layers(root)]
+    checks = [design_document(root), adrs(root, 2 if service else 1), repo_agents(root)]
+    if design_only:  # the gate before src/: the design exists, the code is not judged yet
+        failed = [c["id"] for c in checks if c["status"] == "fail"]
+        return {"status": "pass" if not failed else "fail", "profile": profile, "failed": failed, "checks": checks,
+                "note": "design files only; the code checks run in scripts/verify.sh"}
+    checks += [verify_command(root), composition_root(root), concrete_construction(root), test_layers(root)]
     if service:
         checks += [interfaces(root), observability_contract(root)]
     checks.sort(key=lambda c: c["id"])
@@ -180,9 +184,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("workspace", nargs="?", default=".")
     parser.add_argument("--profile", choices=["generic", "service"], default="generic")
+    parser.add_argument("--design-only", action="store_true", help="check only the design, ADRs and AGENTS.md (before src/)")
     parser.add_argument("--json", action="store_true", help="print the full result instead of the failing checks")
     args = parser.parse_args()
-    result = run(pathlib.Path(args.workspace).resolve(), args.profile)
+    result = run(pathlib.Path(args.workspace).resolve(), args.profile, args.design_only)
     if args.json:
         json.dump(result, sys.stdout, indent=2)
         print()

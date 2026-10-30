@@ -37,6 +37,16 @@ class DesignCheckTests(unittest.TestCase):
     def test_empty_workspace_fails_everything(self):
         self.assertEqual(set(self.statuses().values()), {"fail"})
 
+    def test_design_only_passes_before_any_code_exists(self):
+        write(self.root, "docs/solution-design.md", DESIGN)
+        write(self.root, "docs/adr/0001-layout.md", ADR)
+        write(self.root, "docs/adr/0002-run.md", ADR)
+        write(self.root, "AGENTS.md", AGENTS)
+        result = dc.run(self.root, "service", design_only=True)
+        self.assertEqual(result["status"], "pass")
+        self.assertEqual([c["id"] for c in result["checks"]], ["D01", "D02", "D03"])
+        self.assertEqual(dc.run(self.root, "service")["status"], "fail")
+
     def test_complete_workspace_passes(self):
         write(self.root, "docs/solution-design.md", DESIGN)
         write(self.root, "docs/adr/0001-layout.md", ADR)
