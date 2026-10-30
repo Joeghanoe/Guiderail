@@ -17,10 +17,13 @@ sources:
 # Rule
 
 - Where bytes come from (a source), where they go (a sink or store), the clock, a process runner such as `git`,
-  and configuration are each an interface at the boundary. There is one implementation per kind, selected by
+  configuration and the event sink are each an interface at the boundary. There is one implementation per kind, selected by
   a registration, never by an `if` or a dictionary of `new` objects inside business code.
 - Business code takes its collaborators through the constructor. Only the composition root (`Program.cs`)
   names a concrete type and builds the container (`Microsoft.Extensions.DependencyInjection`, options pattern).
+- What a run reports (events, alerts, counters) leaves through an event sink interface, never by a direct call to a
+  logger, a response builder or a telemetry client inside an operation. Operations emit; the sink decides whether
+  the event goes into the response, a log or telemetry, and a test substitutes a recording sink.
 - The stored layout is a decision of the design (DEL.4), written once in one place and independent of the
   medium: changing where bytes go does not change what the stored data looks like.
 - Folders say what lives where and what may depend on what (for example `Models/`, `Services/`,

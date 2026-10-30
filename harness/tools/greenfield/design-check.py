@@ -117,10 +117,11 @@ def interfaces(root):
             continue
         for m in re.finditer(r"\binterface\s+(I[A-Z]\w+)", text(path)):
             names[m.group(1)] = rel.as_posix()
-    roles = {"store": r"Store|Sink|Storage|Repository", "clock": r"Clock|TimeProvider", "source": r"Source|Provider|Reader"}
+    roles = {"store": r"Store|Sink|Storage|Repository", "clock": r"Clock|TimeProvider", "source": r"Source|Provider|Reader",
+             "events": r"Event(Sink|Writer|Publisher|Emitter)|Telemetry|Reporter"}
     covered = {r for r, p in roles.items() if any(re.search(p, n) for n in names)}
     uses_time_provider = any("TimeProvider" in text(p) for _, p in files(root, {".cs"}))
-    ok = len(names) >= 4 and ({"store", "source"} <= covered) and ("clock" in covered or uses_time_provider)
+    ok = len(names) >= 4 and ({"store", "source", "events"} <= covered) and ("clock" in covered or uses_time_provider)
     return check("D06", "CODE.8", ok, f"{len(names)} interfaces {sorted(names)[:10]}; roles covered {sorted(covered)}"
                  f"{' + TimeProvider' if uses_time_provider else ''}")
 

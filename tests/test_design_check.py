@@ -56,7 +56,7 @@ class DesignCheckTests(unittest.TestCase):
         write(self.root, "Directory.Build.props", "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>")
         write(self.root, "BannedSymbols.txt", "x")
         write(self.root, "src/Program.cs", PROGRAM)
-        write(self.root, "src/Interfaces.cs", "interface IStore {} interface ISource {} interface IClock {} interface IRunner {}")
+        write(self.root, "src/Interfaces.cs", "interface IStore {} interface ISource {} interface IClock {} interface IRunner {} interface IEventSink {}")
         write(self.root, "src/Impl.cs", "class FileStore : IStore {}")
         write(self.root, "src/ErrorCodes.cs", "class ErrorCodes { const string RunStarted = \"x\"; } class RunStatusService {}")
         write(self.root, "tests/UnitA.cs", "[Fact] void a(){}" * 6)
