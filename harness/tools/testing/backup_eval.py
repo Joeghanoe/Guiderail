@@ -96,12 +96,13 @@ class Fixture:
 
 
 class Grader:
-    def __init__(self, command, work, timeout=30):
+    def __init__(self, command, work, timeout=30, criteria=None):
         self.command = command
         self.work = pathlib.Path(work)
         self.timeout = timeout
         self.calls = []
         self.results = {}
+        self.criteria = criteria or [f"F{n:02}" for n in range(1, 11)]
 
     def invoke(self, request):
         call_dir = self.work / "calls" / str(len(self.calls))
@@ -287,10 +288,118 @@ class Grader:
             operational = json.dumps({k: v for k, v in call.items() if k in {"stdout", "stderr", "response"}})
             require(f.canary not in operational, "synthetic private payload leaked to operational output")
 
+    def tree(self, path):
+        """Every file and directory under path with a content hash; None when path does not exist."""
+        path = pathlib.Path(path)
+        if not path.exists():
+            return None
+        return {p.relative_to(path).as_posix(): (digest(p) if p.is_file() else "dir") for p in sorted(path.rglob("*"))}
+
+    def f11(self):
+        f = self.fixture("f11", True)
+        r = self.backup(f)
+        self.success(r)
+        before = self.tree(f.store)
+        r = self.invoke({"operation": "status", "store": str(f.store), "run_id": "point-a"})
+        self.success(r)
+        run = r.get("run", {})
+        require(run.get("run_id") == "point-a" and run.get("state") == "succeeded", "status does not name the run and its state")
+        require(stamp(run["created_at"]) == stamp(NOW), "status ignores the recorded creation time")
+        require({s["id"] for s in run.get("sources", [])} == {s["id"] for s in f.sources}, "status lacks source outcomes")
+        require(run.get("object_count") == f.count and run.get("byte_count") == f.size, "status counts differ from the run")
+        require(self.tree(f.store) == before, "status call changed the store")
+        r = self.invoke({"operation": "status", "store": str(f.store), "run_id": "never-ran"})
+        require(r["status"] == "rejected" and r.get("code") == "run_not_found", "unknown run is not reported as not found")
+        require(self.tree(f.store) == before, "status of an unknown run changed the store")
+
+    def f12(self):
+        f = self.fixture("f12")
+        self.success(self.backup(f))
+        before = self.tree(f.store)
+        r = self.invoke({"operation": "health", "store": str(f.store)})
+        self.success(r)
+        require(r.get("health") == "healthy", "usable store is not healthy")
+        require(self.tree(f.store) == before, "health call wrote to the store")
+        broken = f.root / "not-a-directory"
+        broken.write_text("a file where a store should be")
+        r = self.invoke({"operation": "health", "store": str(broken)})
+        require(r["status"] == "failed" and r.get("health") == "unhealthy", "unusable store reported healthy")
+        require(broken.read_text() == "a file where a store should be", "health call modified an unusable store")
+
+    def f13(self):
+        f = self.fixture("f13", True)
+        before = self.tree(f.store)
+        r = self.backup(f, dry_run=True)
+        self.success(r)
+        require(r.get("dry_run") is True and r.get("artifacts") == [], "dry run is not labelled or stored artifacts")
+        require(r.get("object_count") == f.count and r.get("byte_count") == f.size, "dry run does not report what it would copy")
+        require({s["id"] for s in r.get("sources", [])} == {s["id"] for s in f.sources}, "dry run lacks source outcomes")
+        require(self.tree(f.store) == before, "dry run wrote bytes or a recovery point to the store")
+        self.success(self.backup(f))
+
+    def f14(self):
+        f = self.fixture("f14")
+        for source in f.sources:
+            if source["id"] == "blob":
+                source["exclude"] = ["nested/*", "*.tmp"]
+        (f.input / "blob" / "scratch.tmp").write_bytes(b"temporary")
+        kept = {p: h for p, h in inventory(f.input).items() if not p.startswith("blob/nested/") and not p.endswith(".tmp")}
+        r = self.backup(f)
+        self.success(r)
+        require(r.get("object_count") == len(kept), "excluded files are counted as backed up")
+        excluded = r.get("excluded", [])
+        require({(e.get("source_id"), e.get("path")) for e in excluded} == {("blob", "nested/value"), ("blob", "scratch.tmp")},
+                "excluded files are not listed with their source")
+        require(all(e.get("reason") for e in excluded), "an exclusion has no reason")
+        result, dest = self.restore(f)
+        self.success(result)
+        require(inventory(dest) == kept, "excluded content was stored or included content was lost")
+        require(inventory(f.input) == {**kept, "blob/nested/value": f.expected["blob/nested/value"],
+                                       "blob/scratch.tmp": digest(f.input / "blob" / "scratch.tmp")},
+                "exclusion modified the source")
+
+    def f15(self):
+        names = {"RunStarted", "SourceStarted", "SourceFinished", "RunFinished"}
+        allowed = {"event", "run_id", "source_id", "outcome", "code", "object_count", "byte_count", "duration_ms"}
+        f, r = self.failure("f15")
+        events = r.get("events")
+        require(isinstance(events, list) and events, "backup response has no events")
+        require(all(e.get("event") in names for e in events), "an event is outside the catalogue")
+        require(all(set(e) <= allowed for e in events), "an event carries a property outside the contract")
+        require(all(e.get("run_id") == "point-a" for e in events), "an event lacks the run id")
+        require([e["event"] for e in events].count("RunStarted") == 1 and events[0]["event"] == "RunStarted", "RunStarted is not first and once")
+        require([e["event"] for e in events].count("RunFinished") == 1 and events[-1]["event"] == "RunFinished", "RunFinished is not last and once")
+        for source in f.sources:
+            sid = source["id"]
+            mine = [e["event"] for e in events if e.get("source_id") == sid]
+            require(mine == ["SourceStarted", "SourceFinished"], f"source {sid} lacks its started and finished events")
+        finished = {e["source_id"]: e for e in events if e["event"] == "SourceFinished"}
+        require(all(finished[s].get("outcome") == "failed" and finished[s].get("code") for s in ("missing", "broken")),
+                "failed sources are not reported with a code in their finished event")
+        require(events[-1].get("outcome") in {"partial", "failed"}, "RunFinished does not carry the run outcome")
+        require(f.canary not in json.dumps(events), "an event carries payload content")
+
+    def f16(self):
+        f = self.fixture("f16")
+        outside = f.root / "outside"
+        outside.mkdir()
+        (outside / "sentinel").write_text("keep")
+        before = self.tree(f.root / "outside")
+        for kind, value in (("run_id", "../outside/escape"), ("run_id", str(outside / "abs")), ("run_id", "a/b")):
+            r = self.invoke(f.request("backup", sources=f.sources, **{kind: value}))
+            require(r["status"] == "rejected", f"hostile {kind} {value!r} was accepted")
+            require(self.tree(f.root / "outside") == before, "a hostile run id wrote outside the store")
+        hostile = [{**f.sources[0], "id": "../../outside/src"}]
+        r = self.invoke(f.request("backup", sources=hostile))
+        require(r["status"] == "rejected", "a hostile source id was accepted")
+        require(self.tree(f.root / "outside") == before, "a hostile source id wrote outside the store")
+        self.success(self.backup(f))
+        r = self.invoke(f.request("restore", destination=str(f.root / "restored"), run_id="../outside"))
+        require(r["status"] in {"rejected", "failed"}, "a hostile run id was accepted on restore")
+
     def run(self):
         before = digest(pathlib.Path(__file__))
-        for number in range(1, 11):
-            key = f"F{number:02}"
+        for key in self.criteria:
             try:
                 getattr(self, key.lower())()
                 self.results[key] = {"status": "pass"}
@@ -301,7 +410,7 @@ class Grader:
         statuses = {r["status"] for r in self.results.values()}
         functional = "fail" if "fail" in statuses else "inconclusive" if "inconclusive" in statuses else "pass"
         tampered = before != digest(pathlib.Path(__file__))
-        gates = [k for k in ("F03", "F10") if self.results[k]["status"] == "fail"]
+        gates = [k for k in ("F03", "F10", "F16") if self.results.get(k, {}).get("status") == "fail"]
         if tampered:
             gates.append("grader-modified")
         return {"schema_version": 1, "grader_sha256": before, "functional_status": functional,
@@ -312,6 +421,15 @@ class Grader:
                 "behavior": {"status": "inconclusive", "reason": "candidate model tool trace required"},
                 "cost": None, "tokens": None, "usage_reason": "provider usage is external run metadata",
                 "calls": self.calls}
+
+
+def scenario_criteria(here):
+    """The F-criteria the frozen scenario lists; the original F01-F10 when no scenario file sits beside the grader."""
+    path = here.with_name("scenario.json")
+    if not path.is_file():
+        return None
+    ids = json.loads(path.read_text(encoding="utf-8")).get("eval_ids", [])
+    return [i for i in ids if i.startswith("F") and i[1:].isdigit()] or None
 
 
 def main():
@@ -329,7 +447,7 @@ def main():
     if any(out.is_relative_to(root) for root in guarded) or args.timeout <= 0:
         parser.error("use an external output directory and positive timeout")
     out.mkdir(parents=True, exist_ok=False)
-    report = Grader(command, out, args.timeout).run()
+    report = Grader(command, out, args.timeout, scenario_criteria(here)).run()
     (out / "report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
     print(json.dumps({k: v for k, v in report.items() if k != "calls"}, indent=2))
     return 1 if report["status"] == "fail" else 2

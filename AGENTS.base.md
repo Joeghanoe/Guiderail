@@ -21,11 +21,12 @@ note, not a finding.
 
 ## Start new work design-first
 
-Before the first line of code, open `~/.golden-path-harness/harness/index.md`, run the `select` command and open the rules it
-names. A new repo or service follows `~/.golden-path-harness/harness/playbooks/start-greenfield.md` (DEL.4): `docs/solution-design.md`,
-an ADR for each hard-to-reverse decision, the repo's own `AGENTS.md` and `scripts/verify.sh` exist before feature code and
-stay true as it changes. Code sits behind interfaces wired in one composition root (CODE.8) and reports through a fixed
-contract (OBS.3). `REPORT.md` or the PR names the rule IDs applied and the ones you did not.
+New repo or service: your first command, before any file under `src/`, is
+`~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md`,
+`scripts/verify.sh` and the analyzer files for you to fill in. Fill the design, write an ADR per hard-to-reverse decision,
+then build (DEL.4, CODE.8, OBS.3). `scripts/verify.sh` fails while the design is unfinished or the code does not follow
+it, and must pass before you say done. Other work: open `~/.golden-path-harness/harness/index.md`, run the `select` command, open the rules it names.
+`REPORT.md` or the PR names the rule IDs applied and the ones you did not.
 
 ## Decompose workloads and tier models
 

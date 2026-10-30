@@ -6,7 +6,7 @@ tags: [design, architecture, greenfield]
 status: draft
 ---
 
-# <Service>: solution design
+# <Service name>: solution design
 
 One paragraph: who uses it and why it exists. Then the question that drives every decision:
 

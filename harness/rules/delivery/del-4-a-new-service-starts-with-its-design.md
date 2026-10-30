@@ -6,7 +6,7 @@ rule_id: DEL.4
 principle: /principles/p-02-architecture-provides-direction.md
 tags: [delivery, architecture, greenfield, documentation]
 applies_to: ["**"]
-enforced_by: [review, playbook:start-greenfield]
+enforced_by: [script:verify, gate:/gates/design-check.md, review]
 severity: major
 status: draft
 sources:
@@ -29,6 +29,9 @@ changes:
 - **The repo's own `AGENTS.md`** from `templates/repo/AGENTS.md`: layout, vocabulary, current decisions,
   how a change crosses boundaries (CODE.7), how to verify, when to ask. The base file is not a substitute.
 - **`scripts/verify.sh`, `Directory.Build.props` and `BannedSymbols.txt`** (T.1, T.2), so "done" has a command.
+
+`tools/greenfield/greenfield-init.sh` writes all of these as skeletons; `scripts/verify.sh` runs
+`tools/greenfield/design-check.py` and fails while a template prompt is left or a structural check fails.
 
 # Boundary
 

@@ -41,6 +41,12 @@ echo "== CODE.5 structural checker"
 expect 0 "CODE.5 checker builds" dotnet build "$h/tools/code/CheckTypes.csproj"
 expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test_code_types.py
 expect 0 "provider-neutral backup grader controls" python3 -I "$here/tests/test_backup_eval.py"
+expect 0 "greenfield design checks" python3 -I "$here/tests/test_design_check.py"
+gf="$tmp/greenfield"; mkdir -p "$gf"
+expect 0 "greenfield-init writes the skeletons" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
+expect 0 "greenfield-init keeps what exists" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
+expect 1 "design gate fails a fresh skeleton" python3 -I "$h/tools/greenfield/design-check.py" "$gf" --profile service
+expect 0 "verify.sh names the service profile" grep -q "^DESIGN_PROFILE=service" "$gf/scripts/verify.sh"
 expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_freeze_eval.py"
 expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
