@@ -1,0 +1,18 @@
+{
+  "component": "b2b-ing",
+  "root": "component root; paths are relative to it",
+  "files": [
+    {
+      "path": "modules/monitoring.bicep",
+      "sha256": "5ea918086fe1b48a6a78c06e4b1e74a25feec4b8aa091905b1ec5d32c27020c0"
+    },
+    {
+      "path": "azuredeploy.bicep",
+      "sha256": "9143d3d39bf506d6d71805ada31d2861d97d70a251bcb020fdb214e1423976e7"
+    },
+    {
+      "path": "readme.md",
+      "sha256": "7e876bc9b0e0feac11e864cbc5b6dd528b05829db14de47f7e4895f4dbc94542"
+    }
+  ]
+}

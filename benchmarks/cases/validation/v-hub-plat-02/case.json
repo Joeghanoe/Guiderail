@@ -1,0 +1,1 @@
+{"id":"v-hub-plat-02","role":"validation","kind":"feature","components":["hub-plat"],"stack":"dotnet10-nuget-contracts","size":"S","rule_ids":["CODE.7","DEL.3","DEL.2","CODE.5"],"hard_gates":["G01","G02"]}

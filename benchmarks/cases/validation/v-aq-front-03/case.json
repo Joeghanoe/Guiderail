@@ -1,0 +1,21 @@
+{
+  "id": "v-aq-front-03",
+  "role": "validation",
+  "kind": "feature",
+  "components": [
+    "aq-front"
+  ],
+  "stack": "react typescript tailwind shadcn zustand vitest",
+  "size": "M",
+  "rule_ids": [
+    "UI.1",
+    "UI.2",
+    "CODE.5",
+    "T.2",
+    "T.5"
+  ],
+  "hard_gates": [
+    "UI.1",
+    "UI.2"
+  ]
+}

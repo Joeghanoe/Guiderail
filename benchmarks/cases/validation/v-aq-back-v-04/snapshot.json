@@ -1,0 +1,26 @@
+{
+  "component": "aq-back-v",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "Program.cs",
+      "sha256": "e9273564a42ac3c964f6f8c5b045fdfb66f93666aa28d960f3055f98643e94e0"
+    },
+    {
+      "path": "Configuration/AzureMonitorConfiguration.cs",
+      "sha256": "4462c3ff72351cfec6f6404f8c6a76d2b33d2640c886db8ae611bcfed4aff2e3"
+    },
+    {
+      "path": "Configuration/DatasetTokenCredential.cs",
+      "sha256": "c9140ada1521dbdf359d744dd64d2859c8ef33f7eefb10f3b60f7c68dd00ac76"
+    },
+    {
+      "path": "Services/DatasetService.cs",
+      "sha256": "fec5489b077b3f9f6eeffc1485400631ebc3a0143a78702d4b05a621f76aae07"
+    },
+    {
+      "path": "Services/TableStorageThrottleStateService.cs",
+      "sha256": "c06941f82289d3a61ec8dba2ebade4f104e720034c89af3684f4b44247cb0950"
+    }
+  ]
+}

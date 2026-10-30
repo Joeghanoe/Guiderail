@@ -1,0 +1,22 @@
+{
+  "id": "v-b2b-ing-04",
+  "role": "validation",
+  "kind": "refactor",
+  "components": [
+    "b2b-ing"
+  ],
+  "stack": "Bicep, API Management policy XML, OpenAPI, Logic App definition",
+  "size": "M",
+  "rule_ids": [
+    "CODE.4",
+    "CODE.7",
+    "DEL.3",
+    "DEL.1",
+    "CLD.2"
+  ],
+  "hard_gates": [
+    "G01",
+    "G02",
+    "G03"
+  ]
+}

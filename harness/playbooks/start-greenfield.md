@@ -30,7 +30,10 @@ The repo has no source yet, or the task asks for a new service or application. A
    reason codes, the events, the retention rule, what input is never trusted.
 5. **One ADR per hard-to-reverse decision** in `docs/adr/` (DEL.4). Typical: stored layout, run identity and
    idempotency, failure semantics, retention, storage medium behind its interface.
-6. **Fill the repo's `AGENTS.md`**: layout, vocabulary, current decisions,
+6. **Fill the repo's `AGENTS.md`**: layout, vocabulary, current decisions. In the layout, separate entry points,
+   contracts or models, application work and external adapters; split a growing area by its reason to change;
+   state the permitted dependency direction. Do not use `Services/`, `Helpers/`, `Interface/` or `Shared/` as
+   an unexplained catch-all. Then add
    "follow a change across boundaries" with a **checked** or **documented** mark on each entry (CODE.7), verify,
    when to ask. Adapt `scripts/verify.sh` to the repo's toolchain without removing the gate steps.
    Run `bash scripts/verify.sh --design`; it

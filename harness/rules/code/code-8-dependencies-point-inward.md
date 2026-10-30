@@ -26,9 +26,14 @@ sources:
   the event goes into the response, a log or telemetry, and a test substitutes a recording sink.
 - The stored layout is a decision of the design (DEL.4), written once in one place and independent of the
   medium: changing where bytes go does not change what the stored data looks like.
-- Folders say what lives where and what may depend on what (for example `Models/`, `Services/`,
-  `Services/Interface/`, `Services/<Kind>/`, `Helpers/` for pure functions). One flat folder per layer of
-  convenience is not a layout.
+- Folders say what lives where and what may depend on what. For a new service, separate deployment entry
+  points, contracts or models, application work and external adapters. Split a growing area by the reason it
+  changes, such as `Processing/Handlers/` or `Adapters/<System>/`, instead of leaving every class in
+  `Services/` or every value in `Models/`.
+- Put an interface with the capability it describes, or in that capability's `Abstractions/` folder. A global
+  `Interface/`, `Helpers/` or `Shared/` folder is not a boundary unless the repo's `AGENTS.md` names exactly
+  what belongs there and which folders may depend on it. Do not create a folder for one file merely to make
+  the tree look balanced.
 - Adding a kind of source touches its class, its registration, its tests and its runbook line, and nothing else.
 
 # Boundary

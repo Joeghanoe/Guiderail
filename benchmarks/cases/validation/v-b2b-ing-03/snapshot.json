@@ -1,0 +1,18 @@
+{
+  "component": "b2b-ing",
+  "root": "component root; paths are relative to it",
+  "files": [
+    {
+      "path": "modules/logicapp-rcv-vendor-submission-ingest.bicep",
+      "sha256": "3a477e7cf52bc5efab83101e3ed8f59a54a4db101bd808228a634cc9c5cc688c"
+    },
+    {
+      "path": "modules/apim-public-ips.bicep",
+      "sha256": "4cf2d70e0eef41bcc2dc461d35718761f7d42d8629dd7e820c63b3bbae3b55f1"
+    },
+    {
+      "path": "readme.md",
+      "sha256": "7e876bc9b0e0feac11e864cbc5b6dd528b05829db14de47f7e4895f4dbc94542"
+    }
+  ]
+}

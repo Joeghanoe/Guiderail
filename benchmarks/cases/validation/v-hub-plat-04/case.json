@@ -1,0 +1,1 @@
+{"id":"v-hub-plat-04","role":"validation","kind":"feature","components":["hub-plat"],"stack":"bicep-kql-azure-monitor","size":"M","rule_ids":["OBS.2","IAC.1","CODE.7","CODE.4","CLD.1","CLD.2"],"hard_gates":["G01","G02"]}

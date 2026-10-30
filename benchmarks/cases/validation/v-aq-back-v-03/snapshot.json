@@ -1,0 +1,34 @@
+{
+  "component": "aq-back-v",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "Services/TableStorageThrottleStateService.cs",
+      "sha256": "c06941f82289d3a61ec8dba2ebade4f104e720034c89af3684f4b44247cb0950"
+    },
+    {
+      "path": "Services/TableStorageDatasetCadenceService.cs",
+      "sha256": "0e7f7a3dcdee094e40c5be45cbad92bc54fd02b42aa903fcb0c85f8a8fa8ec47"
+    },
+    {
+      "path": "Services/TableStorageLoadStateService.cs",
+      "sha256": "d6deb27a44ed173fa14cfbec14699c6c7ee19218b2bc05cc64a14a42b7458ef5"
+    },
+    {
+      "path": "Services/Interfaces/IThrottleStateService.cs",
+      "sha256": "945ab08580fd35438f09fc4720a6048a93f4ec16223abd8a130de1961499778b"
+    },
+    {
+      "path": "AzureMonitorIncrementalFunctions.cs",
+      "sha256": "2b622ddf51457704f222c6652c9dde5b08ed8c9d20ce5054f1474cb33d05afff"
+    },
+    {
+      "path": "AvailabilityFunction.cs",
+      "sha256": "f0a097cd408cbb17da980dc9937e66f0c09b0037c9a6600dad12057e1194db11"
+    },
+    {
+      "path": "Program.cs",
+      "sha256": "e9273564a42ac3c964f6f8c5b045fdfb66f93666aa28d960f3055f98643e94e0"
+    }
+  ]
+}

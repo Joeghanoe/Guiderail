@@ -8,7 +8,8 @@ repeated here. This file holds only what is specific to this repo.
 ## Layout
 
 ```text
-<folders and what lives where; what may depend on what>
+<folders and what lives where; organize first by responsibility, then by implementation kind or external
+system where needed; state what may depend on what; name any intentionally shared folder precisely>
 ```
 
 ## Naming

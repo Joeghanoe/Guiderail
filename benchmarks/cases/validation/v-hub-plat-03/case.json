@@ -1,0 +1,1 @@
+{"id":"v-hub-plat-03","role":"validation","kind":"refactor","components":["hub-plat"],"stack":"bicep-azure-devops-yaml","size":"M","rule_ids":["CODE.7","CODE.4","IAC.7","DEL.3","CLD.1","CLD.2"],"hard_gates":["G01","G02"]}

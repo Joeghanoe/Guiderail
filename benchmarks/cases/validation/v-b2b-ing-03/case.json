@@ -1,0 +1,20 @@
+{
+  "id": "v-b2b-ing-03",
+  "role": "validation",
+  "kind": "security",
+  "components": [
+    "b2b-ing"
+  ],
+  "stack": "Bicep, API Management policy XML, OpenAPI, Logic App definition",
+  "size": "S",
+  "rule_ids": [
+    "IAC.2",
+    "SEC.2",
+    "CLD.2",
+    "DEL.3"
+  ],
+  "hard_gates": [
+    "G01",
+    "G02"
+  ]
+}
