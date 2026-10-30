@@ -22,7 +22,7 @@ note, not a finding.
 ## Start new work design-first
 
 New repo or service: your first command, before any file under `src/`, is
-`~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md`,
+`bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md`,
 `scripts/verify.sh` and the analyzer files for you to fill in. Fill the design, write an ADR per hard-to-reverse decision,
 then build (DEL.4, CODE.8, OBS.3). `scripts/verify.sh` fails while the design is unfinished or the code does not follow
 it, and must pass before you say done. Other work: open `~/.golden-path-harness/harness/index.md`, run the `select` command, open the rules it names.

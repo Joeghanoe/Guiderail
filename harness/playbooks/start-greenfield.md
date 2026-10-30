@@ -14,7 +14,7 @@ The repo has no source yet, or the task asks for a new service or application. A
 
 # Steps
 
-1. **Scaffold.** `~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service` (omit `--service` for a repo that
+1. **Scaffold.** `bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service` (omit `--service` for a repo that
    runs no operations) writes the design skeleton, the repo's `AGENTS.md`, `scripts/verify.sh`, `Directory.Build.props`
    and `BannedSymbols.txt`, and never overwrites. `scripts/verify.sh` runs the design gate
    (`tools/greenfield/design-check.py`) and the CODE.5 checker; it fails until the design is filled in and the code

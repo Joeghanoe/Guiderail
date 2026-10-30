@@ -54,7 +54,7 @@
     },
     {
       "source": "AGENTS.base.md",
-      "path": "candidate/AGENTS.md",
+      "path": "candidate/AGENTS.base.md",
       "replace": {
         "~/.golden-path-harness/harness": ".harness"
       }

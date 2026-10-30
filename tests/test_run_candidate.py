@@ -99,6 +99,19 @@ class RunCandidateTests(unittest.TestCase):
         with self.assertRaises(runner.Preflight):
             self.run_it(self.profile(), "tampered")
 
+    def test_design_order_is_read_from_the_claude_trace(self):
+        def trace(*paths):
+            events = [{"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "name": "Write", "input": {"file_path": p}}]}} for p in paths]
+            folder = self.root / ("trace-" + str(len(list(self.root.glob("trace-*")))))
+            folder.mkdir()
+            (folder / "claude-events.jsonl").write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+            return folder
+        self.assertTrue(runner.design_before_code(trace("/work/docs/solution-design.md", "/work/src/App/A.cs")))
+        self.assertFalse(runner.design_before_code(trace("/work/src/App/A.cs", "/work/docs/solution-design.md")))
+        self.assertIsNone(runner.design_before_code(trace("/work/src/App/A.cs")))
+        self.assertIsNone(runner.design_before_code(self.root))
+
     def test_code5_checker_runs_on_workspace_sources(self):
         workspace = self.root / "ws"
         workspace.mkdir()

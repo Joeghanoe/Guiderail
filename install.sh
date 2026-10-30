@@ -52,7 +52,8 @@ HOOK_MARKS = ("/.harness/hooks/", "/.golden-path-harness/harness/hooks/")
 gp_home = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or home / ".golden-path-harness")
 TOOLS = ("cloud/cloud-read.sh *", "sonar/sonar-read.sh *", "servicenow/sn-get.sh *", "servicenow/sn-access-check.sh",
          "greenfield/greenfield-init.sh *")
-CLOUD_READ = [f"Bash({base}/harness/tools/{t})" for t in TOOLS for base in (gp_home, "~/.golden-path-harness")]
+CLOUD_READ = [f"Bash({'bash ' if t.startswith('greenfield/') else ''}{base}/harness/tools/{t})"
+              for t in TOOLS for base in (gp_home, "~/.golden-path-harness")]
 # allow rules from earlier layouts (~/.harness, tools/ before it was grouped by domain); drop them
 LEGACY_CLOUD_READ = [f"Bash({base}/.harness/tools/{t})" for t in TOOLS for base in (home, "~")] + \
                     [f"Bash({base}/.harness/tools/{t.split('/', 1)[1]})" for t in TOOLS for base in (home, "~")]

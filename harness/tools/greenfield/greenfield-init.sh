@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Start a new repo or service design-first (DEL.4): write the files a new repo owns into the current directory,
 # for you to fill in, and say what to do next. Never overwrites a file that exists.
-# Usage: greenfield-init.sh [--service] [target-dir]
+# Usage: bash greenfield-init.sh [--service] [target-dir]   (run through bash: copies do not always keep the exec bit)
 #   --service  the repo is a service that runs operations and reports them: the verify gate also checks the
 #              CODE.8 source/store interfaces and the OBS.3 event and error-code contract.
 set -euo pipefail
