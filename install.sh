@@ -50,7 +50,8 @@ OLD_BLOCK = re.compile(r"\n?# TeamValue AI Hub \(managed by install\.ps1\)\n.*?#
 NEW_BLOCK = re.compile(r"\n?# TeamValue harness \(managed by install\.sh\)\n.*?# end TeamValue harness\n?", re.S)
 HOOK_MARKS = ("/.harness/hooks/", "/.golden-path-harness/harness/hooks/")
 gp_home = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or home / ".golden-path-harness")
-TOOLS = ("cloud/cloud-read.sh *", "sonar/sonar-read.sh *", "servicenow/sn-get.sh *", "servicenow/sn-access-check.sh")
+TOOLS = ("cloud/cloud-read.sh *", "sonar/sonar-read.sh *", "servicenow/sn-get.sh *", "servicenow/sn-access-check.sh",
+         "greenfield/greenfield-init.sh *")
 CLOUD_READ = [f"Bash({base}/harness/tools/{t})" for t in TOOLS for base in (gp_home, "~/.golden-path-harness")]
 # allow rules from earlier layouts (~/.harness, tools/ before it was grouped by domain); drop them
 LEGACY_CLOUD_READ = [f"Bash({base}/.harness/tools/{t})" for t in TOOLS for base in (home, "~")] + \

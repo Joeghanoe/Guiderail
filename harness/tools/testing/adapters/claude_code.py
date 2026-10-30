@@ -11,7 +11,11 @@ import sys
 
 import common
 
-ALLOWED = ["Read", "Write", "Edit", "Glob", "Grep", "Bash(dotnet *)", "Bash(git *)", "Bash(ls *)", "Bash(mkdir *)"]
+# The last three mirror what install.sh and the repo's verify command give a real install: the harness's own
+# scaffold command and the repo's verify command (T.1). Nothing else outside dotnet, git, ls and mkdir is allowed.
+ALLOWED = ["Read", "Write", "Edit", "Glob", "Grep", "Bash(dotnet *)", "Bash(git *)", "Bash(ls *)", "Bash(mkdir *)",
+           "Bash(.harness/tools/greenfield/greenfield-init.sh *)", "Bash(.harness/tools/greenfield/greenfield-init.sh)",
+           "Bash(scripts/verify.sh *)", "Bash(scripts/verify.sh)", "Bash(bash scripts/verify.sh *)", "Bash(bash scripts/verify.sh)"]
 
 
 def main():
