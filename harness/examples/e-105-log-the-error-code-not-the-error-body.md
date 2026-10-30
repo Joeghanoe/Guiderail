@@ -47,13 +47,16 @@ private static async Task<string> ReadErrorCodeAsync(HttpResponseMessage respons
     try
     {
         using var body = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync(ct), cancellationToken: ct);
-        return body.RootElement.TryGetProperty("error", out var e)
-            && e.ValueKind == JsonValueKind.String
-            && e.GetString() is { Length: <= 64 } code ? code : "unknown";
+
+        if (!body.RootElement.TryGetProperty("error", out var error) || error.ValueKind != JsonValueKind.String)
+            return "unknown";
+
+        var code = error.GetString()!;
+        return code.Length <= 64 ? code : "unknown";   // a short code, never free text
     }
     catch (JsonException)
     {
-        return "unparseable";
+        return "unparseable";                          // a proxy can answer with HTML
     }
 }
 ```
