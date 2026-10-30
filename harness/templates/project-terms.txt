@@ -12,6 +12,10 @@ Aquarium
 IntegrationPlatform
 LMN
 Bizure.Backup
+hub-conn
+b2b-ext
+b2b-hook
+aq-back
 DataHub
 FreshService
 TimeChimp

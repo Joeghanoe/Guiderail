@@ -1,23 +1,20 @@
 ---
 type: Example
-title: "E-100 A health endpoint returns a failing status when a dependency is down"
-description: The connector's health function maps an unhealthy result to 424 and lists each dependency, so probes and availability tests notice.
-example_id: E-100
+title: "E-022 A health endpoint returns a failing status when a dependency is down"
+description: The service's health function maps an unhealthy result to 424 and lists each dependency, so probes and availability tests notice.
+example_id: E-022
 rule: /rules/observability/obs-1-health-reflects-reality.md
 verdict: compliant
 status: draft
 tags: [health, observability, dotnet]
 example_file: src/HealthCheckFunctions.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
-sources:
-  - id: evidence
-    resource: hub-conn@src/connector-01/HealthCheckFunctions.cs#L22-L52
 ---
 
 # Situation
 
-A function app exposes `GET api/health`. The health service aggregates one check per dependency (the vendor API,
-the event publisher, the queue).[^evidence]
+A function app exposes `GET api/health`. The health service aggregates one check per dependency (the external API,
+the event publisher, the queue).
 
 # Why (verdict)
 
@@ -64,10 +61,3 @@ public async Task<HttpResponseData> Health(HttpRequestData req)
     return response;
 }
 ```
-
-# Not verified
-
-The source also puts a ping and a timer-driven availability probe in the same class; whether that is one job was not
-judged here. Description text of a failing check can carry an exception message; not traced.
-
-[^evidence]: a connector's health function, status mapping

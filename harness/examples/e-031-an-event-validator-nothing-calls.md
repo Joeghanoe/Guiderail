@@ -1,25 +1,22 @@
 ---
 type: Example
-title: "E-233 A validator, its list and an injected configuration that nothing uses"
+title: "E-031 A validator, its list and an injected configuration that nothing uses"
 description: A service keeps an event-type list, a validation method and an injected configuration that no caller reads; delete them and the using directives that came with them.
-example_id: E-233
+example_id: E-031
 rule: /rules/code/code-1-remove-what-is-not-used.md
 verdict: violation
 status: draft
 tags: [dead-code, cleanup]
 example_file: src/Services/WebhookService.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
-sources:
-  - id: evidence
-    resource: b2b-hook@Services/WebhookService.cs#L8-L43
 ---
 
 # Situation
 
-A small service holds two methods. `GetEventType` maps the partner's event names to internal ones and is used. The second,
+A small service holds two methods. `GetEventType` maps external event names to internal ones and is used. The second,
 `IsValidEventType`, checks a static list of internal names against a cloud-event type, and nothing in the project calls it;
 the injected `IConfiguration` is stored and never read. The list duplicates the `switch` in the first method and the
-`switch` in the function that consumes it.[^evidence]
+`switch` in the function that consumes it.
 
 # Why (verdict)
 
@@ -35,11 +32,11 @@ type is added (CODE.1, and CODE.4 for the names). Remove the method, the list, t
 ```csharp
 public sealed class EventTypeMapper
 {
-    public string ToInternal(string partnerType) => partnerType switch
+    public string ToInternal(string externalType) => externalType switch
     {
-        "ticket.created" => EventTypes.CaseCreated,
-        "comment.created" => EventTypes.CommentCreated,
-        _ => throw new NotSupportedException($"Unsupported event type: {partnerType}"),
+        "item.created" => EventTypes.ItemCreated,
+        "note.added" => EventTypes.NoteAdded,
+        _ => throw new NotSupportedException($"Unsupported event type: {externalType}"),
     };
 }
 ```
@@ -47,15 +44,9 @@ public sealed class EventTypeMapper
 ## Bad example
 
 ```csharp
-private static List<string> validEvents = new() { "CaseCreated", "CommentCreated" };
+private static List<string> validEvents = new() { "ItemCreated", "NoteAdded" };
 readonly IConfiguration _config;                       // never read
 
 public bool IsValidEventType(CloudEvent received) =>   // no caller
     received.Type != null && validEvents.Contains(received.Type);
 ```
-
-# Not verified
-
-Searched the project for callers with grep; a reflection or external caller would not show up there.
-
-[^evidence]: Event-type service of a webhook-to-case function app.

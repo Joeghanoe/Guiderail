@@ -1,30 +1,25 @@
 ---
 type: Example
-title: "E-300 A health check reports Unhealthy and the endpoint turns that into a failing status code"
+title: "E-032 A health check reports Unhealthy and the endpoint turns that into a failing status code"
 description: A dependency check returns Unhealthy instead of throwing, and the health endpoint answers with a non-200 so probes and the availability timer notice.
-example_id: E-300
+example_id: E-032
 rule: /rules/observability/obs-1-health-reflects-reality.md
 verdict: compliant
 status: draft
 tags: [health, observability, azure-functions]
 example_file: src/HealthEndpoint.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
-sources:
-  - id: evidence
-    resource: aq-back@ingest/HealthCheckFunctions.cs#L18-L44
-  - id: evidence-2
-    resource: aq-back@api/HealthChecks/CosmosDbHealthChecker.cs#L10-L26
 ---
 
 # Situation
 
-A function app depends on a document database and a vendor API. Each dependency has its own health check class.
+A function app depends on a document database and an external API. Each dependency has its own health check class.
 One HTTP function runs all registered checks and returns the report.
 
 # Why (verdict)
 
 The check answers "can this service do its work" by touching the dependency (listing containers, reading the
-vendor), not by returning true. A failure becomes `Unhealthy`, only cancellation is rethrown. The endpoint maps
+external API), not by returning true. A failure becomes `Unhealthy`, only cancellation is rethrown. The endpoint maps
 anything other than `Healthy` to a failing status code (424 here), so the platform probe and the availability
 test see an outage that a 200 with "unhealthy" in the body would hide (OBS.1).
 
@@ -79,4 +74,3 @@ public async Task<HttpResponseData> Health([HttpTrigger(AuthorizationLevel.Funct
 # Not verified
 
 Whether one slow dependency should degrade the whole report or only its own entry is a per-service decision.
-In one of the two source services the availability timer, not the HTTP endpoint, is what reports to telemetry.

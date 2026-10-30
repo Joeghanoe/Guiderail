@@ -1,28 +1,21 @@
 ---
 type: Example
-title: "E-303 The same catch ladder is not pasted into every endpoint"
+title: "E-034 The same catch ladder is not pasted into every endpoint"
 description: Each HTTP function repeats a catch for the database exception and a catch for Exception with the same body; the mapping belongs in one place.
-example_id: E-303
+example_id: E-034
 rule: /rules/code/code-4-write-a-name-once.md
 verdict: violation
 status: draft
 tags: [duplication, http, errors]
 example_file: src/OrdersFunction.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
-sources:
-  - id: evidence
-    resource: aq-back@api/Functions/HealthFunction.cs#L62-L71
-  - id: evidence-2
-    resource: aq-back@api/Functions/HealthFunction.cs#L119-L130
-  - id: evidence-3
-    resource: aq-back@api/Functions/DomainsFunction.cs#L54-L63
 ---
 
 # Situation
 
 An API has a dozen endpoints. Every endpoint wraps its body in the same two catch blocks: one for the
 database exception and one for `Exception`, both logging an error and returning 503. Only the log text differs
-("Cosmos error ...", "Unhandled error ..."), so the second block adds nothing the first did not already do.
+("Store error ...", "Unhandled error ..."), so the second block adds nothing the first did not already do.
 
 # Why (verdict)
 
@@ -78,5 +71,4 @@ catch (Exception ex)
 
 # Not verified
 
-Whether a middleware can set the invocation result for every trigger type in this host version I did not run.
 A conflict or not-found catch inside an endpoint is specific and stays.

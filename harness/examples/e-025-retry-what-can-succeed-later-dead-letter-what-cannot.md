@@ -1,24 +1,21 @@
 ---
 type: Example
-title: "E-108 Retry a failure that can succeed later, dead-letter one that never will"
+title: "E-025 Retry a failure that can succeed later, dead-letter one that never will"
 description: A queue handler lets the broker retry transient failures, and dead-letters permanent ones at once with a reason code, instead of retrying everything or completing the message.
-example_id: E-108
+example_id: E-025
 rule: /rules/code/code-2-fail-loudly.md
 verdict: compliant
 status: draft
 tags: [errors, messaging, retry, dead-letter]
 example_file: src/MessageHandler.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
-sources:
-  - id: evidence
-    resource: hub-conn@src/connector-03/MessageFunctions.cs#L235-L343
 ---
 
 # Situation
 
 A queue-triggered handler calls a downstream service. Some failures are temporary (timeout, throttling, a
 dependency that is down). Others will fail the same way every time (a malformed message, a rejected value, a
-duplicate that already exists).[^evidence]
+duplicate that already exists).
 
 # Why (verdict)
 
@@ -67,10 +64,3 @@ catch (Exception)
     throw;                                       // a permanently invalid message is retried to the maximum
 }
 ```
-
-# Not verified
-
-Which exceptions count as transient is a per-service decision (`IsTransient` here is illustrative). The
-delivery count and the dead-letter handling are queue settings that belong in the design (DEL.4).
-
-[^evidence]: the failure paths of a queue-triggered handler

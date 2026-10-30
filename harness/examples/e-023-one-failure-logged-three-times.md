@@ -1,26 +1,21 @@
 ---
 type: Example
-title: "E-102 One failure is logged, tracked and recorded as a custom event, each with the full exception"
+title: "E-023 One failure is logged, tracked and recorded as a custom event, each with the full exception"
 description: A catch block writes the exception to the log, to exception telemetry and into a custom event property, and the timer entry point swallows it silently.
-example_id: E-102
+example_id: E-023
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
 status: draft
 tags: [errors, logging, telemetry]
 example_file: src/ProcessFunctions.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
-sources:
-  - id: evidence
-    resource: hub-conn@src/connector-01/ProcessFunctions.cs#L96-L120
-  - id: evidence-2
-    resource: hub-conn@src/connector-01/ProcessFunctions.cs#L218-L225
 ---
 
 # Situation
 
 A per-item loop catches `Exception` so that one bad item does not stop the batch. The catch block logs the
 exception as a string with `LogCritical`, calls `TrackException`, and then writes `exception.ToString()` into the
-`ErrorMessage` property of a custom event.[^evidence] The manual endpoint does the same and returns 500; the timer
+`ErrorMessage` property of a custom event. The manual endpoint does the same and returns 500; the timer
 entry point catches and only calls `TrackException`.
 
 # Why (verdict)
@@ -62,15 +57,8 @@ catch (Exception ex)
 {
     logger.LogCritical($"Error while posting event: {ex}");
     telemetry.TrackException(ex);
-    LogCustomEvent(id, "NewApplicant", "1.0", false, ex.ToString());
+    LogCustomEvent(id, "ItemReceived", "1.0", false, ex.ToString());
     operation.Telemetry.Success = false;
 }
 // the timer entry point: catch (Exception ex) { telemetry.TrackException(ex); }
 ```
-
-# Not verified
-
-The batch-failure exception in the good example is a sketch; the source has no equivalent. Whether the platform
-already de-duplicates the log and the tracked exception was not checked.
-
-[^evidence]: per-item catch block in a processing loop
