@@ -49,6 +49,7 @@ expect 1 "design gate fails a fresh skeleton" python3 -I "$h/tools/greenfield/de
 expect 0 "verify.sh names the service profile" grep -q "^DESIGN_PROFILE=service" "$gf/scripts/verify.sh"
 expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_freeze_eval.py"
 expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
+expect 0 "brownfield runner controls (stand-in adapter and grader, no model)" python3 -I "$here/tests/test_run_brownfield.py"
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
 
 echo "== guard-bash"

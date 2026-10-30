@@ -1,7 +1,7 @@
 # Evaluation cases and the train / validation / holdout split
 
 Cases are brownfield: a change task on an existing codebase, with hidden acceptance criteria.
-Greenfield scenarios stay in `benchmarks/greenfield/`. The runner does not execute brownfield cases yet.
+Greenfield scenarios stay in `benchmarks/greenfield/`. `harness/tools/testing/run_brownfield.py` runs validation cases (see below).
 
 | Role | What it is for | Where it lives | May teach the harness |
 |---|---|---|---|
@@ -17,3 +17,20 @@ Greenfield scenarios stay in `benchmarks/greenfield/`. The runner does not execu
   real names appear. Repo content carries none (`harness/templates/project-terms.txt`).
 - Boundary examples need a human owner. Candidates without one are parked in
   `~/.harness-evaluation/pending-boundary/` until a person accepts the deviation.
+
+## Running a validation case
+
+```bash
+python3 harness/tools/testing/run_brownfield.py run \
+  --case benchmarks/cases/validation/<id> --profile <run-profile.json> --out ~/.harness-evaluation/runs/<name>
+python3 harness/tools/testing/run_brownfield.py grade --case ... --run ~/.harness-evaluation/runs/<name> --profile <run-profile.json>
+```
+
+- Only `validation` cases run; holdout is refused. The workspace is built from the private source map and each
+  file is checked against its pinned sha256; a changed source stops the run.
+- The candidate sees `TASK.md`, the harness and the snapshot, never `criteria.md`. A separate grader session
+  judges each criterion from the saved diff (`grade` replays it without rerunning the candidate). The run
+  profile may add `"grader": {"argv": [...]}` (stdin is the prompt); the default is `claude -p` with the profile's model.
+- CODE.5 runs in change mode against the snapshot, so introduced findings are scored and inherited ones are
+  only counted. Build and tests stay inconclusive because the snapshot is a subset of the project.
+- Rubric verdicts are LLM-judged; treat a single run as one sample (ADR 0005: repeat where feasible).
