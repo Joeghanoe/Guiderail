@@ -135,6 +135,16 @@ the agent gets its own HOME and config through the profile `env`, and any mentio
 (`~/.ssh`, `~/.aws`, `~/.claude` and similar) in the trace is a hard gate. Keep reference solutions and source PDFs
 off the machine that runs the agent.
 
+## Scenario 002 and the design dimension
+
+`benchmarks/greenfield/002/` extends the task with the operational behaviour of the reference design: status, health,
+dry run, exclusions, an event catalogue and untrusted identifiers (F11-F16, [contract v2](local-backup-contract-v2.md)).
+F16 is a third security hard gate. The grader reads `evaluator/scenario.json` to know which criteria to run, so 001
+stays F01-F10. Scenario 002 installs the base instructions as `AGENTS.base.md`, so the repo's own `AGENTS.md` is free.
+The architecture dimension now also reports `design-check.py` (D01-D09, `service` profile) and, from a Claude Code
+trace, how many source files were written before the design. Findings and the improvement loop:
+[greenfield/001/findings-run-1.md](greenfield/001/findings-run-1.md).
+
 ## Coverage limits
 
 Retention is an eligibility simulation, not deletion or immutability enforcement. SQL data is a pre-exported

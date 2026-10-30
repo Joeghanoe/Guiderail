@@ -218,16 +218,16 @@ def csharp_files(workspace):
                   if not {"bin", "obj", ".git"} & set(p.relative_to(workspace).parts))
 
 
-def design_before_code(trace_dir):
-    """True when the first write of docs/solution-design.md precedes the first write of a source file (DEL.4).
+def source_files_before_design(trace_dir):
+    """How many distinct C# files under src/ were written before docs/solution-design.md first was (DEL.4).
 
-    Read from the Claude Code event stream only; None for any other trace, or when either file was never written.
+    0 or a project skeleton means design first; dozens means design after the fact. Read from the Claude Code
+    event stream only; None for any other trace, or when the design was never written.
     """
     path = pathlib.Path(trace_dir) / "claude-events.jsonl"
     if not path.is_file():
         return None
-    design = code = None
-    position = 0
+    written = set()
     for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
         try:
             event = json.loads(line)
@@ -236,13 +236,12 @@ def design_before_code(trace_dir):
         for block in (event.get("message", {}).get("content") or []) if event.get("type") == "assistant" else []:
             if not isinstance(block, dict) or block.get("type") != "tool_use" or block.get("name") not in {"Write", "Edit"}:
                 continue
-            position += 1
             target = str((block.get("input") or {}).get("file_path", ""))
-            if target.endswith("docs/solution-design.md") and design is None:
-                design = position
-            elif "/src/" in target and target.endswith(".cs") and code is None:
-                code = position
-    return None if design is None or code is None else design < code
+            if target.endswith("docs/solution-design.md"):
+                return len(written)
+            if "/src/" in target and target.endswith(".cs"):
+                written.add(target)
+    return None
 
 
 def code5_result(returncode, stdout, count):
@@ -563,7 +562,7 @@ def run_candidate(args):
         "behavior": {"status": "inconclusive", "reason": "truthfulness and workflow need trace review",
                      "observations": {"adapter_exit_code": agent["exit_code"],
                                       "completion_report_present": (workspace / "REPORT.md").is_file(),
-                                      "design_before_code": design_before_code(trace_dir),
+                                      "source_files_before_design": source_files_before_design(trace_dir),
                                       "candidate_commits": int(commits)}},
         "execution": {"started": started, "ended": ended, "runtime_seconds": agent["seconds"],
                       "budget_seconds": budget, "timed_out": agent["timed_out"], "adapter_error": agent["error"]},

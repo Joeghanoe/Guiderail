@@ -99,7 +99,7 @@ class RunCandidateTests(unittest.TestCase):
         with self.assertRaises(runner.Preflight):
             self.run_it(self.profile(), "tampered")
 
-    def test_design_order_is_read_from_the_claude_trace(self):
+    def test_design_order_is_counted_from_the_claude_trace(self):
         def trace(*paths):
             events = [{"type": "assistant", "message": {"content": [
                 {"type": "tool_use", "name": "Write", "input": {"file_path": p}}]}} for p in paths]
@@ -107,10 +107,11 @@ class RunCandidateTests(unittest.TestCase):
             folder.mkdir()
             (folder / "claude-events.jsonl").write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
             return folder
-        self.assertTrue(runner.design_before_code(trace("/work/docs/solution-design.md", "/work/src/App/A.cs")))
-        self.assertFalse(runner.design_before_code(trace("/work/src/App/A.cs", "/work/docs/solution-design.md")))
-        self.assertIsNone(runner.design_before_code(trace("/work/src/App/A.cs")))
-        self.assertIsNone(runner.design_before_code(self.root))
+        design = "/work/docs/solution-design.md"
+        self.assertEqual(runner.source_files_before_design(trace(design, "/work/src/App/A.cs")), 0)
+        self.assertEqual(runner.source_files_before_design(trace("/work/src/App/A.cs", "/work/src/App/B.cs", design)), 2)
+        self.assertIsNone(runner.source_files_before_design(trace("/work/src/App/A.cs")))
+        self.assertIsNone(runner.source_files_before_design(self.root))
 
     def test_code5_checker_runs_on_workspace_sources(self):
         workspace = self.root / "ws"
