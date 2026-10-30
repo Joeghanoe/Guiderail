@@ -23,7 +23,7 @@ sources:
 - An agent never reads `.env` files or dumps the environment. Wrapper scripts read secrets themselves
   and pass them on without printing them. Tool secrets live in the user's env file outside any repo
   (`~/.config/harness/.env`); the agent reads `.harness/.env.example` for the variable names and tells the
-  user when one is missing or expired (C-016).
+  user when one is missing or expired (E-016).
 - A new telemetry attribute comes with a check that it cannot carry personal data.
 
 # Enforcement

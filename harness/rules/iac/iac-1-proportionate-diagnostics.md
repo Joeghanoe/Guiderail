@@ -30,5 +30,5 @@ So diagnostics follow what they are used for:
 
 # Boundary
 
-A compliance or customer requirement that demands full logging wins; it is then a boundary case with the
+A compliance or customer requirement that demands full logging wins; it is then a boundary example with the
 requirement, an owner and `stale_after`, and the cost is part of the decision.

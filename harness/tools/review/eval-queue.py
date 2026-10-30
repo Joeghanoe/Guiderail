@@ -5,7 +5,7 @@
 failed runs look like a bad reviewer. This keeps a checklist instead. After every scenario the result is written
 down, and the next run carries on with what is still unchecked.
 
-Three outcomes, not two. `pass` and `fail` are results: the reviewer did or did not behave as the case says, and
+Three outcomes, not two. `pass` and `fail` are results: the reviewer did or did not behave as the example says, and
 both get checked off. `error` is not a result: the run could not happen (quota gone, not logged in, CLI missing,
 timeout). It stays unchecked and is retried, so running out of tokens never turns into "the reviewer failed".
 
@@ -16,7 +16,7 @@ Tool contract (Vegviser AI Tool Boundary)
   Owner:           team:teamvalue-aicoe. Version: the harness commit in .harness/VERSION.
   Caller identity: the engine CLI's own login, done by the user. This tool never logs in; on an authentication
                    error it stops and says so.
-  Inputs:          run | status | reset, and the options below. Scenarios come from the bundle's cases, exactly
+  Inputs:          run | status | reset, and the options below. Scenarios come from the bundle's examples, exactly
                    as eval.py builds them; scoring is eval.py's own (it is imported, not copied).
   Results:         a checklist (checklist.json, checklist.md) and, when every gating scenario is checked, the same
                    gate line eval.py prints. Exit 0 finished and the gate passes, 1 finished and it fails,
@@ -28,7 +28,7 @@ Tool contract (Vegviser AI Tool Boundary)
                    complete run on a clean commit, as eval.py does. Raw model output is never stored.
   Review trigger:  a change to how eval.py builds or scores scenarios, or a new engine.
 
-The checklist belongs to one engine, one model and one state of the bundle (a hash of the rules, cases, playbooks,
+The checklist belongs to one engine, one model and one state of the bundle (a hash of the rules, examples, playbooks,
 templates and review tools). Change any of them and a fresh checklist starts; the old one is kept, because its
 results describe a reviewer that no longer exists.
 
@@ -59,7 +59,7 @@ DEFAULT_RESULTS = HERE / "eval-results.jsonl"   # committed, so a run started on
 ENGINES = ["claude", "copilot", "agy", "replay"]
 
 # What the reviewer is built from. A change to any of it makes earlier results about a different reviewer.
-HASHED = ("index.md", "principles", "rules", "cases", "playbooks", "templates", "tools/review", "tools/harness/bundle.py")
+HASHED = ("index.md", "principles", "rules", "examples", "playbooks", "templates", "tools/review", "tools/harness/bundle.py")
 SKIPPED = {"history.jsonl", "eval-results.jsonl", ".DS_Store", "eval-queue.py"}   # the queue is not part of the reviewer it measures
 
 # The engines print free text on failure, so these are patterns, not an API. A miss only costs one more error
@@ -101,7 +101,7 @@ def bundle_hash(root):
 
 
 def scenarios_for(ev, root, thresholds, engine, only):
-    """[(item, scenario tuple)] for the bundle's cases. An item says what the checklist needs to know."""
+    """[(item, scenario tuple)] for the bundle's examples. An item says what the checklist needs to know."""
     found = []
     for scenario in ev.from_cases(root):
         name, spec = scenario[0], scenario[1]
@@ -419,7 +419,7 @@ def main():
     parser.add_argument("--replay-dir")
     parser.add_argument("--only", action="append", help="only this scenario (repeatable); the run is partial")
     parser.add_argument("--limit", type=int, default=0, help="stop after this many scenarios, to spread tokens over days")
-    parser.add_argument("--no-advisory", action="store_true", help="skip the draft cases, which cannot fail the gate")
+    parser.add_argument("--no-advisory", action="store_true", help="skip the draft examples, which cannot fail the gate")
     parser.add_argument("--retry-failed", action="store_true",
                         help="run scenarios that failed again; the reviewer is not deterministic")
     parser.add_argument("--max-errors", type=int, default=2, help="stop after this many errors in a row (default 2)")

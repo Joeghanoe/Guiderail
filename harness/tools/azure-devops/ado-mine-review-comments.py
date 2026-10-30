@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mine pull request review threads from an Azure DevOps project into an anonymised CSV.
 
-Use: find recurring reviewer feedback, then distill it into cases and eval scenarios (H.1, H.2).
+Use: find recurring reviewer feedback, then distill it into examples and eval scenarios (H.1, H.2).
 Read-only: only GET requests through `az rest`. Run it yourself, logged in with `az login`.
 
 One row per review thread whose root comment is by --author (default: every author). Names, emails,

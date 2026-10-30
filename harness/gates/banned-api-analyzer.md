@@ -29,7 +29,7 @@ Build error RS0030; `scripts/verify.sh` and the PR fail.
 # Exception route
 
 One scoped `#pragma warning disable RS0030` with a reason, in the composition root only. Anything wider is a
-boundary case with a requirement, an owner and `stale_after`.
+boundary example with a requirement, an owner and `stale_after`.
 
 # Refresh trigger
 

@@ -19,7 +19,7 @@ change touches, rather than loading every instruction file up front.
 | 1. Identity | Agents use a read-only cloud login; the review job has no service connection | **Hard**: the real boundary |
 | 2. Tools | `scripts/verify.sh`, `cloud-read.sh`, `check-scenarios.py`, analyzers (`BannedSymbols.txt`) | Hard for what goes through them |
 | 3. Hooks and settings | Claude Code `PreToolUse` guards, the `Stop` verify, permission deny rules | Guardrail |
-| 4. Instructions | `AGENTS.base.md`, rules, cases | Soft |
+| 4. Instructions | `AGENTS.base.md`, rules, examples | Soft |
 
 If layer 1 is wrong, the rest only looks safe.
 
@@ -35,17 +35,17 @@ harness/              the bundle (~/.golden-path-harness/harness after install.s
   index.md            the entry point; git history is the change log
   principles/         P1-P13: pointers to Vegviser, which is the authority
   rules/              security, cloud, iac, delivery, testing, harness: each says what enforces it
-  cases/              worked examples with good and bad code; human-reviewed cases are precedent and evals
+  examples/           worked examples with good and bad code; human-reviewed ones are precedent and the reviewer eval instrument
   gates/              registration of each deterministic check (tool, owner, coverage, blind spots)
   playbooks/          review a change, add an example, process feedback, classify a test failure, write a business test plan,
                       write a spec, scaffold from a repo's conventions, optimize build duration, compress harness prose
-  templates/          case.md, finding.md, spec.md, project-terms.txt, business-testplan.spec.json
+  templates/          example.md, finding.md, spec.md, project-terms.txt, business-testplan.spec.json
   tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/,
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
-feedback/             draft cases from every repo (~/.golden-path-harness/feedback), reviewed weekly
+feedback/             draft examples from every repo (~/.golden-path-harness/feedback), reviewed weekly
 adapters/             /tv-review for Claude Code, installed by install.sh
-evaluations/          agent evaluation scenarios (task, criteria, run profiles); tests/ verifies the harness itself
+benchmarks/          agent evaluation scenarios (task, criteria, run profiles); tests/ verifies the harness itself
 infra/scripts/        CI and local helper scripts (context budget, review-changed, eval-home-setup)
 infra/templates/repo/  what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
                       BannedSymbols.txt, .harness-scenarios.json
@@ -77,7 +77,7 @@ AZURE_CONFIG_DIR="$HOME/.azure-reader" az login             # with an account th
 ```
 
 No separate reader account? Skip the export: after your own `az login`, `cloud-read.sh` reads with that login
-and only its read-verb and secret checks limit it (C-015). Each fallback invocation warns on stderr, and `az rest`
+and only its read-verb and secret checks limit it (E-015). Each fallback invocation warns on stderr, and `az rest`
 is blocked unless an explicit `HARNESS_AZURE_CONFIG_DIR` is configured. Not logged in means the read fails; you log in.
 
 Tool secrets (the Sonar token for `sonar-read.sh`, the ServiceNow account for `sn-get.sh`) go in `~/.config/harness/.env`, outside every repo; start from
@@ -116,18 +116,18 @@ Re-run after a Claude Code or Copilot update, or a change to how the adapter imp
 ## Evaluate the reviewer
 
 The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Every human-verified
-case is also an eval: its bad example must be flagged by its rule, its good example must not. Run
-`python3 -I harness/tools/review/eval.py` after changing rules, cases, playbooks or the review tools; CI does
+example is also an eval: its bad example must be flagged by its rule, its good example must not. Run
+`python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does
 the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md).
 
 ## How the harness learns
 
-- **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft case in
+- **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft example in
   `~/.golden-path-harness/feedback/` (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into
-  `harness/cases/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13
+  `harness/examples/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13
   (rule H.1).
-- **Trust.** A case with `verified: { by: human:<id>, ... }` is precedent for the reviewer and an eval; an
-  unverified case is a hint.
+- **Trust.** An example with `verified: { by: human:<id>, ... }` is precedent for the reviewer and an eval; an
+  unverified example is a hint.
 - **PR threads.** The reviewer posts each finding as a thread. Its resolution (Fixed, Won't fix, By design) is
   the feedback signal.
 - **Automation ladder.** A repeated task becomes a playbook, then a script, then a hook or CI check (rule H.2).
@@ -136,11 +136,11 @@ the same. Engines, gate thresholds, evidence and options: [harness/tools/review/
 
 ```bash
 python3 harness/tools/harness/bundle.py index    # after adding or renaming a concept
-python3 harness/tools/harness/bundle.py check    # OKF conformance, IDs, links, code examples in cases, indexes
+python3 harness/tools/harness/bundle.py check    # OKF conformance, IDs, links, code in examples, indexes
 python3 harness/tools/harness/bundle.py privacy-check
 python3 harness/tools/harness/bundle.py budget       # always-loaded text (AGENTS.base.md, index.md) stays within its recorded size
 tests/run.sh                             # tools, hooks and install
-python3 -I harness/tools/review/eval.py  # the reviewer, when rules, cases or the review changed
+python3 -I harness/tools/review/eval.py  # the reviewer, when rules, examples or the review changed
 ```
 
 Git history is the change log; write the why in the commit message. CI (`azure-pipelines.yml`) runs the same
@@ -157,6 +157,6 @@ the harness can vouch for, `~/.config/harness/models.json` adds yours, and no pr
 ## Not built yet
 
 - Trigger and non-trigger evals for `/tv-review`, and precision per rule over many PRs.
-- A scheduled job that collects resolved PR threads into draft cases.
+- A scheduled job that collects resolved PR threads into draft examples.
 - A GitHub Actions variant of `infra/pipelines/ai-review.yml`.
 - A deterministic attester for the review receipt (`receipt.json` is published as an artifact today).

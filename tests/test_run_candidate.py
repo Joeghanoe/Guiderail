@@ -124,9 +124,9 @@ class RunCandidateTests(unittest.TestCase):
 
     def test_freeze_expands_trees_applies_replacements_and_excludes(self):
         tree = pathlib.Path(runner.REPOSITORY) / "harness"
-        files = [e["path"] for e in runner.expand_tree({"source": "harness", "path": "c/.harness", "exclude": ["cases", "tools/testing", "tools/index.md"]})]
+        files = [e["path"] for e in runner.expand_tree({"source": "harness", "path": "c/.harness", "exclude": ["examples", "tools/testing", "tools/index.md"]})]
         self.assertTrue(any(f.startswith("c/.harness/rules/") for f in files))
-        self.assertFalse(any("/cases/" in f or "/tools/testing/" in f or f.endswith("tools/index.md") or "__pycache__" in f for f in files))
+        self.assertFalse(any("/.harness/examples/" in f or "/tools/testing/" in f or f.endswith("tools/index.md") or "__pycache__" in f for f in files))
         self.assertTrue(tree.is_dir())
 
     def test_folder_mode_passes_env_and_reports_same_user_class(self):

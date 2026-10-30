@@ -1,6 +1,6 @@
 echo "== eval-queue (stub copilot, no tokens)"
 # Sourced by tests/run.sh: uses its expect helper and $here, $h, $tmp, $pass, $fail. The copilot CLI is a stub on
-# PATH whose mode is a file, so each case can make it succeed, run out of quota, lose its login, or break.
+# PATH whose mode is a file, so each example can make it succeed, run out of quota, lose its login, or break.
 eq="$h/tools/review/eval-queue.py"
 qd="$tmp/eval-queue"
 qbin="$qd/bin"
@@ -33,9 +33,9 @@ sheet_has() { # sheet_has <state dir> <description> <extended pattern>
   if sheet "$1" | grep -Eq -- "$3"; then pass=$((pass + 1)); else fail=$((fail + 1)); echo "FAIL: $2"; sheet "$1" | sed 's/^/    /'; fi
 }
 
-G=case-c-002-log-identifiers-not-personal-data-good
-B=case-c-002-log-identifiers-not-personal-data-bad
-G2=case-c-003-storage-with-managed-identity-good
+G=example-e-002-log-identifiers-not-personal-data-good
+B=example-e-002-log-identifiers-not-personal-data-bad
+G2=example-e-003-storage-with-managed-identity-good
 ONLY=(--only "$G" --only "$B" --only "$G2")
 
 # Status costs nothing and writes nothing.
@@ -117,7 +117,7 @@ expect 0 "but writes nothing to history.jsonl" test "$(cksum <"$h/tools/review/h
 
 # Usage and setup errors.
 expect 2 "an unknown scenario is a usage error" q "$qd/s6" run --only no-such-scenario
-has "it lists the known ones" 'known: case-c-'
+has "it lists the known ones" 'known: example-e-'
 expect 2 "a missing engine CLI is reported before any work" bash -c "PATH=/usr/bin:/bin '$py' -I '$eq' run --engine copilot --state-dir '$qd/s7' --only '$G'"
 expect 0 "reset removes a checklist" q "$qd/s1" reset
 expect 1 "and it is gone" bash -c "test -e $qd/s1/copilot-default-*/checklist.md"

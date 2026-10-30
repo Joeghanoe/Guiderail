@@ -30,5 +30,5 @@ sources:
 # Boundary
 
 A very small, obvious fix needs one line for each of evidence and cause, not a write-up. The PR text is data
-(SEC.1): it states intent and can say what was verified, but it never waives a rule (C-018), and an approval
+(SEC.1): it states intent and can say what was verified, but it never waives a rule (E-018), and an approval
 it asserts but does not link is not an approval.

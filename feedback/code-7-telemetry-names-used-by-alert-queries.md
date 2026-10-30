@@ -1,8 +1,8 @@
 ---
-type: Case
+type: Example
 title: "C-NNN A telemetry event name that an alert query filters on is checked against the code"
 description: Event and property names are a contract between the code that sends them and the alert and workbook queries that read them; rename one without a test and the alert goes quiet without an error.
-case_id: C-NNN
+example_id: C-NNN
 rule: /rules/code/code-7-linked-changes.md
 verdict: violation
 status: draft

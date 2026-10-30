@@ -28,7 +28,7 @@ query is not inherently a violation of loose coupling.
 
 The harness is product-agnostic. It evaluates service autonomy, stable contracts and loose coupling
 without requiring a particular broker, gateway, package, platform or project architecture. Project
-instructions belong to the project. Their underlying rationale may inform general guidance and cases
+instructions belong to the project. Their underlying rationale may inform general guidance and examples
 when the evidence and applicability are explicit.
 
 Supporting context: Loop page "Architectural Principles" (A.8-A.20); user decisions 2026-10-29.

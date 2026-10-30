@@ -10,7 +10,7 @@ Source: [Way of Work](https://teamvaluebv.sharepoint.com/:fl:/g/contentstorage/C
 
 * [Principles](principles/) - P1-P13, pointers to Vegviser, which is the authority
 * [Rules](rules/) - what follows from them, with the tool or hook that enforces each one
-* [Cases](cases/) - worked examples with a verdict; human-reviewed cases are precedent
+* [Examples](examples/) - worked examples with a verdict; human-reviewed examples are precedent
 * [Playbooks](playbooks/) - review a change, add an example, orchestrate a workload, process feedback, classify a test failure, write a business test plan, analyse ServiceNow, draw an integration diagram, verify a deployment, triage an incident
 * [Gates](gates/) - registration of each deterministic check: tool, owner, coverage, blind spots
 
@@ -18,4 +18,4 @@ Source: [Way of Work](https://teamvaluebv.sharepoint.com/:fl:/g/contentstorage/C
 
 * [tools/](tools/) - scripts grouped by domain, see its index: harness, review, testing, cloud, azure-devops, servicenow, sonar, diagrams, orchestration
 * [hooks/](hooks/) - Claude Code guard hooks: bash, read, stop-verify
-* [templates/](templates/) - `case.md` for feedback, `finding.md` for a review finding, `business-testplan.spec.json` for a business test plan
+* [templates/](templates/) - `example.md` for feedback, `finding.md` for a review finding, `business-testplan.spec.json` for a business test plan

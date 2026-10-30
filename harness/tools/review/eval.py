@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Evaluate reviewer behavior from human-readable harness cases.
+"""Evaluate reviewer behavior from human-readable harness examples.
 
-Each case becomes a throwaway git repo with .harness/ copied in; review.sh is the same script
-the PR pipeline runs. Human-verified cases and reviewer-behavior cases gate. Other drafts are evaluated and reported as
+Each example becomes a throwaway git repo with .harness/ copied in; review.sh is the same script
+the PR pipeline runs. Human-verified examples and reviewer-behavior examples gate. Other drafts are evaluated and reported as
 advisory: a draft is not precedent for the reviewer and cannot fail the gate, but a failure is visible.
 
 Run with: python3 -I harness/tools/review/eval.py
@@ -109,13 +109,13 @@ def safe_repo_path(value):
     windows_path = pathlib.PureWindowsPath(value)
     if (not value or not path.parts or "\\" in value or path.is_absolute() or windows_path.is_absolute()
             or windows_path.drive or ".." in path.parts or path.parts[0] in {".git", ".harness"}):
-        raise ValueError(f"unsafe evaluation path in case metadata: {value!r}")
+        raise ValueError(f"unsafe evaluation path in example metadata: {value!r}")
     return value
 
 
-def case_context_files(root, case_path, meta):
-    case_id = safe_repo_path(bundle.unquote(meta.get("case_id", "")).lower())
-    fixture_root = root / "cases" / "fixtures" / case_id
+def case_context_files(root, example_path, meta):
+    example_id = safe_repo_path(bundle.unquote(meta.get("example_id", "")).lower())
+    fixture_root = root / "examples" / "fixtures" / example_id
     files = []
     for value in bundle.as_list(meta.get("eval_context_files", "")):
         target = safe_repo_path(bundle.unquote(value))
@@ -135,10 +135,10 @@ def write_case_context(repo, files):
 
 def from_cases(root):
     for path, meta, body in bundle.concepts(root):
-        if not meta or bundle.unquote(meta.get("type", "")) != "Case":
+        if not meta or bundle.unquote(meta.get("type", "")) != "Example":
             continue
         behavior = bundle.unquote(meta.get("eval_behavior", ""))
-        # Unverified cases are evaluated but advisory: a draft cannot fail the gate. Behavior cases always gate.
+        # Unverified examples are evaluated but advisory: a draft cannot fail the gate. Behavior examples always gate.
         advisory = not (bundle.human_verified(meta) or behavior)
         verdict = bundle.unquote(meta.get("verdict", ""))
         if verdict not in ("violation", "compliant", "boundary"):
@@ -155,40 +155,40 @@ def from_cases(root):
         bad_rule_id = bundle.unquote(meta.get("eval_bad_rule_id", rule_id))
         pr = markdown_section(body, "PR description")
         context_files = case_context_files(root, path, meta)
-        # A boundary case's bad example is what the rule normally flags; only its good side is a hard expectation.
+        # An boundary example's bad example is what the rule normally flags; only its good side is a hard expectation.
         kinds = (("Good", "clean"),) if verdict == "boundary" else (("Bad", "find"), ("Good", "clean"))
         for kind, expect in kinds:
             for lang, code, suffix in case_examples(body, kind):
                 target = safe_repo_path(bundle.unquote(meta.get("example_file", "")) or
                                         f"src/Example.{LANG_EXT.get(lang, 'txt')}")
-                spec = {"description": f"{path.stem}: {kind.lower()} example", "tags": ["case", kind.lower()],
+                spec = {"description": f"{path.stem}: {kind.lower()} example", "tags": ["example", kind.lower()],
                         "critical": bundle.unquote(meta.get("eval_critical", "")).lower() == "true",
                         "verified": bundle.human_verified(meta),
                         "advisory": advisory,
-                        "mask_case": verdict != "boundary",
-                        "case_path": path.relative_to(root).as_posix(),
+                        "mask_example": verdict != "boundary",
+                        "example_path": path.relative_to(root).as_posix(),
                         "expect": {"must_find": [{"rule_id": bad_rule_id if expect == "find" else rule_id,
                                                   "file": target}]}
                         if expect == "find" else {"must_not_find": [rule_id]}}
                 write = lambda repo, t=target, c=code: ((repo / t).parent.mkdir(parents=True, exist_ok=True),
                                                         (repo / t).write_text(c + "\n", encoding="utf-8"))
                 before = lambda repo, files=context_files: write_case_context(repo, files)
-                yield f"case-{path.stem}-{suffix}", spec, before, write, pr
+                yield f"example-{path.stem}-{suffix}", spec, before, write, pr
         for variant_kind, lang, code, suffix in variant_examples(body):
             target = safe_repo_path(f"src/Example.{LANG_EXT.get(lang, 'txt')}")
             expected_rule_id = bad_rule_id if variant_kind == "bad" else rule_id
-            spec = {"description": f"{path.stem}: {suffix}", "tags": ["case", "variant", variant_kind],
+            spec = {"description": f"{path.stem}: {suffix}", "tags": ["example", "variant", variant_kind],
                     "critical": bundle.unquote(meta.get("eval_critical", "")).lower() == "true",
                     "verified": bundle.human_verified(meta),
                     "advisory": advisory,
-                    "mask_case": verdict != "boundary",
-                    "case_path": path.relative_to(root).as_posix(),
+                    "mask_example": verdict != "boundary",
+                    "example_path": path.relative_to(root).as_posix(),
                     "expect": {"must_find": [{"rule_id": expected_rule_id, "file": target}]}
                     if variant_kind == "bad" else {"must_not_find": [rule_id]}}
             write = lambda repo, t=target, c=code: ((repo / t).parent.mkdir(parents=True, exist_ok=True),
                                                     (repo / t).write_text(c + "\n", encoding="utf-8"))
             before = lambda repo, files=context_files: write_case_context(repo, files)
-            yield f"case-{path.stem}-{suffix}", spec, before, write, pr
+            yield f"example-{path.stem}-{suffix}", spec, before, write, pr
 
         if behavior == "rename":
             code = next(case_examples(body, "Good"), (None, None, None))[1]
@@ -207,10 +207,10 @@ def from_cases(root):
                 spec = {"description": f"{path.stem}: pure rename", "tags": ["abstention"],
                         "critical": True, "verified": bundle.human_verified(meta),
                         "advisory": advisory,
-                        "mask_case": True,
-                        "case_path": path.relative_to(root).as_posix(),
+                        "mask_example": True,
+                        "example_path": path.relative_to(root).as_posix(),
                         "expect": {"max_high_findings": 0}}
-                yield f"case-{path.stem}-pure-rename", spec, before, after, ""
+                yield f"example-{path.stem}-pure-rename", spec, before, after, ""
 
 
 def score(spec, findings):
@@ -232,9 +232,9 @@ def score(spec, findings):
 
 def copy_evaluation_bundle(source, destination, spec):
     shutil.copytree(source, destination, ignore=shutil.ignore_patterns("__pycache__"))
-    if spec.get("mask_case"):
-        (destination / spec["case_path"]).unlink()
-        cases_directory = destination / "cases"
+    if spec.get("mask_example"):
+        (destination / spec["example_path"]).unlink()
+        cases_directory = destination / "examples"
         (cases_directory / "index.md").write_text(bundle.generated_index(cases_directory, destination),
                                                   encoding="utf-8")
 
@@ -364,7 +364,7 @@ def main():
     parser.add_argument("--jobs", type=int, default=2, help="maximum concurrent eval runs (default: 2, max: 8)")
     parser.add_argument("--out", type=pathlib.Path,
                         default=pathlib.Path(tempfile.gettempdir()) / "teamvalue-harness-evals")
-    parser.add_argument("--bundle", type=pathlib.Path, default=DEFAULT_BUNDLE, help="bundle to review with and take cases from")
+    parser.add_argument("--bundle", type=pathlib.Path, default=DEFAULT_BUNDLE, help="bundle to review with and take examples from")
     parser.add_argument("--thresholds", type=pathlib.Path, default=HERE / "thresholds.json")
     args = parser.parse_args()
     if not 1 <= args.jobs <= 8:

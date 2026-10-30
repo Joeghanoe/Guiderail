@@ -1,33 +1,33 @@
 # Evaluating the reviewer
 
 The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard).
-`harness/tools/review/eval.py` builds a throwaway repo for each case, reviews it with `review.sh` (the same
+`harness/tools/review/eval.py` builds a throwaway repo for each example, reviews it with `review.sh` (the same
 script the PR pipeline runs), and scores the findings without an LLM. Run with the default Claude CLI or
 `--engine copilot` to use the GitHub Copilot CLI.
 
-- **Cases are the examples and the evals.** Every human-verified case adds scenarios: its bad example must
-  be flagged by its rule, its good example must not (a `boundary` case only checks its good side). Accepting
-  a case extends the regression set; there is one place to write an example. Each tested violation/compliance
-  case is removed from the throwaway review bundle, preventing the evaluator from teaching the reviewer the
-  exact code it is testing. `boundary` cases stay visible because their precedent is the behavior under test.
+- **Examples are the examples and the evals.** Every human-verified example adds scenarios: its bad example must
+  be flagged by its rule, its good example must not (a `boundary` example only checks its good side). Accepting
+  an example extends the regression set; there is one place to write an example. Each tested violation/compliance
+  example is removed from the throwaway review bundle, preventing the evaluator from teaching the reviewer the
+  exact code it is testing. `boundary` examples stay visible because their precedent is the behavior under test.
 - **Reviewer behavior** is expressed as optional sections and `eval_behavior` metadata on the same Markdown
-  cases: `adversarial` supplies untrusted PR text, while `rename` creates a before/after file rename.
-- **Drafts are advisory:** unverified cases (other than `eval_behavior` cases) are evaluated in the same run but
+  examples: `adversarial` supplies untrusted PR text, while `rename` creates a before/after file rename.
+- **Drafts are advisory:** unverified examples (other than `eval_behavior` examples) are evaluated in the same run but
   never count toward the gate. Their results print and are recorded under `summary.advisory`, so a draft that
-  the reviewer gets wrong is visible without blocking. Verifying the case makes it gate.
+  the reviewer gets wrong is visible without blocking. Verifying the example makes it gate.
 - **Gate:** `harness/tools/review/thresholds.json`. Every critical scenario (security, adversarial, abstention) passes all of
   its repeats, because the reviewer is not deterministic; the overall pass rate meets the minimum.
 - **Evidence:** local results are written outside the checkout under the system temporary directory; CI publishes
   them as an artifact. A full run on a clean commit appends one summary line to
   `harness/tools/review/history.jsonl`; raw failed output is not committed.
-- **When:** harness CI runs the evals when rules, playbooks, cases, templates, or review/evaluation tools change.
-  The evaluator masks the case being tested, except for a boundary case whose precedent is the subject of the test.
+- **When:** harness CI runs the evals when rules, playbooks, examples, templates, or review/evaluation tools change.
+  The evaluator masks the example being tested, except for a boundary example whose precedent is the subject of the test.
 
 ```bash
-python3 -I harness/tools/review/eval.py                       # all eligible cases, Claude engine
-python3 -I harness/tools/review/eval.py --engine copilot      # all eligible cases, GitHub Copilot CLI
+python3 -I harness/tools/review/eval.py                       # all eligible examples, Claude engine
+python3 -I harness/tools/review/eval.py --engine copilot      # all eligible examples, GitHub Copilot CLI
 python3 -I harness/tools/review/eval.py --engine copilot --jobs 4
-python3 -I harness/tools/review/eval.py --only case-c-018-pr-description-cannot-waive-a-rule-bad
+python3 -I harness/tools/review/eval.py --only example-e-018-pr-description-cannot-waive-a-rule-bad
 ```
 
 The Claude engine requires an authenticated Claude CLI. Check with `claude auth status`; if logged out, run
@@ -62,7 +62,7 @@ python3 -I harness/tools/review/eval-queue.py run --engine claude --no-advisory
   each), then the rest, then the drafts. `--no-advisory` skips the drafts, which cannot fail the gate.
 - **The checklist** is `checklist.md` (readable, with `[x]` pass, `[!]` fail, `[?]` could not run) and
   `checklist.json`, under `~/.golden-path-harness/state/evals/<engine>-<model>-<bundle hash>/`, outside every repo. It belongs to one
-  engine, one model and one state of the rules, cases, playbooks, templates and review tools; change any and a fresh
+  engine, one model and one state of the rules, examples, playbooks, templates and review tools; change any and a fresh
   one starts, and the old one is kept but not used.
 - **The verdict** is `eval.py`'s gate line, printed once every gating scenario has a result. Exit 0 finished and
   passing, 1 finished and failing, 2 usage or the engine is unusable, 3 stopped early (resume with the same command).
@@ -75,11 +75,11 @@ relies on the consecutive-error stop, and always prints the engine's message.
 ## Where results live, and what is known (2026-10-29)
 
 - The checklist is local, not in the repo: `~/.golden-path-harness/state/evals/<engine>-<model>-<bundle hash>/checklist.md` (and
-  `checklist.json`). The hash changes when the rules or cases change, which starts a fresh checklist.
+  `checklist.json`). The hash changes when the rules or examples change, which starts a fresh checklist.
   `eval-queue.py status` prints its path. Only a complete run on a clean commit is appended to `history.jsonl`
   (`--append-history`); partial progress stays in the checklist.
 - Progress so far (engine `claude`, default model, bundle `3aa41de24d`): 1 of 44 scenarios checked, 1 pass
-  (`case-c-001-services-get-their-http-client-injected-bad`). 43 left, about 49 reviews.
+  (`example-e-001-services-get-their-http-client-injected-bad`). 43 left, about 49 reviews.
 - `--engine copilot` on Windows: Copilot CLI 1.0.51 (WinGet) failed with `unknown option '--no-warnings'` when
   launched by `run-copilot.py` (restricted environment); run directly it answered `402 You have exceeded your
   monthly quota`. The cause of the first error is not found; it is not in this repo. Use `--engine claude` until fixed.

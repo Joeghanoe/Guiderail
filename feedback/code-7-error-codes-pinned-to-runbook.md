@@ -1,8 +1,8 @@
 ---
-type: Case
+type: Example
 title: "C-NNN Every error code in the catalog has a row in the runbook, and a test fails when one is missing"
 description: An error-code catalog in code and its operations page are two sides of one list; a test reads the page and names each code that has no row.
-case_id: C-NNN
+example_id: C-NNN
 rule: /rules/code/code-7-linked-changes.md
 verdict: compliant
 status: draft

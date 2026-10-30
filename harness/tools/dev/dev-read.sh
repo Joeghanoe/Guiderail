@@ -32,7 +32,7 @@
 #      formats, private key blocks, cookies, email addresses, and the Env block of docker inspect. It does not
 #      catch a secret with no telltale key or shape, free-text personal data (names, addresses, IP addresses,
 #      national ids), or a value split across lines. A human reads before pasting anything from here into a
-#      commit, a case, an ADR or a prompt.
+#      commit, an example, an ADR or a prompt.
 #   2. Localhost is not safe by definition. A local app can proxy to a deployed environment and a local port can
 #      be a tunnel, so a GET against localhost can still read real data, and a response can contain it. Only the
 #      user knows what a port is forwarded to. Hosts that are not localhost are refused unless the USER asked for

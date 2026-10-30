@@ -25,7 +25,7 @@ account or subscription a CLI uses; `cloud-read.sh` and the hooks refuse it.
 | Layer | What | Hard or soft |
 |---|---|---|
 | 1. Identity | The agent's CLI uses its own login: Azure `Reader` without data-plane roles, a T Cloud user with only read policies, an Azure DevOps PAT with read scopes. Locally: a separate `AZURE_CONFIG_DIR`, so the agent never sees your Owner token | **Hard**: the real boundary |
-| 2. Wrapper | `tools/cloud/cloud-read.sh`: for `az`, everything except state-changing verbs (create, update, delete, ...) and secret-returning reads, so monitoring, logs and metrics work (C-017); for the other CLIs, read verbs only | Hard for what goes through it |
+| 2. Wrapper | `tools/cloud/cloud-read.sh`: for `az`, everything except state-changing verbs (create, update, delete, ...) and secret-returning reads, so monitoring, logs and metrics work (E-017); for the other CLIs, read verbs only | Hard for what goes through it |
 | 3. Hooks | `hooks/guard-bash.sh` blocks cloud CLIs, cloud management URLs and Az write cmdlets outside the wrapper | Guardrail |
 | 4. Instructions | This rule | Soft |
 
@@ -41,7 +41,7 @@ credentials, tokens, SAS, connection strings or publishing profiles, even when i
 # Boundary
 
 Without a separate reader account, the login the user did themselves is the grant: the wrapper reads
-(show, list, get, query, logs) with it and needs no further step (C-015). The agent still never logs in,
+(show, list, get, query, logs) with it and needs no further step (E-015). The agent still never logs in,
 switches accounts or sets the config directory (`guard-bash.sh` blocks it). Layer 1 then no longer
 guarantees read-only, so the wrapper's verb and secret checks alone carry it.
 

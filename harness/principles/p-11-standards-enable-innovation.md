@@ -26,7 +26,7 @@ instruction specifies how to carry it out. Keep authority, exceptions and eviden
 inferred repository conventions before making them authoritative.
 
 This harness is product-agnostic. Project-specific instructions remain in their projects; useful
-underlying principles and examples may strengthen general guidance and cases after review. A source's
+underlying principles and examples may strengthen general guidance and examples after review. A source's
 choice of product, platform or project architecture is not a harness requirement.
 
 Use **n-1** for framework currency. DEL.2 defines the supported window as the current stable release or

@@ -1,4 +1,4 @@
-# Names that make a case project-specific. bundle.py rejects a case that contains one (whole words, any case).
+# Names that make an example project-specific. bundle.py rejects an example that contains one (whole words, any example).
 # Add customers, partners, projects and internal system names; a repo may add its own with --terms.
 NCJ
 Telindus

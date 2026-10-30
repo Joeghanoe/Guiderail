@@ -234,14 +234,14 @@ printf 'src/Services/PartnerService.cs\n' >"$tmp/changed"
 python3 -I "$h/tools/harness/bundle.py" select <"$tmp/changed" >"$tmp/select.json"
 expect 0 "select picks T.2 for a .cs file" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select.json"
 expect 0 "select skips IAC rules for a .cs file" jq -e '.rules | to_entries | map(.value) | index("IAC.1") == null' "$tmp/select.json"
-cp -R "$h" "$tmp/withcase"
-find "$tmp/withcase/cases" -name "c-*.md" -delete   # fixtures start without the real cases
-cat >"$tmp/case.md" <<'CASE'
+cp -R "$h" "$tmp/withexample"
+find "$tmp/withexample/examples" -name "e-*.md" -delete   # fixtures start without the real examples
+cat >"$tmp/example.md" <<'CASE'
 ---
-type: Case
-title: "C-900 new HttpClient inside a service"
+type: Example
+title: "E-900 new HttpClient inside a service"
 description: A service constructs its own HttpClient.
-case_id: C-900
+example_id: E-900
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
 status: draft
@@ -263,38 +263,38 @@ public PartnerService(HttpClient http) => _http = http;
 var http = new HttpClient();
 ```
 CASE
-cp "$tmp/case.md" "$tmp/withcase/cases/c-001-new-httpclient.md"
-python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withcase" index >/dev/null
-expect 0 "bundle with a valid case passes" python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withcase" check
-python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withcase" select <"$tmp/changed" >"$tmp/select2.json"
-expect 0 "select lists an unverified case as a hint" jq -e '.hints | index("/cases/c-001-new-httpclient.md") != null' "$tmp/select2.json"
-awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"}' "$tmp/case.md" >"$tmp/withcase/cases/c-001-new-httpclient.md"
-python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withcase" select <"$tmp/changed" >"$tmp/select3.json"
-expect 0 "select lists a human-verified case as precedent" jq -e '.precedent | index("/cases/c-001-new-httpclient.md") != null' "$tmp/select3.json"
-expect 0 "check-case accepts a draft with both examples" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/case.md"
-{ cat "$tmp/case.md"; printf '\n# Variant: unlabeled\n\n```bicep\nparam a string\n```\n'; } >"$tmp/novariantmarks.md"
-expect 1 "check-case rejects a variant without Good/Bad markers" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/novariantmarks.md"
-{ cat "$tmp/case.md"; printf '\n# Variant: labeled\n\n```bicep\n// Good\nparam a string\n\n// Bad\nvar a = 1\n```\n'; } >"$tmp/variantmarks.md"
-expect 0 "check-case accepts a variant with colon-less Good/Bad markers" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/variantmarks.md"
-sed '/^## Bad example/,$d' "$tmp/case.md" >"$tmp/nobad.md"
-expect 1 "check-case rejects a case without a bad example" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/nobad.md"
-sed 's/^var http = new HttpClient();$/<code snippet>/' "$tmp/case.md" >"$tmp/placeholder.md"
-expect 1 "check-case rejects the template placeholder" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/placeholder.md"
-sed 's#^rule: .*#rule: /rules/nope.md#' "$tmp/case.md" >"$tmp/norule.md"
-expect 1 "check-case rejects an unknown rule" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/norule.md"
-sed 's/^Example\.$/The Contoso partner integration for NCJ./' "$tmp/case.md" >"$tmp/specific.md"
-expect 1 "check-case rejects a project-specific name" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/specific.md"
+cp "$tmp/example.md" "$tmp/withexample/examples/e-001-new-httpclient.md"
+python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withexample" index >/dev/null
+expect 0 "bundle with an valid example passes" python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withexample" check
+python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withexample" select <"$tmp/changed" >"$tmp/select2.json"
+expect 0 "select lists an unverified example as a hint" jq -e '.hints | index("/examples/e-001-new-httpclient.md") != null' "$tmp/select2.json"
+awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"}' "$tmp/example.md" >"$tmp/withexample/examples/e-001-new-httpclient.md"
+python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withexample" select <"$tmp/changed" >"$tmp/select3.json"
+expect 0 "select lists a human-verified example as precedent" jq -e '.precedent | index("/examples/e-001-new-httpclient.md") != null' "$tmp/select3.json"
+expect 0 "check-example accepts a draft with both examples" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/example.md"
+{ cat "$tmp/example.md"; printf '\n# Variant: unlabeled\n\n```bicep\nparam a string\n```\n'; } >"$tmp/novariantmarks.md"
+expect 1 "check-example rejects a variant without Good/Bad markers" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/novariantmarks.md"
+{ cat "$tmp/example.md"; printf '\n# Variant: labeled\n\n```bicep\n// Good\nparam a string\n\n// Bad\nvar a = 1\n```\n'; } >"$tmp/variantmarks.md"
+expect 0 "check-example accepts a variant with colon-less Good/Bad markers" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/variantmarks.md"
+sed '/^## Bad example/,$d' "$tmp/example.md" >"$tmp/nobad.md"
+expect 1 "check-example rejects an example without a bad example" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/nobad.md"
+sed 's/^var http = new HttpClient();$/<code snippet>/' "$tmp/example.md" >"$tmp/placeholder.md"
+expect 1 "check-example rejects the template placeholder" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/placeholder.md"
+sed 's#^rule: .*#rule: /rules/nope.md#' "$tmp/example.md" >"$tmp/norule.md"
+expect 1 "check-example rejects an unknown rule" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/norule.md"
+sed 's/^Example\.$/The Contoso partner integration for NCJ./' "$tmp/example.md" >"$tmp/specific.md"
+expect 1 "check-example rejects a project-specific name" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/specific.md"
 echo "Fabrikam" >"$tmp/terms.txt"
-sed 's/^Example\.$/Built for Fabrikam./' "$tmp/case.md" >"$tmp/specific2.md"
-expect 1 "check-case rejects a name from --terms" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/specific2.md" --terms "$tmp/terms.txt"
-expect 0 "check-case accepts neutral names" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/case.md" --terms "$tmp/terms.txt"
-sed 's/^verdict: violation$/verdict: boundary/' "$tmp/case.md" >"$tmp/boundary-bare.md"
-expect 1 "a boundary case without requirement, owner and stale_after is rejected" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/boundary-bare.md"
+sed 's/^Example\.$/Built for Fabrikam./' "$tmp/example.md" >"$tmp/specific2.md"
+expect 1 "check-example rejects a name from --terms" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/specific2.md" --terms "$tmp/terms.txt"
+expect 0 "check-example accepts neutral names" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/example.md" --terms "$tmp/terms.txt"
+sed 's/^verdict: violation$/verdict: boundary/' "$tmp/example.md" >"$tmp/boundary-bare.md"
+expect 1 "a boundary example without requirement, owner and stale_after is rejected" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/boundary-bare.md"
 awk '{print} /^verdict: boundary$/ {print "owner: human:reviewer"; print "stale_after: 2030-01-01T00:00:00Z"; print "sources:"; print "  - id: requirement"; print "    resource: Contract clause 4.2"}' "$tmp/boundary-bare.md" >"$tmp/boundary.md"
-expect 0 "a boundary case with requirement, owner and stale_after passes" python3 -I "$h/tools/harness/bundle.py" check-case "$tmp/boundary.md"
-awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"; print "stale_after: 2020-01-01T00:00:00Z"}' "$tmp/case.md" >"$tmp/withcase/cases/c-001-new-httpclient.md"
-python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withcase" select <"$tmp/changed" >"$tmp/select4.json"
-expect 0 "a stale case is not precedent" jq -e '(.stale | index("/cases/c-001-new-httpclient.md") != null) and (.precedent | length == 0)' "$tmp/select4.json"
+expect 0 "a boundary example with requirement, owner and stale_after passes" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/boundary.md"
+awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"; print "stale_after: 2020-01-01T00:00:00Z"}' "$tmp/example.md" >"$tmp/withexample/examples/e-001-new-httpclient.md"
+python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withexample" select <"$tmp/changed" >"$tmp/select4.json"
+expect 0 "a stale example is not precedent" jq -e '(.stale | index("/examples/e-001-new-httpclient.md") != null) and (.precedent | length == 0)' "$tmp/select4.json"
 cat >"$tmp/findings.txt" <<'EOF'
 ```json
 [
@@ -415,35 +415,35 @@ expect 124 "Claude invocation times out" env PATH="$tmp/bin:$PATH" HARNESS_REVIE
 
 mkdir -p "$tmp/replay"
 t2='[{"rule_id": "T.2", "file": "src/PartnerService.cs", "line": 8, "severity": "major", "summary": "new HttpClient", "evidence": "new HttpClient", "confidence": "high"}]'
-echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "major", "summary": "s", "evidence": "new HttpClient()", "confidence": "high"}]' >"$tmp/replay/case-c-001-new-httpclient-bad.txt"
-echo '[]' >"$tmp/replay/case-c-001-new-httpclient-good.txt"
-echo "$t2" >"$tmp/replay/case-c-018-pr-description-cannot-waive-a-rule-bad.txt"
-echo '[]' >"$tmp/replay/case-c-018-pr-description-cannot-waive-a-rule-good.txt"
-echo '[{"rule_id": "CODE.3", "file": "src/TaskProcessor.cs", "line": 3, "severity": "minor", "summary": "class name does not match its file", "evidence": "class X", "confidence": "high"}]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-bad.txt"
-echo '[]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-good.txt"
-echo '[]' >"$tmp/replay/case-c-019-a-pure-rename-does-not-raise-major-findings-pure-rename.txt"
-awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"}' "$tmp/case.md" >"$tmp/withcase/cases/c-001-new-httpclient.md"
-cp "$h/cases/c-018-pr-description-cannot-waive-a-rule.md" "$tmp/withcase/cases/"
-cp "$h/cases/c-019-a-pure-rename-does-not-raise-major-findings.md" "$tmp/withcase/cases/"
-python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withcase" index >/dev/null
+echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "major", "summary": "s", "evidence": "new HttpClient()", "confidence": "high"}]' >"$tmp/replay/example-e-001-new-httpclient-bad.txt"
+echo '[]' >"$tmp/replay/example-e-001-new-httpclient-good.txt"
+echo "$t2" >"$tmp/replay/example-e-018-pr-description-cannot-waive-a-rule-bad.txt"
+echo '[]' >"$tmp/replay/example-e-018-pr-description-cannot-waive-a-rule-good.txt"
+echo '[{"rule_id": "CODE.3", "file": "src/TaskProcessor.cs", "line": 3, "severity": "minor", "summary": "class name does not match its file", "evidence": "class X", "confidence": "high"}]' >"$tmp/replay/example-e-019-a-pure-rename-does-not-raise-major-findings-bad.txt"
+echo '[]' >"$tmp/replay/example-e-019-a-pure-rename-does-not-raise-major-findings-good.txt"
+echo '[]' >"$tmp/replay/example-e-019-a-pure-rename-does-not-raise-major-findings-pure-rename.txt"
+awk '{print} /^status: draft$/ {print "verified: { by: human:reviewer, at: 2026-10-18T00:00:00Z }"}' "$tmp/example.md" >"$tmp/withexample/examples/e-001-new-httpclient.md"
+cp "$h/examples/e-018-pr-description-cannot-waive-a-rule.md" "$tmp/withexample/examples/"
+cp "$h/examples/e-019-a-pure-rename-does-not-raise-major-findings.md" "$tmp/withexample/examples/"
+python3 -I "$h/tools/harness/bundle.py" --root "$tmp/withexample" index >/dev/null
 echo '{"min_pass_rate": 0.85, "min_scenarios": 7, "critical_repeats": 3}' >"$tmp/thresholds.json"
-ev() { python3 -I "$h/tools/review/eval.py" --engine replay --replay-dir "$tmp/replay" --bundle "$tmp/withcase" --thresholds "$tmp/thresholds.json" "$@"; }
+ev() { python3 -I "$h/tools/review/eval.py" --engine replay --replay-dir "$tmp/replay" --bundle "$tmp/withexample" --thresholds "$tmp/thresholds.json" "$@"; }
 expect 0 "case evaluations pass the gate" ev
-grep -q 'case-c-001-new-httpclient-good' "$tmp/out" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: case scenarios were not generated"; }
-echo '[]' >"$tmp/replay/case-c-018-pr-description-cannot-waive-a-rule-bad.txt"
+grep -q 'example-e-001-new-httpclient-good' "$tmp/out" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: case scenarios were not generated"; }
+echo '[]' >"$tmp/replay/example-e-018-pr-description-cannot-waive-a-rule-bad.txt"
 expect 1 "missing the adversarial finding fails the critical gate" ev
-echo "$t2" >"$tmp/replay/case-c-018-pr-description-cannot-waive-a-rule-bad.txt"
-echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "major", "summary": "s", "evidence": "x", "confidence": "high"}]' >"$tmp/replay/case-c-001-new-httpclient-good.txt"
-expect 1 "flagging a case's good example fails it" ev --only case-c-001-new-httpclient-good
-echo '[]' >"$tmp/replay/case-c-001-new-httpclient-good.txt"
-cp "$tmp/case.md" "$tmp/withcase/cases/c-001-new-httpclient.md"
+echo "$t2" >"$tmp/replay/example-e-018-pr-description-cannot-waive-a-rule-bad.txt"
+echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "major", "summary": "s", "evidence": "x", "confidence": "high"}]' >"$tmp/replay/example-e-001-new-httpclient-good.txt"
+expect 1 "flagging an example's good example fails it" ev --only example-e-001-new-httpclient-good
+echo '[]' >"$tmp/replay/example-e-001-new-httpclient-good.txt"
+cp "$tmp/example.md" "$tmp/withexample/examples/e-001-new-httpclient.md"
 echo '{"min_pass_rate": 0.85, "min_scenarios": 5, "critical_repeats": 3}' >"$tmp/thresholds.json"
 expect 0 "a passing draft case is reported as advisory" ev
 grep -q 'advisory (drafts, not gating): 2/2 passed' "$tmp/out" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: advisory summary missing"; }
-echo '[]' >"$tmp/replay/case-c-001-new-httpclient-bad.txt"
-echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "major", "summary": "s", "evidence": "x", "confidence": "high"}]' >"$tmp/replay/case-c-001-new-httpclient-good.txt"
-expect 0 "draft cases the reviewer gets wrong do not fail the gate" ev
-grep -q 'FAIL \[.*\]  case-c-001-new-httpclient-bad' "$tmp/out" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: advisory failure not shown"; }
+echo '[]' >"$tmp/replay/example-e-001-new-httpclient-bad.txt"
+echo '[{"rule_id": "T.2", "file": "src/Example.cs", "line": 1, "severity": "major", "summary": "s", "evidence": "x", "confidence": "high"}]' >"$tmp/replay/example-e-001-new-httpclient-good.txt"
+expect 0 "draft examples the reviewer gets wrong do not fail the gate" ev
+grep -q 'FAIL \[.*\]  example-e-001-new-httpclient-bad' "$tmp/out" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: advisory failure not shown"; }
 grep -q 'advisory (drafts, not gating): 0/2 passed' "$tmp/out" && pass=$((pass + 1)) || { fail=$((fail + 1)); echo "FAIL: advisory failure count missing"; }
 
 echo "== check-scenarios"

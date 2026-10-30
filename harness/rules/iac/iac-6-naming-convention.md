@@ -1,7 +1,7 @@
 ---
 type: Rule
 title: "IAC.6 New resources follow the TeamValue naming convention, or the repo's own"
-description: New resource names follow {workload}[-{component}]-{env}-{region}-{type} in kebab-case, unless the repo already has an established convention, which then wins.
+description: New resource names follow {workload}[-{component}]-{env}-{region}-{type} in kebab-example, unless the repo already has an established convention, which then wins.
 rule_id: IAC.6
 principle: /principles/p-11-standards-enable-innovation.md
 tags: [iac, naming]
@@ -29,7 +29,7 @@ it under "Naming". If the repo has no convention yet, use TeamValue's:
 | `region` | short region code | `we` (West Europe), `ne` (North Europe), `de` (T Cloud eu-de) |
 | `type` | Cloud Adoption Framework abbreviation | `rg`, `log`, `appi`, `kv`, `func`, `st`, `vnet`, `snet` |
 
-- Lowercase, kebab-case, the parts in this order.
+- Lowercase, kebab-example, the parts in this order.
 - Resource types that forbid hyphens or limit length (storage accounts, some Key Vaults) keep the same parts in
   the same order without hyphens, shortened from the workload side: `ordersapidevwest`. The environment and the
   type are never dropped.

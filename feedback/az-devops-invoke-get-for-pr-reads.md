@@ -1,8 +1,8 @@
 ---
-type: Case
+type: Example
 title: "C-NNN Cloud read access should not depend on a special Azure CLI config directory"
 description: Azure read commands use the user's current CLI login, while command-level wrapper rules decide what is allowed.
-case_id: C-NNN
+example_id: C-NNN
 rule: /rules/cloud/cld-1-agents-read-cloud-state.md
 verdict: open
 status: draft
@@ -14,7 +14,7 @@ sources:
   - id: other-wrapper
     resource: harness/tools/azure-devops/ado-common.sh (conditionally sets AZURE_CONFIG_DIR from HARNESS_AZURE_CONFIG_DIR)
   - id: precedent
-    resource: harness/cases/c-015-user-granted-current-login.md (the user's own login is accepted when no separate reader is configured)
+    resource: harness/examples/e-015-user-granted-current-login.md (the user's own login is accepted when no separate reader is configured)
 ---
 
 # Situation

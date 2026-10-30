@@ -36,7 +36,7 @@ command a human can run, `4` nothing to read (nothing listening, engine not runn
   private keys, cookies, email addresses and the `Env` block of `docker inspect`. It cannot catch a secret with no
   telltale key or shape ("the password was 'x'"), free-text personal data (names, IP addresses, phone numbers,
   national ids), or a value split over lines. It also over-masks (`secretary=Jane`). Read before you paste output into
-  a commit, a case, an ADR or a prompt; quote the one line you need (see diagnose-pipeline-failure).
+  a commit, an example, an ADR or a prompt; quote the one line you need (see diagnose-pipeline-failure).
 - **Localhost is not safe by definition.** A local app can proxy to a deployed environment and a local port can be a
   tunnel, so a response can contain real data. `--allow-remote` is for the user to ask for in chat; never add it
   yourself. Even then cloud, DevOps and metadata hosts are refused, and redirects are shown, not followed.

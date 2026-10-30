@@ -27,29 +27,29 @@ class EvaluationTests(unittest.TestCase):
         scenarios = {
             name: spec for name, spec, *_ in evaluation.from_cases(ROOT / "harness")
         }
-        self.assertTrue(scenarios["case-c-001-services-get-their-http-client-injected-bad"]["mask_case"])
-        boundary = next(spec for name, spec in scenarios.items() if name.startswith("case-c-017-"))
-        self.assertFalse(boundary["mask_case"])
+        self.assertTrue(scenarios["example-e-001-services-get-their-http-client-injected-bad"]["mask_example"])
+        boundary = next(spec for name, spec in scenarios.items() if name.startswith("example-e-017-"))
+        self.assertFalse(boundary["mask_example"])
 
     def test_behavior_cases_replace_hand_written_scenarios(self):
         scenarios = {
             name: spec for name, spec, *_ in evaluation.from_cases(ROOT / "harness")
         }
-        self.assertIn("case-c-018-pr-description-cannot-waive-a-rule-bad", scenarios)
-        self.assertIn("case-c-019-a-pure-rename-does-not-raise-major-findings-pure-rename", scenarios)
-        self.assertTrue(scenarios["case-c-018-pr-description-cannot-waive-a-rule-bad"]["critical"])
-        rename_bad = scenarios["case-c-019-a-pure-rename-does-not-raise-major-findings-bad"]
+        self.assertIn("example-e-018-pr-description-cannot-waive-a-rule-bad", scenarios)
+        self.assertIn("example-e-019-a-pure-rename-does-not-raise-major-findings-pure-rename", scenarios)
+        self.assertTrue(scenarios["example-e-018-pr-description-cannot-waive-a-rule-bad"]["critical"])
+        rename_bad = scenarios["example-e-019-a-pure-rename-does-not-raise-major-findings-bad"]
         self.assertEqual(rename_bad["expect"]["must_find"][0]["rule_id"], "CODE.3")
 
     def test_eval_context_is_seeded_before_change_and_rename_removes_old_path(self):
         scenarios = {name: scenario for name, *scenario in evaluation.from_cases(ROOT / "harness")}
         with tempfile.TemporaryDirectory() as temporary:
             repo = pathlib.Path(temporary)
-            _, before, after, _ = scenarios["case-c-007-remove-what-is-not-used-good"]
+            _, before, after, _ = scenarios["example-e-007-remove-what-is-not-used-good"]
             before(repo)
             self.assertTrue((repo / "src/OrderHandler.cs").is_file())
 
-            _, before, after, _ = scenarios["case-c-019-a-pure-rename-does-not-raise-major-findings-pure-rename"]
+            _, before, after, _ = scenarios["example-e-019-a-pure-rename-does-not-raise-major-findings-pure-rename"]
             before(repo)
             after(repo)
             self.assertFalse((repo / "src/TaskProcessorOld.cs").exists())
@@ -59,10 +59,10 @@ class EvaluationTests(unittest.TestCase):
         scenarios = {
             name: spec for name, spec, *_ in evaluation.from_cases(ROOT / "harness")
         }
-        self.assertIn("case-c-003-storage-with-managed-identity-variant-1-1-good", scenarios)
-        self.assertIn("case-c-003-storage-with-managed-identity-variant-1-1-bad", scenarios)
+        self.assertIn("example-e-003-storage-with-managed-identity-variant-1-1-good", scenarios)
+        self.assertIn("example-e-003-storage-with-managed-identity-variant-1-1-bad", scenarios)
         self.assertEqual(
-            scenarios["case-c-003-storage-with-managed-identity-variant-1-1-bad"]["expect"]["must_find"][0]["file"],
+            scenarios["example-e-003-storage-with-managed-identity-variant-1-1-bad"]["expect"]["must_find"][0]["file"],
             "src/Example.bicep",
         )
 
@@ -78,35 +78,35 @@ class EvaluationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             source = pathlib.Path(temporary) / "bundle"
             destination = pathlib.Path(temporary) / "review-bundle"
-            (source / "cases").mkdir(parents=True)
-            (source / "cases" / "tested.md").write_text("tested", encoding="utf-8")
-            (source / "cases" / "other.md").write_text("other", encoding="utf-8")
-            (source / "cases" / "index.md").write_text("* tested case\n", encoding="utf-8")
+            (source / "examples").mkdir(parents=True)
+            (source / "examples" / "tested.md").write_text("tested", encoding="utf-8")
+            (source / "examples" / "other.md").write_text("other", encoding="utf-8")
+            (source / "examples" / "index.md").write_text("* tested case\n", encoding="utf-8")
             evaluation.copy_evaluation_bundle(
-                source, destination, {"mask_case": True, "case_path": "cases/tested.md"}
+                source, destination, {"mask_example": True, "example_path": "examples/tested.md"}
             )
-            self.assertFalse((destination / "cases" / "tested.md").exists())
-            self.assertTrue((destination / "cases" / "other.md").is_file())
-            self.assertNotIn("tested.md", (destination / "cases" / "index.md").read_text(encoding="utf-8"))
+            self.assertFalse((destination / "examples" / "tested.md").exists())
+            self.assertTrue((destination / "examples" / "other.md").is_file())
+            self.assertNotIn("tested.md", (destination / "examples" / "index.md").read_text(encoding="utf-8"))
 
     def test_boundary_copy_keeps_precedent(self):
         with tempfile.TemporaryDirectory() as temporary:
             source = pathlib.Path(temporary) / "bundle"
             destination = pathlib.Path(temporary) / "review-bundle"
-            (source / "cases").mkdir(parents=True)
-            (source / "cases" / "boundary.md").write_text("boundary", encoding="utf-8")
-            evaluation.copy_evaluation_bundle(source, destination, {"mask_case": False})
-            self.assertTrue((destination / "cases" / "boundary.md").is_file())
+            (source / "examples").mkdir(parents=True)
+            (source / "examples" / "boundary.md").write_text("boundary", encoding="utf-8")
+            evaluation.copy_evaluation_bundle(source, destination, {"mask_example": False})
+            self.assertTrue((destination / "examples" / "boundary.md").is_file())
 
     def test_unverified_cases_are_advisory_and_behavior_cases_gate(self):
         specs = {name: spec for name, spec, *_ in evaluation.from_cases(ROOT / "harness")}
-        self.assertFalse(specs["case-c-019-a-pure-rename-does-not-raise-major-findings-pure-rename"]["advisory"])
-        self.assertFalse(specs["case-c-018-pr-description-cannot-waive-a-rule-bad"]["advisory"])
+        self.assertFalse(specs["example-e-019-a-pure-rename-does-not-raise-major-findings-pure-rename"]["advisory"])
+        self.assertFalse(specs["example-e-018-pr-description-cannot-waive-a-rule-bad"]["advisory"])
         self.assertTrue(all(isinstance(spec["advisory"], bool) for spec in specs.values()))
         verified = {path.stem for path, meta, _ in evaluation.bundle.concepts(ROOT / "harness")
                     if meta and evaluation.bundle.human_verified(meta)}
         for name, spec in specs.items():
-            if any(name.startswith(f"case-{stem}-") for stem in verified):
+            if any(name.startswith(f"example-{stem}-") for stem in verified):
                 self.assertFalse(spec["advisory"], name)
 
     def test_every_generated_spec_can_be_scored(self):
@@ -158,21 +158,21 @@ class EvaluationTests(unittest.TestCase):
 
     def test_variant_labels_work_with_and_without_a_colon(self):
         names = [name for name, *_ in evaluation.from_cases(ROOT / "harness")]
-        self.assertIn("case-c-006-environment-values-in-one-place-variant-1-1-good", names)
-        self.assertIn("case-c-006-environment-values-in-one-place-variant-1-1-bad", names)
+        self.assertIn("example-e-006-environment-values-in-one-place-variant-1-1-good", names)
+        self.assertIn("example-e-006-environment-values-in-one-place-variant-1-1-bad", names)
 
     def test_default_bundle_follows_the_script_location(self):
         self.assertEqual(evaluation.DEFAULT_BUNDLE, ROOT / "harness")
-        self.assertTrue((evaluation.DEFAULT_BUNDLE / "cases").is_dir())
+        self.assertTrue((evaluation.DEFAULT_BUNDLE / "examples").is_dir())
 
     def test_every_case_with_a_verdict_and_examples_yields_scenarios(self):
         names = [name for name, *_ in evaluation.from_cases(ROOT / "harness")]
         for path, meta, body in evaluation.bundle.concepts(ROOT / "harness"):
-            if not meta or evaluation.bundle.unquote(meta.get("type", "")) != "Case":
+            if not meta or evaluation.bundle.unquote(meta.get("type", "")) != "Example":
                 continue
             verdict = evaluation.bundle.unquote(meta.get("verdict", ""))
             if "```" in body and verdict in ("violation", "compliant", "boundary"):
-                self.assertTrue(any(n.startswith(f"case-{path.stem}-") for n in names), f"{path.stem} has no scenario")
+                self.assertTrue(any(n.startswith(f"example-{path.stem}-") for n in names), f"{path.stem} has no scenario")
 
     def test_claude_runner_and_evaluator_share_one_environment_allowlist(self):
         spec = importlib.util.spec_from_file_location(
@@ -309,13 +309,13 @@ class EvaluationTests(unittest.TestCase):
             subprocess.run(["git", "-C", str(repository), "commit", "-qm", "initial"], check=True,
                            capture_output=True, text=True)
 
-            draft = repository / "feedback" / "c-900-test-draft.md"
+            draft = repository / "feedback" / "e-900-test-draft.md"
             draft.write_text(
                 "---\n"
-                "type: Case\n"
-                "title: C-900 test draft\n"
+                "type: Example\n"
+                "title: E-900 test draft\n"
                 "description: A service receives its HTTP client.\n"
-                "case_id: C-900\n"
+                "example_id: E-900\n"
                 "rule: /rules/testing/t-2-services-do-not-create-io.md\n"
                 "verdict: violation\n"
                 "status: draft\n"
@@ -341,10 +341,10 @@ class EvaluationTests(unittest.TestCase):
                                     capture_output=True, text=True, check=True).stdout.strip()
             status = subprocess.run(["git", "-C", str(worktree), "status", "--short"],
                                     capture_output=True, text=True, check=True).stdout
-            self.assertTrue(branch.startswith("feedback/c-900-"))
-            self.assertIn("A  harness/cases/c-900-test-draft.md", status)
-            self.assertIn("M  harness/cases/index.md", status)
-            self.assertTrue((worktree / "harness" / "cases" / draft.name).is_file())
+            self.assertTrue(branch.startswith("feedback/e-900-"))
+            self.assertIn("A  harness/examples/e-900-test-draft.md", status)
+            self.assertIn("M  harness/examples/index.md", status)
+            self.assertTrue((worktree / "harness" / "examples" / draft.name).is_file())
 
 
 if __name__ == "__main__":

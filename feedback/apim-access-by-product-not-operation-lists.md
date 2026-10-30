@@ -1,8 +1,8 @@
 ---
-type: Case
+type: Example
 title: "C-NNN Express subscription access through API products, not operation-name lists"
 description: A shared policy duplicated product membership by branching on subscription and operation identifiers.
-case_id: C-NNN
+example_id: C-NNN
 rule: /rules/code/code-6-use-what-the-platform-does.md
 verdict: violation
 status: draft

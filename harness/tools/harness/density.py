@@ -9,7 +9,7 @@ body - and ranks the result as suggestions.
 
 It cannot tell whether a sentence carries value. No signal here reads meaning, so a passage can look
 padded by every signal and still be the one sentence that stops a reviewer over-applying a rule. Only
-`tools/review/eval.py` can show that behaviour survived a cut, and only for behaviour the cases cover.
+`tools/review/eval.py` can show that behaviour survived a cut, and only for behaviour the examples cover.
 Decide with the evals; use this to decide where to look first. See /playbooks/compress-harness-prose.md.
 
 Commands:
@@ -39,7 +39,7 @@ sys.path.insert(0, str(HERE))
 import bundle  # noqa: E402
 
 # Folders whose Markdown an agent loads as instructions. Everything else under the bundle is machine input.
-PROSE_DIRS = ("rules", "playbooks", "gates", "principles", "cases")
+PROSE_DIRS = ("rules", "playbooks", "gates", "principles", "examples")
 # Loaded before an agent opens anything, so their bytes are paid on every task (see bundle.py budget).
 ALWAYS_LOADED = ("/AGENTS.base.md", "/index.md")
 SHINGLE = 8                 # words; shorter than this matches ordinary English, longer misses restatements
@@ -55,7 +55,7 @@ RISK_BLOCKER = 1            # the rule is a blocker: a reviewer that stops apply
 RISK_NO_DEFINITION = 1      # copies with no definition site: someone must choose the one home first
 
 REFUSALS = (
-    ("cases/", "a case is the eval instrument; compressing one moves the measurement, not the cost"),
+    ("examples/", "an example is the eval instrument; compressing one moves the measurement, not the cost"),
     ("principles/", "a principle is a pointer to its external authority, not harness prose"),
 )
 GENERATED_REFUSAL = "written by `bundle.py index` from the frontmatter it lists; it shrinks when they do"
@@ -99,8 +99,8 @@ LIMITS = (
     "No signal here measures meaning. A passage can be padded by every signal and still be the sentence "
     "that keeps a reviewer from over-applying a rule.",
     "Only tools/review/eval.py can show that reviewer behaviour survived a cut, and only for the "
-    "behaviour the cases cover. A flat pass rate licenses a cut; it does not prove the cut was free.",
-    "Text no case exercises is the most dangerous text to compress, not the safest: nothing reports its "
+    "behaviour the examples cover. A flat pass rate licenses a cut; it does not prove the cut was free.",
+    "Text no example exercises is the most dangerous text to compress, not the safest: nothing reports its "
     "loss. Candidates in an uncovered file carry a risk penalty for that reason.",
     "A duplicate is the exception: de-duplicating keeps the instruction at its definition site, so its "
     "safety does not rest on eval coverage.",

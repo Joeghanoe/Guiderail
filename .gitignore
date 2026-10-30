@@ -368,9 +368,9 @@ feedback/mined/
 
 # Golden Path runtime state: lives under ~/.golden-path-harness (GOLDEN_PATH_HOME), never in the checkout
 .golden-path-harness/
-/evaluations/**/runs/
-/evaluations/**/frozen/
-/evaluations/**/results/
-/evaluations/**/.private/
+/benchmarks/**/runs/
+/benchmarks/**/frozen/
+/benchmarks/**/results/
+/benchmarks/**/.private/
 workspaces/
 *.credentials

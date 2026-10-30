@@ -1,8 +1,8 @@
 ---
-type: Case
+type: Example
 title: "C-NNN Incident triage grounded in live evidence and the support desk's solution articles"
 description: Idea only - move support-desk triage up the automation ladder by grounding every triage in read-only evidence plus the existing knowledge base, measured by an eval, with humans deciding.
-case_id: C-NNN
+example_id: C-NNN
 rule: /rules/harness/h-2-repeated-work-moves-up.md
 verdict: automation-candidate
 status: draft
@@ -28,7 +28,7 @@ causes and workarounds as solution articles in its ITSM tool.[^requirement]
 # Why (verdict)
 
 `automation-candidate` under H.2 (P6, P12, P13): triage is repeated work with a stable shape, and the
-harness review loop (cases as labelled data, `eval.py` as held-out evaluation, thresholds as gate,
+harness review loop (examples as labelled data, `eval.py` as held-out evaluation, thresholds as gate,
 feedback as new labels) can be reused for it rather than training a model.
 
 The idea, in steps up the ladder:
@@ -40,7 +40,7 @@ The idea, in steps up the ladder:
    - *Contradicted* - an article seems to apply but the evidence does not fit it (possibly stale).
    - *Not covered* - no article fits; the agent says so and drafts an article for a human to publish.
 2. **Measurable groundedness.** A deterministic check confirms that cited article IDs exist and quoted
-   evidence appears in the saved outputs. Past incidents, anonymized (SEC.2), become replayable eval cases
+   evidence appears in the saved outputs. Past incidents, anonymized (SEC.2), become replayable eval examples
    scored on class, root cause and groundedness.
 3. **Auto-drafted triage (later).** An alert or new ticket starts the playbook headlessly and posts a draft
    as a work note. A human accepts or corrects it.
@@ -55,7 +55,7 @@ Boundaries that hold throughout:
 - The agent never edits or publishes articles, closes tickets, or changes an environment (CLD.1, CLD.2).
 - Read access to the ITSM tool goes through a read-only harness wrapper limited to solution articles; it
   refuses tickets, requesters and agents (SEC.2). Changes to the harness go through a PR (H.1).
-- Articles stay in the ITSM tool; harness cases keep only project-agnostic patterns.
+- Articles stay in the ITSM tool; harness examples keep only project-agnostic patterns.
 
 # Open questions for a human
 

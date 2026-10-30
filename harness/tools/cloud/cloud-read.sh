@@ -9,7 +9,7 @@
 #                    Without HARNESS_AZURE_CONFIG_DIR, az uses the login the user did themselves; then only
 #                    layer 2 limits it.
 #   Inputs:          <az|terraform|tofu|kubectl|hcloud> <args>. az: anything except state-changing verbs and
-#                    secret-returning reads (C-017). The other CLIs: an allowlist of read verbs.
+#                    secret-returning reads (E-017). The other CLIs: an allowlist of read verbs.
 #   Results:         the CLI's output and exit code; exit 3 with a reason when refused; exit 4 when az is not
 #                    logged in (the agent asks the user to run `az login`).
 #   Side effects:    none intended. Layer 1 (the identity) is what guarantees it.
@@ -58,7 +58,7 @@ case "$cli" in
     else
       echo "cloud-read: warning: using personal az login (no HARNESS_AZURE_CONFIG_DIR)" >&2
     fi
-    # Allow by default, deny what changes state (C-017). az has hundreds of command groups; listing the read
+    # Allow by default, deny what changes state (E-017). az has hundreds of command groups; listing the read
     # verbs of each (monitor, apim, policy, ...) kept refusing harmless reads. The words are checked wherever
     # they stand in the arguments, so `az --subscription x group delete` cannot slip past. Without a separate
     # reader, az uses the login the user did themselves, so layer 1 does not guarantee read-only: this denylist

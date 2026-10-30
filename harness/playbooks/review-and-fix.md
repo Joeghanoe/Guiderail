@@ -31,7 +31,7 @@ local branch, before the PR, so the human reviews fixed code and open questions 
      names it, say that Sonar was not checked rather than guess;
    - `~/.golden-path-harness/harness/tools/sonar/sonar-read.sh qualitygates/project_status projectKey=<key> pullRequest=<pr>` and
      `issues/search componentKeys=<key> pullRequest=<pr> resolved=false impactSoftwareQualities=RELIABILITY,SECURITY ps=500`
-     (not `types=BUG`; see C-016). Add `hotspots/search` for security hotspots;
+     (not `types=BUG`; see E-016). Add `hotspots/search` for security hotspots;
    - keep only issues on files the diff touches. Each becomes a finding in the review's JSON shape, with the rule
      the Sonar issue maps to (`CODE.*`, `SEC.2`, ...), `file`, `line` and the Sonar message as `evidence`, and
      `confidence: high`. A Sonar issue with no matching harness rule is a quality note, not a finding;

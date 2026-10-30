@@ -2,7 +2,7 @@ echo "== density"
 # A synthetic bundle, so these assertions do not move when the real rules and playbooks do.
 dens="$h/tools/harness/density.py"
 db="$tmp/density"
-mkdir -p "$db/harness/rules/cloud" "$db/harness/playbooks" "$db/harness/cases" "$db/harness/gates"
+mkdir -p "$db/harness/rules/cloud" "$db/harness/playbooks" "$db/harness/examples" "$db/harness/gates"
 printf 'base instructions for every task\n' >"$db/AGENTS.base.md"
 printf -- '---\nokf_version: "0.2"\n---\n\n# Bundle\n\n* [Rules](rules/)\n' >"$db/harness/index.md"
 printf '# Rules\n\n* [CLD.9](cld-9-shared-pipelines.md) - generated listing\n' >"$db/harness/rules/index.md"
@@ -60,12 +60,12 @@ The reviewer experience improves when the reasoning behind a decision is reconst
 Teams that understand the trade-offs behind a boundary tend to respect it in their own work. A culture of
 shared understanding grows from careful explanation rather than terse assertion.
 THREE
-cat >"$db/harness/cases/c-900-shared-pipeline.md" <<CASE
+cat >"$db/harness/examples/e-900-shared-pipeline.md" <<CASE
 ---
-type: Case
-title: "C-900 a shared pipeline change"
-description: A case that quotes the rule.
-case_id: C-900
+type: Example
+title: "E-900 a shared pipeline change"
+description: An example that quotes the rule.
+example_id: E-900
 rule: /rules/cloud/cld-9-shared-pipelines.md
 verdict: violation
 ---
@@ -97,7 +97,7 @@ den report --json >"$tmp/den-report.json" 2>/dev/null
 expect 0 "density report runs over a bundle" den report
 expect 0 "the repeated passage is found in every file that holds it" jq -e '
   [.duplicates[] | select(.text | test("written down as a command"))] | length == 1 and
-  (.[0].files | sort == ["/cases/c-900-shared-pipeline.md", "/playbooks/one.md", "/playbooks/two.md",
+  (.[0].files | sort == ["/examples/e-900-shared-pipeline.md", "/playbooks/one.md", "/playbooks/two.md",
    "/rules/cloud/cld-9-shared-pipelines.md"])' "$tmp/den-dup.json"
 expect 0 "the rule that defines the ID is named as the definition site" jq -e '
   [.duplicates[] | select(.text | test("written down as a command"))][0]
@@ -115,10 +115,10 @@ expect 0 "narrative prose is a candidate, and ranks behind the duplicate" jq -e 
   ([.candidates[] | select(.signal == "narrative")][0].risk > .candidates[0].risk)' "$tmp/den-cand.json"
 expect 0 "every candidate carries a byte estimate and an action" jq -e '
   all(.candidates[]; .bytes > 0 and (.action | length) > 0)' "$tmp/den-cand.json"
-expect 0 "a case is never suggested: it is the eval instrument" jq -e '
-  ([.candidates[] | select(.file | startswith("/cases/"))] | length) == 0' "$tmp/den-cand.json"
-expect 0 "the report says why a case is refused" jq -e '
-  [.files[] | select(.file == "/cases/c-900-shared-pipeline.md")][0].refused | test("eval instrument")
+expect 0 "an example is never suggested: it is the eval instrument" jq -e '
+  ([.candidates[] | select(.file | startswith("/examples/"))] | length) == 0' "$tmp/den-cand.json"
+expect 0 "the report says why an example is refused" jq -e '
+  [.files[] | select(.file == "/examples/e-900-shared-pipeline.md")][0].refused | test("eval instrument")
   ' "$tmp/den-report.json"
 expect 0 "a generated index is refused" jq -e '
   [.files[] | select(.file == "/rules/index.md")][0].refused | test("bundle.py index")' "$tmp/den-report.json"

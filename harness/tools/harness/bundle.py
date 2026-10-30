@@ -4,10 +4,10 @@
 Commands:
   index              regenerate index.md in every directory except the bundle root
   check              OKF conformance, harness conventions, and index files up to date
-  select             read changed paths on stdin, print the rules and cases that apply (JSON)
+  select             read changed paths on stdin, print the rules and examples that apply (JSON)
   findings <file>    validate a reviewer's JSON findings; print the valid ones, report the dropped ones
-  check-case <file>  validate one draft case outside the bundle (e.g. harness-feedback/x.md) against it
-  submit-feedback    prepare a local branch/worktree with a validated feedback case staged for review
+  check-example <file>  validate one draft example outside the bundle (e.g. harness-feedback/x.md) against it
+  submit-feedback    prepare a local branch/worktree with a validated feedback example staged for review
   privacy-check      fail if private feedback or raw eval artifacts are present in the checkout
   budget             fail if the always-loaded context (AGENTS.base.md, index.md) outgrew context-budget.json
 
@@ -31,7 +31,7 @@ import sys
 
 INDEX = "index.md"
 RESERVED = {INDEX, "log.md"}
-TYPES_IN_DIR = {"principles": "Principle", "rules": "Rule", "cases": "Case", "playbooks": "Playbook", "gates": "Gate"}
+TYPES_IN_DIR = {"principles": "Principle", "rules": "Rule", "examples": "Example", "playbooks": "Playbook", "gates": "Gate"}
 SEVERITIES = ["blocker", "major", "minor", "nit"]
 VERDICTS = {"violation", "compliant", "boundary", "rejected", "open", "automation-candidate"}
 CONFIDENCE = {"high", "medium", "low"}
@@ -156,7 +156,7 @@ def cmd_index(root, _args):
 
 
 def check_ids(rel, meta, kind, ids):
-    id_key = {"Principle": "principle_id", "Rule": "rule_id", "Case": "case_id"}.get(kind)
+    id_key = {"Principle": "principle_id", "Rule": "rule_id", "Example": "example_id"}.get(kind)
     if not id_key:
         return []
     cid = unquote(meta.get(id_key, ""))
@@ -198,7 +198,7 @@ def project_terms(root, extra=None):
 def check_agnostic(rel, meta, body, terms):
     text = " ".join([meta.get("title", ""), meta.get("description", ""), body])
     hits = sorted({t for t in terms if re.search(rf"(?<![\w.]){re.escape(t)}(?![\w])", text, flags=re.I)})
-    return [f"{rel}: project-specific name(s) {hits}; generalize the case"] if hits else []
+    return [f"{rel}: project-specific name(s) {hits}; generalize the example"] if hits else []
 
 
 # A "Good" / "Bad" comment starting a line in a variant code block; the colon is optional.
@@ -223,13 +223,13 @@ def check_case(rel, meta, body):
         errors.append(f"{rel}: no rule")
     if verdict == "boundary":
         if not meta.get("owner", "").startswith("human:"):
-            errors.append(f"{rel}: a boundary case needs owner: human:<id> (who accepted the deviation)")
+            errors.append(f"{rel}: a boundary example needs owner: human:<id> (who accepted the deviation)")
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T[\d:]+(Z|[+-]\d{2}:\d{2})", unquote(meta.get("stale_after", ""))):
-            errors.append(f"{rel}: a boundary case needs stale_after (ISO 8601 with offset)")
+            errors.append(f"{rel}: a boundary example needs stale_after (ISO 8601 with offset)")
         if not re.search(r"^\s*-\s*id:\s*requirement\s*$", meta["_frontmatter"], flags=re.M):
-            errors.append(f"{rel}: a boundary case needs a sources entry with id: requirement")
+            errors.append(f"{rel}: a boundary example needs a sources entry with id: requirement")
     if verdict in NEEDS_CODE:
-        errors += [f"{rel}: a {verdict} case needs a '## {kind} example' heading followed by a code block"
+        errors += [f"{rel}: a {verdict} example needs a '## {kind} example' heading followed by a code block"
                    for kind in ("Good", "Bad") if not re.search(EXAMPLE.format(kind), body, flags=re.M)]
     behavior = unquote(meta.get("eval_behavior", ""))
     if behavior and behavior not in {"adversarial", "rename"}:
@@ -289,7 +289,7 @@ def check_concept(root, path, meta, body, ids):
     errors += check_ids(rel, meta, kind, ids)
     if kind == "Rule":
         errors += check_rule(rel, meta)
-    elif kind == "Case":
+    elif kind == "Example":
         errors += check_case(rel, meta, body)
         errors += check_agnostic(rel, meta, body, project_terms(root))
         if meta.get("eval_rule_id"):
@@ -300,7 +300,7 @@ def check_concept(root, path, meta, body, ids):
                     if rule_meta and unquote(rule_meta.get("rule_id", "")):
                         available.add(unquote(rule_meta["rule_id"]))
             if unquote(meta["eval_rule_id"]) not in available:
-                errors.append(f"{rel}: eval_rule_id must name one of the case's rules")
+                errors.append(f"{rel}: eval_rule_id must name one of the example's rules")
     return errors + check_links(root, rel, meta, body)
 
 
@@ -375,13 +375,13 @@ def cmd_privacy_check(root, _args):
     return 1 if files else 0
 
 
-def cmd_check_case(root, args):
+def cmd_check_example(root, args):
     path = pathlib.Path(args.file)
     meta, body = parse(path)
     if meta is None:
         errors = [f"{path}: no frontmatter"]
-    elif unquote(meta.get("type", "")) != "Case":
-        errors = [f"{path}: type must be Case"]
+    elif unquote(meta.get("type", "")) != "Example":
+        errors = [f"{path}: type must be Example"]
     else:
         errors = [f"{path}: no {key}" for key in ("title", "description") if not meta.get(key)]
         errors += check_case(str(path), meta, body)
@@ -390,7 +390,7 @@ def cmd_check_case(root, args):
         errors += check_agnostic(str(path), meta, body, project_terms(root, args.terms) + [repo])
     for e in errors:
         print(e, file=sys.stderr)
-    print(f"case check: {len(errors)} problem(s)")
+    print(f"example check: {len(errors)} problem(s)")
     return 1 if errors else 0
 
 
@@ -417,19 +417,19 @@ def cmd_submit_feedback(root, args):
     if errors:
         for error in errors:
             print(error, file=sys.stderr)
-        print(f"case check: {len(errors)} problem(s)")
+        print(f"example check: {len(errors)} problem(s)")
         return 1
 
-    case_id = unquote(meta.get("case_id", ""))
-    if not re.fullmatch(r"C-\d{3,}", case_id):
-        print("submit-feedback: draft needs a case_id such as C-020", file=sys.stderr)
+    example_id = unquote(meta.get("example_id", ""))
+    if not re.fullmatch(r"E-\d{3,}", example_id):
+        print("submit-feedback: draft needs an example_id such as E-020", file=sys.stderr)
         return 1
-    if any(unquote(existing.get("case_id", "")) == case_id
+    if any(unquote(existing.get("example_id", "")) == example_id
            for _, existing, _ in concepts(root) if existing):
-        print(f"submit-feedback: case_id {case_id} already exists in the bundle", file=sys.stderr)
+        print(f"submit-feedback: example_id {example_id} already exists in the bundle", file=sys.stderr)
         return 1
 
-    slug = re.sub(r"[^a-z0-9]+", "-", f"{case_id}-{source.stem}".lower()).strip("-")[:100].rstrip("-")
+    slug = re.sub(r"[^a-z0-9]+", "-", f"{example_id}-{source.stem}".lower()).strip("-")[:100].rstrip("-")
     branch = f"feedback/{slug}"
     destination = pathlib.Path(args.worktree_dir or pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or pathlib.Path.home() / ".golden-path-harness") / "workspaces" / "feedback" / slug)
     destination = destination.expanduser()
@@ -437,8 +437,8 @@ def cmd_submit_feedback(root, args):
         print(f"submit-feedback: worktree path already exists: {destination}", file=sys.stderr)
         return 1
     destination = destination.resolve()
-    if (repository / "harness" / "cases" / source.name).exists():
-        print(f"submit-feedback: case file {source.name} already exists in the bundle", file=sys.stderr)
+    if (repository / "harness" / "examples" / source.name).exists():
+        print(f"submit-feedback: example file {source.name} already exists in the bundle", file=sys.stderr)
         return 1
 
     top_level = subprocess.run(["git", "-C", str(repository), "rev-parse", "--show-toplevel"],
@@ -458,7 +458,7 @@ def cmd_submit_feedback(root, args):
             print(created.stderr, file=sys.stderr, end="")
         return created.returncode
 
-    target = destination / "harness" / "cases" / source.name
+    target = destination / "harness" / "examples" / source.name
     shutil.copy2(source, target)
     index = subprocess.run([sys.executable, str(destination / "harness" / "tools" / "harness" / "bundle.py"),
                             "index"], cwd=destination, capture_output=True, text=True, check=False)
@@ -468,21 +468,21 @@ def cmd_submit_feedback(root, args):
             print(index.stderr, file=sys.stderr, end="")
         return index.returncode
     staged = subprocess.run(["git", "-C", str(destination), "add", "--",
-                             f"harness/cases/{source.name}", "harness/cases/index.md"],
+                             f"harness/examples/{source.name}", "harness/examples/index.md"],
                             capture_output=True, text=True, check=False)
     if staged.returncode:
         print(f"submit-feedback: worktree created at {destination}, but staging failed", file=sys.stderr)
         if staged.stderr:
             print(staged.stderr, file=sys.stderr, end="")
         return staged.returncode
-    print(f"Prepared {branch} at {destination}; the case and index are staged.")
+    print(f"Prepared {branch} at {destination}; the example and index are staged.")
     print("Review the staged diff, then commit, push, and open the PR yourself.")
     return 0
 
 
 def cmd_select(root, _args):
     changed = [line.strip() for line in sys.stdin if line.strip()]
-    rules, cases = {}, []
+    rules, examples = {}, []
     for path, meta, _ in concepts(root):
         if not meta:
             continue
@@ -492,10 +492,10 @@ def cmd_select(root, _args):
             globs = [glob_to_regex(g) for g in json.loads(meta.get("applies_to", "[]"))]
             if any(g.match(f) for g in globs for f in changed):
                 rules[rel] = unquote(meta.get("rule_id", ""))
-        elif kind == "Case":
-            cases.append((rel, meta))
+        elif kind == "Example":
+            examples.append((rel, meta))
     now = datetime.datetime.now(datetime.timezone.utc)
-    relevant = [(rel, m) for rel, m in cases if set(as_list(m.get("rule", ""))) & set(rules)]
+    relevant = [(rel, m) for rel, m in examples if set(as_list(m.get("rule", ""))) & set(rules)]
     stale = [rel for rel, m in relevant if is_stale(m, now)]
     precedent = [rel for rel, m in relevant if human_verified(m) and rel not in stale]
     hints = [rel for rel, m in relevant if not human_verified(m) and rel not in stale]
@@ -579,7 +579,7 @@ def main():
     findings = sub.add_parser("findings")
     findings.add_argument("file")
     findings.add_argument("--repo", help="repo root: drop findings on missing files, anchor lines on the evidence")
-    case = sub.add_parser("check-case")
+    case = sub.add_parser("check-example")
     case.add_argument("file")
     case.add_argument("--terms", help="file with more project-specific names, one per line")
     submit = sub.add_parser("submit-feedback")
@@ -587,7 +587,7 @@ def main():
     submit.add_argument("--worktree-dir", type=pathlib.Path, help="local destination for the submission worktree")
     args = parser.parse_args()
     handler = {"index": cmd_index, "check": cmd_check, "privacy-check": cmd_privacy_check, "budget": cmd_budget,
-               "select": cmd_select, "findings": cmd_findings, "check-case": cmd_check_case,
+               "select": cmd_select, "findings": cmd_findings, "check-example": cmd_check_example,
                "submit-feedback": cmd_submit_feedback}
     return handler[args.command](args.root.resolve(), args)
 

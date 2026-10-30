@@ -17,7 +17,7 @@ status: stable
 one-off command  ->  playbook (concept)  ->  script in tools/  ->  hook or CI check
 ```
 
-- The second time an agent does the same task, it proposes a playbook as a case with
+- The second time an agent does the same task, it proposes a playbook as an example with
   `verdict: automation-candidate`.
 - A playbook that is mostly commands becomes a script: parameters as arguments, sorted output, a header with
   purpose, input, output and an example.

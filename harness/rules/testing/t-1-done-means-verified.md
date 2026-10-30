@@ -26,7 +26,7 @@ sources:
 - Check static-analysis findings before reporting done when the change touches code Sonar analyses. Read the
   IDE diagnostics for the changed files first (cheapest), then `tools/sonar/sonar-read.sh issues/search` with
   `impactSoftwareQualities=RELIABILITY,SECURITY`; a `types=BUG,VULNERABILITY` filter misses Reliability
-  findings filed as code smells (C-016).
+  findings filed as code smells (E-016).
 - Report honestly: what ran, what failed (with output), what was skipped and why.
 
 # Enforcement

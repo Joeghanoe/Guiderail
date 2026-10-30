@@ -51,6 +51,6 @@ status: draft
   dev.azure.com, or `curl` with a token.
 - Never queue, retry or cancel a run, change a variable or variable group, or touch a service connection. Write
   the step down for the human.
-- Redaction in the tool is best effort. Do not paste raw log text into a commit message, a case or an ADR;
+- Redaction in the tool is best effort. Do not paste raw log text into a commit message, an example or an ADR;
   quote the one error line.
 - A cause that repeats across runs is an automation candidate (H.2); name it in the report.

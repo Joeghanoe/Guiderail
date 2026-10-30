@@ -42,7 +42,7 @@ output says otherwise.
    pipelines, grants access and changes retention. An agent may push a named feature branch
    (`git push -u origin <feature-branch>`). Approval in one context does not extend to the next. Segregation of Duties applies: Developer != Reviewer;
    promotion to PRD is strictly approved by the Product Owner ("One Button Deploy").
-5. **H.1** Do not edit `~/.golden-path-harness/harness/`. Changes go through cases and the harness repo.
+5. **H.1** Do not edit `~/.golden-path-harness/harness/`. Changes go through examples and the harness repo.
 
 ## What you already have
 
@@ -80,9 +80,9 @@ integration suite can reach comes with a scenario (T.5). A defect found in DEV o
 
 - A review finding cites a rule ID, `file:line` and evidence, with a confidence. See
   `~/.golden-path-harness/harness/playbooks/review-change.md`. You never approve; a human does.
-- When the user corrects output that came from a rule, write a case from `~/.golden-path-harness/harness/templates/case.md`
+- When the user corrects output that came from a rule, write an example from `~/.golden-path-harness/harness/templates/example.md`
   into `~/.golden-path-harness/feedback/` (`status: draft`, no `verified`) and carry on. Defend principles and hard rules
-  with their ID and the existing cases; when the case shows a rule does not fit, propose a boundary, not a
+  with their ID and the existing examples; when the example shows a rule does not fit, propose a boundary, not a
   removal (H.1).
 - The second time you do the same task, propose a playbook; a playbook that is mostly commands becomes a
   script (H.2). Name what you proposed in your summary.
