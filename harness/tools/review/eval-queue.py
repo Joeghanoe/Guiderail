@@ -56,7 +56,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 BUNDLE_ROOT = HERE.parents[1]
 DEFAULT_STATE = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or pathlib.Path.home() / ".golden-path-harness") / "state" / "evals"
 DEFAULT_RESULTS = HERE / "eval-results.jsonl"   # committed, so a run started on one machine resumes on another
-ENGINES = ["claude", "copilot", "agy", "replay"]
+ENGINES = ["claude", "codex", "copilot", "agy", "replay"]
 
 # What the reviewer is built from. A change to any of it makes earlier results about a different reviewer.
 HASHED = ("index.md", "principles", "rules", "examples", "playbooks", "templates", "tools/review", "tools/harness/bundle.py")

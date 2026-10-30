@@ -36,6 +36,11 @@ COPILOT_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDA
                            "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                            "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "COPILOT_HOME", "HTTPS_PROXY",
                            "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
+# Keep identical to CLI_ENVIRONMENT in run-codex.py.
+CODEX_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                         "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "CODEX_HOME",
+                         "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "OPENAI_API_KEY", "OPENAI_BASE_URL",
+                         "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 # Keep identical to CLI_ENVIRONMENT in run-agy.py.
 AGY_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
                        "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
@@ -240,7 +245,8 @@ def copy_evaluation_bundle(source, destination, spec):
 
 
 def review_environment(args, name):
-    allowed = {"copilot": COPILOT_CLI_ENVIRONMENT, "agy": AGY_CLI_ENVIRONMENT}.get(args.engine, CLI_ENVIRONMENT)
+    allowed = {"codex": CODEX_CLI_ENVIRONMENT, "copilot": COPILOT_CLI_ENVIRONMENT,
+               "agy": AGY_CLI_ENVIRONMENT}.get(args.engine, CLI_ENVIRONMENT)
     environment = {key: os.environ[key] for key in allowed if key in os.environ}
     environment["HARNESS_REVIEW_ENGINE"] = args.engine
     if args.engine == "replay":
@@ -357,7 +363,7 @@ def run_scenarios(scenarios, args, thresholds):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--engine", default="claude", choices=["claude", "copilot", "agy", "replay"])
+    parser.add_argument("--engine", default="claude", choices=["claude", "codex", "copilot", "agy", "replay"])
     parser.add_argument("--replay-dir")
     parser.add_argument("--model", help="model to pin, recorded in the result")
     parser.add_argument("--only", action="append", help="run only this scenario (repeatable)")

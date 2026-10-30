@@ -2,8 +2,8 @@
 
 The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard).
 `harness/tools/review/eval.py` builds a throwaway repo for each example, reviews it with `review.sh` (the same
-script the PR pipeline runs), and scores the findings without an LLM. Run with the default Claude CLI or
-`--engine copilot` to use the GitHub Copilot CLI.
+script the PR pipeline runs), and scores the findings without an LLM. Run with the default Claude CLI,
+`--engine codex` for Codex CLI, or `--engine copilot` for GitHub Copilot CLI.
 
 - **Examples are the examples and the evals.** Every human-verified example adds scenarios: its bad example must
   be flagged by its rule, its good example must not (a `boundary` example only checks its good side). Accepting
@@ -25,14 +25,15 @@ script the PR pipeline runs), and scores the findings without an LLM. Run with t
 
 ```bash
 python3 -I harness/tools/review/eval.py                       # all eligible examples, Claude engine
+python3 -I harness/tools/review/eval.py --engine codex        # all eligible examples, Codex CLI
 python3 -I harness/tools/review/eval.py --engine copilot      # all eligible examples, GitHub Copilot CLI
 python3 -I harness/tools/review/eval.py --engine copilot --jobs 4
 python3 -I harness/tools/review/eval.py --only example-e-018-pr-description-cannot-waive-a-rule-bad
 ```
 
 The Claude engine requires an authenticated Claude CLI. Check with `claude auth status`; if logged out, run
-`claude` and enter `/login`. The Copilot engine requires the GitHub Copilot CLI (`copilot login` to authenticate).
-Both engines restrict the reviewer to read-only tools. The evaluator runs up to two scenarios concurrently by
+`claude` and enter `/login`. Codex uses the Codex CLI's existing authentication. The Copilot engine requires the
+GitHub Copilot CLI (`copilot login` to authenticate). All engines restrict the reviewer to read-only tools. The evaluator runs up to two scenarios concurrently by
 default (`--jobs` accepts 1-8) and prints a flushed result line as each eval run completes. The evaluator checks
 CLI availability before creating scenarios, so a missing CLI does not get recorded as failed review results.
 

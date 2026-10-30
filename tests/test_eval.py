@@ -181,6 +181,23 @@ class EvaluationTests(unittest.TestCase):
         spec.loader.exec_module(runner)
         self.assertEqual(runner.CLI_ENVIRONMENT, evaluation.CLI_ENVIRONMENT)
 
+    def test_codex_runner_and_evaluator_share_one_environment_allowlist(self):
+        spec = importlib.util.spec_from_file_location(
+            "run_codex", ROOT / "harness" / "tools" / "review" / "run-codex.py")
+        runner = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(runner)
+        self.assertEqual(runner.CLI_ENVIRONMENT, evaluation.CODEX_CLI_ENVIRONMENT)
+
+    def test_codex_eval_environment_keeps_auth_but_drops_pipeline_tokens(self):
+        parent = {"PATH": "/usr/bin", "HOME": "/home/user", "CODEX_HOME": "/home/user/.codex",
+                  "OPENAI_API_KEY": "openai-token", "SYSTEM_ACCESSTOKEN": "pipeline-token"}
+        with patch.dict("os.environ", parent, clear=True):
+            child = evaluation.review_environment(SimpleNamespace(engine="codex", model=None), "test")
+        self.assertEqual(child, {
+            "PATH": "/usr/bin", "HOME": "/home/user", "CODEX_HOME": "/home/user/.codex",
+            "OPENAI_API_KEY": "openai-token", "HARNESS_REVIEW_ENGINE": "codex",
+        })
+
     def test_provider_routing_variables_are_kept_but_pipeline_tokens_are_not(self):
         parent = {"PATH": "/usr/bin", "ANTHROPIC_BASE_URL": "https://gateway", "CLAUDE_CODE_USE_BEDROCK": "1",
                   "HTTPS_PROXY": "http://proxy", "SYSTEM_ACCESSTOKEN": "t", "AWS_SECRET_ACCESS_KEY": "s"}
