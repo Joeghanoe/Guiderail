@@ -7,6 +7,7 @@ rule: /rules/code/code-8-dependencies-point-inward.md
 verdict: violation
 status: draft
 tags: [code, design, folders, dependency-direction]
+eval_tree: true
 generated: { by: openai/codex, at: 2026-10-30T00:00:00Z }
 sources:
   - id: evidence
@@ -98,6 +99,4 @@ src/WorkProcessor/
 
 # Not verified
 
-The reviewer evaluation runner writes each example code block to one file, so it cannot reproduce these two
-directory trees. This draft records the maintainer's layout feedback as reviewer context. A human must approve
-the convention before it becomes stable precedent.
+A human must approve the convention before it becomes stable precedent.

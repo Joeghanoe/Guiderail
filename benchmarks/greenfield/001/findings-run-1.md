@@ -85,3 +85,31 @@ number of C# files written before `docs/solution-design.md`, from the trace.
 Still short of the reference (Bizure.Backup): 3 ADRs against 11, about 35 tests against about 315, and a design
 and repo `AGENTS.md` a fraction of its length. Samples are 3 per configuration; the design checks prove structure,
 not quality.
+
+## Loop 6 (same model, container, exploratory; train / validation / holdout split in place)
+
+Harness commit ed96653, scenario 002 frozen as `greenfield-002-loop6` (manifest b1213383...a653), profile
+`run-profile.claude-sonnet-5-5.container.json`, 3 samples in parallel (`l6a-c`). No harness rule, benchmark or
+grader changed. The working tree held uncommitted review-tool edits unrelated to the frozen sources
+(`uncommitted_sources: []`). `tests/run.sh` was 954 passed, 1 failed ("check-example rejects a project-specific
+name"); not investigated here, outside the benchmark path.
+
+| Run | Status | Functional | Build, tests | CODE.5 | Design | Src before design | Runtime | .cs files | Test methods | ADRs | Interfaces | Tool calls |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `l6a` | inconclusive (policy) | F01-F16 pass | pass, pass | 0 | 9/9 | 0 | 565 s | 69 | 42 | 4 | 9 | 130 |
+| `l6b` | inconclusive (policy) | F01-F16 pass | pass, pass | 0 | 9/9 | 0 | 588 s | 63 | 30 | 3 | 7 | 112 |
+| `l6c` | inconclusive (policy) | F01-F16 pass | pass, pass | 0 | 9/9 | 0 | 659 s | 61 | 29 | 3 | 8 | 140 |
+
+"Inconclusive" is the expected overall status for exploratory container runs (policy and behavior need review),
+not a failure. No hard-gate or agent-phase violations. No run hit a usage limit. Test methods are counted as
+`[Fact]`/`[Theory]` attributes in the workspace.
+
+Against loop 5 (all F01-F16 pass, CODE.5 0, Design 9/9, 6-9 interfaces, 33-36 tests, 3 ADRs, source before design
+0, 0, not measured): same pass profile. Source before design is now measured in all three and is 0. Interfaces
+7-9 (loop 5: 6-9), ADRs 3-4 (3), test methods 29-42 (33-36): no change beyond sample noise. Against the reference
+(counts only): ADRs 3-4 against 11, test methods 29-42 against about 315. The shortfall in ADR and test volume
+stays. Design checks prove structure, not quality; no human has read these designs yet.
+
+What this does not show: the new examples and the validation cases did not change greenfield results, which is
+expected, since neither feeds scenario 002. Brownfield validation cases cannot run yet. Holdout stays sealed.
+Three samples per configuration; one model.

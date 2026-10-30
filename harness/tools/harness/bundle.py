@@ -245,6 +245,10 @@ def check_case(rel, meta, body):
     eval_critical = unquote(meta.get("eval_critical", ""))
     if eval_critical and eval_critical.lower() not in {"true", "false"}:
         errors.append(f"{rel}: eval_critical must be true or false")
+    for key in ("eval_split_files", "eval_tree"):
+        value = unquote(meta.get(key, ""))
+        if value and value.lower() not in {"true", "false"}:
+            errors.append(f"{rel}: {key} must be true or false")
     for key in ("example_file", "eval_before_file", "eval_after_file"):
         value = unquote(meta.get(key, ""))
         if value and not safe_repo_path(value):

@@ -23,6 +23,8 @@ sources:
   error. For an HTTP response, `EnsureSuccessStatusCode()` already throws the right one.
 - Log a failure once, with the context, in one statement. A failure that is logged and rethrown is logged at
   the place that finally handles it.
+- In a broker-triggered handler, let transient failures propagate for redelivery. Dead-letter a permanently
+  invalid message immediately with a fixed reason code; retrying it cannot make it valid.
 - Do not log request or response bodies (SEC.2).
 
 # Boundary

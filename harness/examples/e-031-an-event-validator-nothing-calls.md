@@ -7,7 +7,8 @@ rule: /rules/code/code-1-remove-what-is-not-used.md
 verdict: violation
 status: draft
 tags: [dead-code, cleanup]
-example_file: src/Services/WebhookService.cs
+example_file: src/Services/EventTypeMapper.cs
+eval_context_files: [src/Functions/WebhookFunction.cs]
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 ---
 

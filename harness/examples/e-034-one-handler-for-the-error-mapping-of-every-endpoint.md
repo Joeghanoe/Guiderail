@@ -8,6 +8,7 @@ verdict: violation
 status: draft
 tags: [duplication, http, errors]
 example_file: src/OrdersFunction.cs
+eval_context_files: [src/CustomersFunction.cs]
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 ---
 

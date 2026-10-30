@@ -66,6 +66,29 @@ class EvaluationTests(unittest.TestCase):
             "src/Example.bicep",
         )
 
+    def test_marked_multifile_example_writes_each_source_file(self):
+        scenario = next(s for s in evaluation.from_cases(ROOT / "harness")
+                        if s[0] == "example-e-020-code-5-one-type-per-file-no-small-type-exception-good")
+        _, spec, _, write, _ = scenario
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = pathlib.Path(temporary)
+            write(repo)
+            self.assertTrue((repo / "src/MenuService.cs").is_file())
+            self.assertTrue((repo / "src/Menu.cs").is_file())
+            self.assertTrue((repo / "src/IMenuRepository.cs").is_file())
+        self.assertNotIn("file", spec["expect"].get("must_find", [{}])[0])
+
+    def test_tree_example_writes_the_directory_layout_as_changed_files(self):
+        scenario = next(s for s in evaluation.from_cases(ROOT / "harness")
+                        if s[0] == "example-e-021-growing-service-needs-owned-folders-bad")
+        _, spec, _, write, _ = scenario
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = pathlib.Path(temporary)
+            write(repo)
+            self.assertTrue((repo / "src/WorkProcessor/Services/SystemAAdapter.cs").is_file())
+            self.assertTrue((repo / "src/WorkProcessor/Models/WorkItem.cs").is_file())
+        self.assertNotIn("file", spec["expect"]["must_find"][0])
+
     def test_snippet_findings_are_matched_by_rule_and_file_not_short_line_range(self):
         finding = {"rule_id": "T.2", "file": "src/Example.cs", "line": 8, "severity": "major"}
         result = evaluation.score(

@@ -7,6 +7,7 @@ rule: /rules/code/code-5-one-responsibility.md
 verdict: violation
 status: stable
 tags: [code, design, file-structure, one-type-per-file]
+eval_split_files: true
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-26T00:00:00Z }
 sources:
   - id: origin
