@@ -33,7 +33,7 @@ The repo has no source yet, or the task asks for a new service or application. A
 6. **Fill the repo's `AGENTS.md`**: layout, vocabulary, current decisions,
    "follow a change across boundaries" with a **checked** or **documented** mark on each entry (CODE.7), verify,
    when to ask. Adapt `scripts/verify.sh` to the repo's toolchain without removing the gate steps.
-   Run `python3 -I ~/.golden-path-harness/harness/tools/greenfield/design-check.py . --profile service --design-only`; it
+   Run `bash scripts/verify.sh --design`; it
    must pass before any file under `src/` exists (DEL.4: design first, not documented afterwards).
 7. **Build in slices** (orchestrate-workload): contracts and models; interfaces and the composition root; one
    implementation per kind; the operations; the entry point. Each slice compiles and has tests in its layer

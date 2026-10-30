@@ -23,8 +23,7 @@ note, not a finding.
 
 New repo or service: your first command, before any file under `src/`, is
 `bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md`,
-`scripts/verify.sh` and the analyzer files for you to fill in. Fill the design and write an ADR per hard-to-reverse decision; no file under `src/` until `design-check.py . --profile service --design-only` (in the
-script's output) passes. Then build (DEL.4, CODE.8, OBS.3). `scripts/verify.sh` fails while the design is unfinished or the code does not follow
+`scripts/verify.sh` and the analyzer files for you to fill in. Fill the design and write an ADR per hard-to-reverse decision; no file under `src/` until `bash scripts/verify.sh --design` passes. Then build (DEL.4, CODE.8, OBS.3). `scripts/verify.sh` fails while the design is unfinished or the code does not follow
 it, and must pass before you say done. Other work: open `~/.golden-path-harness/harness/index.md`, run the `select` command, open the rules it names.
 `REPORT.md` or the PR names the rule IDs applied and the ones you did not.
 

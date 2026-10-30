@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # One verify command for local runs, the agent's Stop hook and CI (rule T.1).
 # --fast (the Stop hook): incremental build and unit tests in seconds. CI never passes --fast.
+# --design: only the design gate (design, ADRs, AGENTS.md); run it before the first file under src/.
 # Example for a .NET solution; replace the steps with this repo's own toolchain.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -12,10 +13,14 @@ for candidate in ./.harness "$HOME/.golden-path-harness/harness"; do
   [[ -z "$harness" && -f "$candidate/tools/greenfield/design-check.py" ]] && harness="$candidate"
 done
 if [[ -n "$harness" ]]; then
-  python3 -I "$harness/tools/greenfield/design-check.py" . --profile "$DESIGN_PROFILE"
+  design_only=()
+  [[ "${1:-}" == "--design" ]] && design_only=(--design-only)
+  python3 -I "$harness/tools/greenfield/design-check.py" . --profile "$DESIGN_PROFILE" ${design_only[@]+"${design_only[@]}"}
 else
   echo "verify: harness not found; skipping the design gate" >&2
 fi
+
+[[ "${1:-}" == "--design" ]] && exit 0
 
 sln="${SOLUTION:-}"
 for candidate in ./*.slnx ./*.sln; do
