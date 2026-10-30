@@ -19,6 +19,14 @@ git diff --name-only origin/main...HEAD | python3 ~/.golden-path-harness/harness
 Cite rules and principles by ID (`T.2`, `P7`). Never invent one; if nothing applies, say it is a quality
 note, not a finding.
 
+## Start new work design-first
+
+Before the first line of code, open `~/.golden-path-harness/harness/index.md`, run the `select` command and open the rules it
+names. A new repo or service follows `~/.golden-path-harness/harness/playbooks/start-greenfield.md` (DEL.4): `docs/solution-design.md`,
+an ADR for each hard-to-reverse decision, the repo's own `AGENTS.md` and `scripts/verify.sh` exist before feature code and
+stay true as it changes. Code sits behind interfaces wired in one composition root (CODE.8) and reports through a fixed
+contract (OBS.3). `REPORT.md` or the PR names the rule IDs applied and the ones you did not.
+
 ## Decompose workloads and tier models
 
 A task that spans several layers or services is split into bounded workloads, each with its own file paths,
