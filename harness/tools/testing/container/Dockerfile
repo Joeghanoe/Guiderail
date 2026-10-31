@@ -7,7 +7,7 @@ ARG CLAUDE_CODE_VERSION
 ARG CODEX_VERSION
 RUN test -n "$CLAUDE_CODE_VERSION" && test -n "$CODEX_VERSION"
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git python3 ca-certificates curl gnupg \
+ && apt-get install -y --no-install-recommends git python3 jq ca-certificates curl gnupg \
  && curl -fsSL https://deb.nodesource.com/setup_${NODE_MAJOR}.x | bash - \
  && apt-get install -y --no-install-recommends nodejs \
  && npm install -g @anthropic-ai/claude-code@${CLAUDE_CODE_VERSION} @openai/codex@${CODEX_VERSION} \

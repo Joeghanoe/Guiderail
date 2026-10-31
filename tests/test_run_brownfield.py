@@ -84,6 +84,56 @@ class RunBrownfieldTests(unittest.TestCase):
         self.assertEqual((code5["status"], code5["introduced"]), ("fail", 1), code5)
         self.assertEqual(report["status"], "fail")
 
+    def test_code5_outside_the_case_rule_list_is_reported_but_does_not_decide(self):
+        data = json.loads((self.case / "case.json").read_text())
+        data["rule_ids"] = ["T.2"]
+        (self.case / "case.json").write_text(json.dumps(data))
+        _, report = self.run_it(self.profile(mode="twotypes"))
+        self.assertEqual((report["architecture"]["code5"]["status"], report["architecture"]["code5"]["scored"]), ("fail", False))
+        self.assertNotEqual(report["status"], "fail")
+
+    def test_runtime_startup_events_are_not_counted_as_the_agent_reading_protected_paths(self):
+        out = self.root / "scan"
+        (out / "trace").mkdir(parents=True)
+        (out / "candidate.diff").write_text("", encoding="utf-8")
+        (out / "trace" / "e.jsonl").write_text('{"type":"system","memory":"/home/u/.claude/x"}\n'
+                                               '{"type":"assistant","text":"cat /home/u/.ssh/id"}\n', encoding="utf-8")
+        self.assertEqual(bf.agent_activity_references(["/home/u/.claude", "/home/u/.ssh"], out), ["/home/u/.ssh"])
+        (out / "trace" / "e.jsonl").write_text('{"type":"user","text":"saved to /home/u/.claude/projects/x"}\n', encoding="utf-8")
+        self.assertEqual(bf.agent_activity_references(["/home/u/.claude"], out), [])
+
+    def test_hooks_option_installs_the_stop_hook_and_a_verify_that_demands_a_test(self):
+        import os, subprocess
+        data = json.loads(self.profile().read_text())
+        data["hooks"] = True
+        profile = self.root / "profile-hooks.json"
+        profile.write_text(json.dumps(data), encoding="utf-8")
+        self.run_it(profile, "hooked")
+        ws = self.root / "hooked" / "workspace"
+        settings = json.loads((ws / ".claude" / "settings.json").read_text())
+        self.assertIn("stop-verify.sh", settings["hooks"]["Stop"][0]["hooks"][0]["command"])
+        self.assertTrue(os.access(ws / "scripts" / "verify.sh", os.X_OK))
+        subprocess.run(["git", "-C", str(ws), "reset", "-q", "--mixed", "HEAD~1"], check=True)  # as before the runner's commit
+        # the stand-in agent added Added.cs and no test: verify fails, then passes once a test file exists
+        failing = subprocess.run([str(ws / "scripts" / "verify.sh"), "--fast"], cwd=ws, capture_output=True, text=True)
+        self.assertEqual(failing.returncode, 1, failing.stderr)
+        (ws / "Services" / "Added.cs").write_text(
+            "namespace Demo;\npublic class Added\n{\n    public int Load(int a) => a;\n}\n", encoding="utf-8")
+        (ws / "Services" / "AddedTests.cs").write_text("namespace Demo;\n", encoding="utf-8")
+        unnamed = subprocess.run([str(ws / "scripts" / "verify.sh"), "--fast"], cwd=ws, capture_output=True, text=True)
+        self.assertEqual((unnamed.returncode, "Load" in unnamed.stderr), (1, True), unnamed.stderr)
+        (ws / "Services" / "AddedTests.cs").write_text(
+            "namespace Demo;\nclass T { void A() => new Added().Load(1); }\n", encoding="utf-8")
+        self.assertEqual(subprocess.run([str(ws / "scripts" / "verify.sh"), "--fast"], cwd=ws).returncode, 0)
+
+    def test_hooks_are_off_by_default(self):
+        self.run_it(self.profile(), "plain")
+        self.assertFalse((self.root / "plain" / "workspace" / ".claude").exists())
+
+    def test_items_the_grader_leaves_out_are_inconclusive(self):
+        graded = bf.complete({"items": [{"id": "G01", "verdict": "pass"}]}, ["G01", "T.5"])
+        self.assertEqual([(i["id"], i["verdict"]) for i in graded["items"]], [("G01", "pass"), ("T.5", "inconclusive")])
+
     def test_credential_in_the_diff_is_a_hard_gate_violation(self):
         _, report = self.run_it(self.profile(mode="secret"))
         self.assertIn("credential-pattern-in-added-code", report["hard_gate_violations"])

@@ -55,7 +55,22 @@ def source_for(component):
     raise rc.Preflight(f"no private source mapping for component {component}; see {PRIVATE}")
 
 
-def materialize(case_dir, case, snapshot, work):
+def install_hooks(workspace):
+    """Project-level Stop hook and a stand-in verify script: what a real install adds around the agent (T.1)."""
+    hooks = workspace / ".harness" / "hooks"
+    hooks.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(rc.REPOSITORY / "harness" / "hooks" / "stop-verify.sh", hooks / "stop-verify.sh")
+    (workspace / "scripts").mkdir(exist_ok=True)
+    shutil.copyfile(HERE / "brownfield-verify.sh", workspace / "scripts" / "verify.sh")
+    for script in (hooks / "stop-verify.sh", workspace / "scripts" / "verify.sh"):
+        script.chmod(0o755)
+    command = '"$CLAUDE_PROJECT_DIR/.harness/hooks/stop-verify.sh"'
+    (workspace / ".claude").mkdir(exist_ok=True)
+    (workspace / ".claude" / "settings.json").write_text(json.dumps(
+        {"hooks": {"Stop": [{"hooks": [{"type": "command", "command": command}]}]}}, indent=2), encoding="utf-8")
+
+
+def materialize(case_dir, case, snapshot, work, hooks=False):
     """Pinned snapshot files plus the task and harness, committed as the clean starting state."""
     base, aliases = source_for(case["components"][0])
     workspace = work / "workspace"
@@ -79,6 +94,8 @@ def materialize(case_dir, case, snapshot, work):
         target = workspace / item["path"]
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(rc.REPOSITORY / item["source"], target)
+    if hooks:
+        install_hooks(workspace)
     pristine = work / "pristine"
     shutil.copytree(workspace, pristine)
     rc.git(workspace, "init", "-q", "-b", "main")
@@ -87,6 +104,26 @@ def materialize(case_dir, case, snapshot, work):
     rc.git(workspace, "add", "-A")
     rc.git(workspace, "commit", "-q", "-m", "clean starting state")
     return workspace, pristine, rc.git(workspace, "rev-parse", "HEAD")
+
+
+def agent_activity_references(paths, out):
+    """Protected paths in what the agent asked for (assistant events). Start-up events and tool results are the CLI's doing."""
+    needles = {p: p.lower().replace("\\", "/").rstrip("/") for p in paths}
+    found = set()
+    for file in [*(out / "trace").rglob("*"), out / "candidate.diff"]:
+        if not file.is_file() or file.name == "usage.json":
+            continue
+        lines = file.read_text(encoding="utf-8", errors="replace").splitlines()
+        for line in lines:
+            if file.suffix == ".jsonl":
+                try:
+                    if json.loads(line).get("type") != "assistant":
+                        continue  # start-up events and tool results are the CLI's own doing, not the agent's request
+                except ValueError:
+                    pass
+            text = line.lower().replace("\\\\", "/").replace("\\", "/")
+            found.update(p for p, needle in needles.items() if needle in text)
+    return sorted(found)
 
 
 def changed_files(workspace, start):
@@ -126,7 +163,7 @@ def diff_gates(diff, changes):
     added = added_lines(diff)
     violations = ["credential-pattern-in-added-code"] if any(CREDENTIAL.search(x) for x in added) else []
     guids = sum(1 for x in added if GUID.search(x))
-    touched_harness = [p for _, p in changes if p.startswith(".harness/") or p in ("AGENTS.base.md", "CLAUDE.md", "TASK.md")]
+    touched_harness = [p for _, p in changes if p.startswith((".harness/", ".claude/")) or p in ("AGENTS.base.md", "CLAUDE.md", "TASK.md", "scripts/verify.sh")]
     violations += ["harness-or-instructions-modified:" + p for p in touched_harness]
     return violations, {"added_lines": len(added), "added_lines_with_guid": guids,
                         "files_changed": [f"{s} {p}" for s, p in changes]}
@@ -166,7 +203,20 @@ def parse_grade(text):
     return data, None
 
 
-def run_grader(profile, case_dir, diff, workspace, changes, out):
+def expected_ids(case_dir, case):
+    criteria = (case_dir / "criteria.md").read_text(encoding="utf-8")
+    return re.findall(r"^- (G\d+)\b", criteria, re.M) + list(case.get("rule_ids", []))
+
+
+def complete(data, expected):
+    """Rubric items the grader left out count as inconclusive, never as a pass."""
+    seen = {i["id"] for i in data["items"]}
+    data["items"] += [{"id": x, "verdict": "inconclusive", "evidence": "grader omitted this item"}
+                      for x in expected if x not in seen]
+    return data
+
+
+def run_grader(profile, case_dir, diff, workspace, changes, out, expected=()):
     """A fresh session outside the workspace; it sees the criteria and the change, nothing else."""
     prompt_file = out / "grader-prompt.txt"
     prompt_file.write_text(grader_prompt(case_dir, diff, workspace, changes), encoding="utf-8")
@@ -180,7 +230,7 @@ def run_grader(profile, case_dir, diff, workspace, changes, out):
     if run.returncode != 0:
         return {"status": "inconclusive", "reason": "grader command failed: " + run.stderr[-300:]}
     data, error = parse_grade(run.stdout)
-    return {"status": "inconclusive", "reason": error} if error else {"status": "graded", "judge": "llm", **data}
+    return {"status": "inconclusive", "reason": error} if error else {"status": "graded", "judge": "llm", **complete(data, expected)}
 
 
 def summarize(grade):
@@ -208,7 +258,7 @@ def run_case(args):
     logs, trace_dir = out / "logs", out / "trace"
     logs.mkdir()
     trace_dir.mkdir()
-    workspace, pristine, start = materialize(case_dir, case, snapshot, out)
+    workspace, pristine, start = materialize(case_dir, case, snapshot, out, bool(profile.get("hooks")))
     prompt = out / "prompt.txt"
     prompt.write_text(PROMPT, encoding="utf-8")
     watched = rc.sensitive_paths() if profile["isolation"]["mode"] == "folder" else []
@@ -223,19 +273,23 @@ def run_case(args):
     (out / "candidate.diff").write_text(diff, encoding="utf-8")
     changes = changed_files(workspace, start)
     gate_violations, observations = diff_gates(diff, changes)
-    gate_violations += ["protected-path-referenced:" + p for p in rc.referenced(watched, out)]
+    gate_violations += ["protected-path-referenced:" + p for p in agent_activity_references(watched, out)]
     architecture = code5_change(workspace, pristine, [p for _, p in changes], out, logs)
-    grade = run_grader(profile, case_dir, diff, workspace, changes, out) if changes else \
+    grade = run_grader(profile, case_dir, diff, workspace, changes, out, expected_ids(case_dir, case)) if changes else \
         {"status": "inconclusive", "reason": "the candidate changed nothing"}
     functional, failed_gates = summarize(grade)
     gate_violations += ["rubric-hard-gate:" + g for g in failed_gates]
-    status = "fail" if gate_violations or functional == "fail" or architecture["status"] == "fail" else "inconclusive"
-    if status == "inconclusive" and functional == "pass" and architecture["status"] == "pass":
+    # Only rules the case lists decide the verdict; other checker results are reported as observations.
+    scored = "CODE.5" in case.get("rule_ids", [])
+    architecture["scored"] = scored
+    arch = architecture["status"] if scored else "pass"
+    status = "fail" if gate_violations or functional == "fail" or arch == "fail" else "inconclusive"
+    if status == "inconclusive" and functional == "pass" and arch == "pass":
         status = "pass"
     usage, usage_reason = rc.read_usage(trace_dir)
     result = {
         "schema_version": 1, "case_id": case["id"], "role": case["role"], "holdout": False, "kind": case.get("kind"),
-        "run_class": "exploratory" if profile["isolation"]["mode"] in ("none", "folder") else profile["isolation"]["mode"],
+        "hooks": bool(profile.get("hooks")), "run_class": "exploratory" if profile["isolation"]["mode"] in ("none", "folder") else profile["isolation"]["mode"],
         "model": {"provider": profile["provider"], "model": profile["model"], "adapter_version": profile["adapter_version"]},
         "versions": {"harness_commit": rc.git(rc.REPOSITORY, "rev-parse", "HEAD"), "workspace_start_commit": start,
                      "snapshot_files": len(snapshot["files"]),
@@ -271,7 +325,7 @@ def regrade(args):
     start = result["versions"]["workspace_start_commit"]
     changes = changed_files(workspace, start)
     diff = (out / "candidate.diff").read_text(encoding="utf-8")
-    grade = run_grader(profile, case_dir, diff, workspace, changes, out)
+    grade = run_grader(profile, case_dir, diff, workspace, changes, out, expected_ids(case_dir, case))
     functional, failed = summarize(grade)
     result["functional"] = {"status": functional, "judge": "llm rubric, replayable with `grade`", "grade": grade}
     result["hard_gate_violations"] = [v for v in result["hard_gate_violations"] if not v.startswith("rubric-hard-gate:")] \

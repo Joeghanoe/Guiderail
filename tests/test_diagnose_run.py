@@ -53,7 +53,16 @@ class DiagnoseRunTests(unittest.TestCase):
 
     def test_judge_pass_against_introduced_code5_finding_is_flagged(self):
         found = self.signals(self.run_dir(architecture={"code5": {"status": "fail", "introduced": 2, "inherited": 0}}))
-        self.assertIn("G01 passed while CODE.5 found introduced violations", found)
+        self.assertEqual(found["CODE.5 introduced findings alongside rubric passes"]["suggested_class"], "evaluator-defect")
+
+    def test_out_of_scope_code5_findings_point_at_the_rule_scope_once(self):
+        found = self.signals(self.run_dir(architecture={"code5": {"status": "fail", "introduced": 2, "scored": False}}))
+        self.assertEqual(found["CODE.5 introduced findings alongside rubric passes"]["suggested_class"], "incomplete-principle")
+
+    def test_absent_test_is_confirmed_against_the_file_list_not_blamed_on_the_judge(self):
+        grade = {"status": "graded", "items": [{"id": "G08", "verdict": "fail", "evidence": "The diff adds no unit test."}]}
+        found = self.signals(self.run_dir(functional={"status": "fail", "grade": grade}))
+        self.assertEqual(found["G08 failed because something is absent"]["suggested_class"], "model-or-harness-failure")
 
     def test_inherited_findings_are_project_debt(self):
         found = self.signals(self.run_dir(architecture={"code5": {"status": "pass", "introduced": 0, "inherited": 4}}))

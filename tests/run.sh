@@ -51,6 +51,7 @@ expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_free
 expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
 expect 0 "brownfield runner controls (stand-in adapter and grader, no model)" python3 -I "$here/tests/test_run_brownfield.py"
 expect 0 "run diagnosis controls (evidence only, no model)" python3 -I "$here/tests/test_diagnose_run.py"
+expect 0 "harness usage and denied-command report (traces only, no model)" python3 -I "$here/tests/test_harness_usage.py"
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
 
 echo "== guard-bash"
@@ -290,7 +291,7 @@ sed 's/^var http = new HttpClient();$/<code snippet>/' "$tmp/example.md" >"$tmp/
 expect 1 "check-example rejects the template placeholder" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/placeholder.md"
 sed 's#^rule: .*#rule: /rules/nope.md#' "$tmp/example.md" >"$tmp/norule.md"
 expect 1 "check-example rejects an unknown rule" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/norule.md"
-sed 's/^Example\.$/The Contoso partner integration for NCJ./' "$tmp/example.md" >"$tmp/specific.md"
+sed 's/^Example\.$/The TeamNOW partner integration./' "$tmp/example.md" >"$tmp/specific.md"
 expect 1 "check-example rejects a project-specific name" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/specific.md"
 echo "Fabrikam" >"$tmp/terms.txt"
 sed 's/^Example\.$/Built for Fabrikam./' "$tmp/example.md" >"$tmp/specific2.md"

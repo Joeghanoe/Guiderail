@@ -12,6 +12,9 @@ import re
 import sys
 from datetime import datetime, timezone
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import harness_usage  # noqa: E402
+
 CLASSES = ("project-defect", "evaluator-defect", "incomplete-principle", "model-or-harness-failure", "insufficient-evidence")
 EVIDENCE_PATH = re.compile(r"([\w./-]+\.\w+)(?::(\d+))?")
 
@@ -54,21 +57,39 @@ def propose(run):
         add("candidate changed nothing", "model-or-harness-failure", "medium", {"adapter_exit_code":
             report.get("behavior", {}).get("adapter_exit_code")}, "No diff: check the trace for a refusal, a tool block or a misread task.")
 
+    denied = harness_usage.denied_calls(run)
+    if denied:
+        causes = sorted({d["cause"] for d in denied})
+        gap = [d for d in denied if d["cause"] in ("harness-documented", "compound")]
+        add(f"{len(denied)} command(s) denied by the adapter allowlist", "model-or-harness-failure", "medium" if not changed else "low",
+            {"denied": denied[:8], "causes": causes, "run_void_if_no_diff": not changed},
+            ("Nothing changed after a denial: the run measures the allowlist, not the candidate; rerun after deciding. " if not changed else "")
+            + ("Some denied commands are ones the harness tells agents to run, or only fail because of a `cd` prefix or a pipe: "
+               "propose an allowlist entry or an instruction fix for review (step 6); this tool changes neither. " if gap else
+               "The denied commands are shell file writes or unclassified; read them before blaming the allowlist."))
     grade = functional.get("grade") or {}
     if grade.get("status") == "inconclusive" or functional.get("status") == "inconclusive":
         add("grading inconclusive", "insufficient-evidence", "high", {"reason": grade.get("reason") or functional.get("reason")},
             "Nothing was decided; fix the grader command or output and replay with `grade`.")
     for item in grade.get("items", []):
         verifiable = cited_location(item.get("evidence"), workspace, changed)
-        if item["verdict"] == "fail" and not verifiable:
+        absence = re.match(r"\s*(the (diff|change) )?(adds? )?(no|not|none|missing)\b", str(item.get("evidence", "")), re.I)
+        if item["verdict"] == "fail" and not verifiable and absence:
+            add(f"{item['id']} failed because something is absent", "model-or-harness-failure", "low",
+                {"item": item, "files_changed": sorted(changed)},
+                "An absence has no line to cite; confirm against the changed-file list that it really is missing.")
+        elif item["verdict"] == "fail" and not verifiable:
             add(f"{item['id']} failed without checkable evidence", "evaluator-defect", "medium", item,
                 "The judge cited no changed file and line; read the diff before blaming the candidate.")
-        elif item["verdict"] == "pass" and code5.get("introduced"):
-            add(f"{item['id']} passed while CODE.5 found introduced violations", "evaluator-defect", "medium",
-                {"item": item, "code5": code5}, "Judge and deterministic checker disagree; the rubric item may be too loose.")
         elif item["verdict"] == "inconclusive":
             add(f"{item['id']} undecided", "insufficient-evidence", "medium", item,
                 "The change or snapshot does not show enough to decide; consider whether the criterion is checkable.")
+    scored = code5.get("scored", True)
+    if code5.get("introduced") and any(i["verdict"] == "pass" for i in grade.get("items", [])):
+        add("CODE.5 introduced findings alongside rubric passes", "evaluator-defect" if scored else "incomplete-principle",
+            "medium" if scored else "low", {"code5": code5, "scored": scored},
+            "Judge and checker disagree." if scored else
+            "CODE.5 is not in this case's rule list, so it did not decide the verdict; decide whether the case or the rule scope is wrong.")
     if code5.get("status") == "fail" and any(i["verdict"] == "pass" for i in grade.get("items", [])) and not code5.get("introduced"):
         add("CODE.5 failed with no introduced finding", "evaluator-defect", "high", code5, "Baseline comparison looks wrong.")
     if code5.get("inherited"):
