@@ -4,7 +4,7 @@
 Commands:
   index              regenerate index.md in every directory except the bundle root
   check              OKF conformance, harness conventions, and index files up to date
-  select             read changed paths on stdin, print the rules and examples that apply (JSON)
+  select             read changed paths (arguments, or stdin when none), print the rules and examples that apply (JSON)
   findings <file>    validate a reviewer's JSON findings; print the valid ones, report the dropped ones
   check-example <file>  validate one draft example outside the bundle (e.g. harness-feedback/x.md) against it
   submit-feedback    prepare a local branch/worktree with a validated feedback example staged for review
@@ -17,6 +17,7 @@ applies_to are written as inline JSON-compatible lists (["a", "b"]), which `chec
 
 Example:
   git diff --name-only origin/main...HEAD | python3 .harness/tools/harness/bundle.py select
+  python3 .harness/tools/harness/bundle.py select src/Orders.cs src/Orders.Tests.cs
 """
 
 import argparse
@@ -484,8 +485,8 @@ def cmd_submit_feedback(root, args):
     return 0
 
 
-def cmd_select(root, _args):
-    changed = [line.strip() for line in sys.stdin if line.strip()]
+def cmd_select(root, args):
+    changed = list(args.paths) or [line.strip() for line in sys.stdin if line.strip()]
     rules, examples = {}, []
     for path, meta, _ in concepts(root):
         if not meta:
@@ -579,7 +580,8 @@ def main():
     budget = sub.add_parser("budget")
     budget.add_argument("--update", action="store_true", help="record the measured sizes as the new budget")
     budget.add_argument("--baseline", help="budget file from the base branch; fail if this one raises a value")
-    sub.add_parser("select")
+    select = sub.add_parser("select")
+    select.add_argument("paths", nargs="*", help="changed paths; read from stdin when none are given")
     findings = sub.add_parser("findings")
     findings.add_argument("file")
     findings.add_argument("--repo", help="repo root: drop findings on missing files, anchor lines on the evidence")

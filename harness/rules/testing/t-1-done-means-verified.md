@@ -21,6 +21,8 @@ sources:
 - It runs, in order: formatter in check mode, analyzers with warnings as errors, build, tests.
   `--fast` is for the Stop hook and must take seconds: an incremental build and the unit tests, no
   restore, no format check, no integration tests. CI never passes `--fast`.
+- New behaviour ships with a test that calls it, even where neighbouring code has none. With no test project in
+  reach, add the test file beside the code.
 - Fix new warnings and lint issues in the code. A suppression is scoped to one line, names the rule and
   says why. No file- or repo-wide disables, no lowered thresholds.
 - Check static-analysis findings before reporting done when the change touches code Sonar analyses. Read the

@@ -243,6 +243,8 @@ printf 'src/Services/PartnerService.cs\n' >"$tmp/changed"
 python3 -I "$h/tools/harness/bundle.py" select <"$tmp/changed" >"$tmp/select.json"
 expect 0 "select picks T.2 for a .cs file" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select.json"
 expect 0 "select skips IAC rules for a .cs file" jq -e '.rules | to_entries | map(.value) | index("IAC.1") == null' "$tmp/select.json"
+python3 -I "$h/tools/harness/bundle.py" select src/Orders.cs >"$tmp/select-args.json" </dev/null
+expect 0 "select takes paths as arguments, not only on stdin" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select-args.json"
 cp -R "$h" "$tmp/withexample"
 find "$tmp/withexample/examples" -name "e-*.md" -delete   # fixtures start without the real examples
 cat >"$tmp/example.md" <<'CASE'
