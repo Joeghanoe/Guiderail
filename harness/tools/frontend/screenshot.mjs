@@ -5,7 +5,9 @@
 //
 // Usage: node screenshot.mjs --url <url> [--url <url> ...] [--out <dir>] [--name <prefix>]
 //          [--viewports 320x640,390x844,768x1024,1280x800] [--scheme light|dark|both] [--wait <ms>] [--full-page]
-//          [--scale 1] [--keep-days 7] [--max-mb 200] [--allow-remote]
+//          [--scale 1] [--keep-days 7] [--max-mb 200] [--allow-remote] [--auth-state <file.json>]
+//   --auth-state  capture a page behind a login: the file (browser storage and cookies, produced out of band) is seeded into the
+//                 page before it boots. Format and safety rules: auth-state.mjs; ways to produce it: auth-examples/.
 // Output: <out>/<name>-<w>x<h>[-dark].png and <out>/report.json; a one-line-per-finding summary on stdout.
 //         Without --out the run goes to ~/.golden-path-harness/cache/screenshots/<repo>/<timestamp>/, outside every repo, and runs older
 //         than --keep-days, or beyond --max-mb in total (oldest first), are deleted before the capture. Only run
@@ -15,7 +17,8 @@ import { execFileSync, spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { homedir, tmpdir } from "node:os";
-import { basename, join } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
+import { cookieParams, describeAuthState, parseAuthState, seedScript } from "./auth-state.mjs";
 
 const SHOTS_ROOT = join(process.env.GOLDEN_PATH_HOME || join(homedir(), ".golden-path-harness"), "cache", "screenshots");
 const DEFAULT_VIEWPORTS = "320x640,390x844,768x1024,1280x800";
@@ -44,7 +47,7 @@ function parseArgs(argv) {
     if (arg === "--full-page") options.fullPage = true;
     else if (arg === "--allow-remote") options.allowRemote = true;
     else if (arg === "--url") options.urls.push(argv[++i]);
-    else if (["--out", "--name", "--viewports", "--scheme", "--wait", "--scale", "--keep-days", "--max-mb"].includes(arg)) options[arg.slice(2)] = argv[++i];
+    else if (["--out", "--name", "--viewports", "--scheme", "--wait", "--scale", "--keep-days", "--max-mb", "--auth-state"].includes(arg)) options[arg.slice(2)] = argv[++i];
     else fail(`unknown option ${arg}`);
   }
   for (const key of ["wait", "scale", "keep-days", "max-mb"]) {
@@ -67,6 +70,31 @@ function checkUrl(raw, allowRemote) {
   const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
   if (!local && !allowRemote) fail(`${url.hostname} is not localhost; pass --allow-remote if the user asked for it`);
   return url.href;
+}
+
+// A state file holds a live token. Inside a git repository it must be ignored, so it cannot be committed by accident (SEC.2).
+function loadAuthState(file) {
+  const path = resolve(file);
+  if (!existsSync(path)) fail(`auth state file not found: ${file}`);
+  const dir = dirname(path);
+  let inside = false;
+  try {
+    inside = execFileSync("git", ["-C", dir, "rev-parse", "--is-inside-work-tree"], { stdio: ["ignore", "pipe", "ignore"] }).toString().trim() === "true";
+  } catch {
+    inside = false;
+  }
+  if (inside) {
+    try {
+      execFileSync("git", ["-C", dir, "check-ignore", "-q", path], { stdio: "ignore" });
+    } catch {
+      fail(`${file} is inside a git repository and is not ignored; keep an auth state file outside the repo or in .gitignore (SEC.2)`);
+    }
+  }
+  try {
+    return parseAuthState(readFileSync(path, "utf8"));
+  } catch (error) {
+    fail(error.message);
+  }
 }
 
 function parseViewports(text) {
@@ -277,13 +305,16 @@ async function run() {
   const viewports = parseViewports(options.viewports);
   const schemes = options.scheme === "both" ? ["light", "dark"] : [options.scheme];
   const axeSource = loadAxe();
+  const auth = options["auth-state"] ? loadAuthState(options["auth-state"]) : null;
+  const authOrigin = auth ? auth.origin ?? new URL(urls[0]).origin : null;
+  if (auth) for (const url of urls.filter((u) => new URL(u).origin !== authOrigin)) console.log(`note: the auth state is for ${authOrigin} and is not applied to ${url}`);
   const pruned = options.out ? null : pruneRuns(options["keep-days"], options["max-mb"]);
   if (!options.out) options.out = join(SHOTS_ROOT, repoName(), new Date().toISOString().replace(/[:.]/g, "-"));
   mkdirSync(options.out, { recursive: true });
 
   const browser = await launchBrowser(findBrowser());
   const cdp = connect(browser.endpoint);
-  const report = { axe: axeSource ? "run" : "not run: axe-core is not installed in this repo", shots: [] };
+  const report = { axe: axeSource ? "run" : "not run: axe-core is not installed in this repo", auth: auth ? describeAuthState(auth, authOrigin) : "none", shots: [] };
   try {
     await cdp.opened;
     const { targetId } = await cdp.send("Target.createTarget", { url: "about:blank" });
@@ -291,6 +322,10 @@ async function run() {
     const page = (method, params) => cdp.send(method, params, sessionId);
     await page("Page.enable");
     await page("Network.setCacheDisabled", { cacheDisabled: true });
+    if (auth) {
+      for (const cookie of cookieParams(auth, authOrigin)) await page("Network.setCookie", cookie);
+      await page("Page.addScriptToEvaluateOnNewDocument", { source: seedScript(auth, authOrigin) });
+    }
 
     for (const [index, url] of urls.entries()) {
       const prefix = options.name || "page";
@@ -341,6 +376,7 @@ async function run() {
   console.log("\nFindings, each with the viewports where it occurs:");
   for (const [finding, where] of grouped) console.log(`  ${finding}  @ ${where.length === report.shots.length ? "all" : where.join(", ")}`);
   console.log(`axe-core: ${report.axe}`);
+  if (auth) console.log(`auth state: applied to ${authOrigin} (${report.auth.sessionStorageKeys} sessionStorage keys, ${report.auth.localStorageKeys} localStorage keys, ${report.auth.cookies} cookies); values are not shown`);
   if (pruned) console.log(`cleanup: removed ${pruned.removed} old run(s), freed ${pruned.freedMb} MB (kept ${options["keep-days"]} days, max ${options["max-mb"]} MB)`);
   console.log(`report: ${join(options.out, "report.json")}`);
 }
