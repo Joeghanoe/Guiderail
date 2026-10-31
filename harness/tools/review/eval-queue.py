@@ -39,6 +39,7 @@ Usage:
 """
 
 import argparse
+import concurrent.futures
 import datetime
 import functools
 import hashlib
@@ -51,6 +52,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+import threading
 
 sys.dont_write_bytecode = True
 HERE = pathlib.Path(__file__).resolve().parent
@@ -378,43 +380,131 @@ def cmd_run(args):
     print(f"checklist: {md_path}")
     save(state, items, json_path, md_path)
 
-    consecutive_errors, ran = 0, 0
-    for position, item in enumerate(queue, 1):
-        if args.limit and ran >= args.limit:
-            return stop(f"Stopped after {ran} scenario(s) as --limit asked.", state, items, json_path, md_path)
-        proven = any(e["status"] in ("pass", "fail") for e in state["scenarios"].values())
-        tag = f" (critical, {item['runs']} runs)" if item["critical"] else ""
-        print(f"\n[{position}/{len(queue)}] {item['name']}{tag}", flush=True)
-        try:
-            result = ev.run_scenarios([by_name[item["name"]]], run_args, thresholds)[0]
-            status, detail = classify(result)
-        except KeyboardInterrupt:
-            return stop("Interrupted.", state, items, json_path, md_path)
-        except Exception as error:  # a crash in one scenario must not lose the others' results
-            status, detail = "error", clean(f"{type(error).__name__}: {error}")
-        ran += 1
-        previous = state["scenarios"].get(item["name"], {})
-        state["scenarios"][item["name"]] = {
-            "status": status, "detail": detail, "at": now(), "runs": item["runs"],
-            "runs_passed": result.get("runs_passed") if status != "error" else None,
-            "attempts": previous.get("attempts", 0) + 1, "usage": result.get("usage")}
-        save(state, items, json_path, md_path)
-        record_result(args.results_file, state, item["name"], state["scenarios"][item["name"]])
-        print(f"  -> {status}{': ' + detail if detail else ''}")
-        if status != "error":
-            consecutive_errors = 0
-            continue
-        consecutive_errors += 1
-        if BUDGET.search(detail):
-            return stop("This looks like the model budget or quota running out. Wait for it to reset, then resume.",
-                        state, items, json_path, md_path)
-        if LOGIN.search(detail):
-            return stop(f"This looks like a login problem. Log in to {args.engine} yourself, then resume.",
-                        state, items, json_path, md_path)
-        if not proven or consecutive_errors >= args.max_errors:
-            reason = ("Nothing has run successfully yet, so the setup is the likely problem; fix it before spending more."
-                      if not proven else f"{consecutive_errors} errors in a row.")
-            return stop(f"Stopping. {reason}", state, items, json_path, md_path)
+    if args.jobs == 1:
+        consecutive_errors, ran = 0, 0
+        for position, item in enumerate(queue, 1):
+            if args.limit and ran >= args.limit:
+                return stop(f"Stopped after {ran} scenario(s) as --limit asked.", state, items, json_path, md_path)
+            proven = any(e["status"] in ("pass", "fail") for e in state["scenarios"].values())
+            tag = f" (critical, {item['runs']} runs)" if item["critical"] else ""
+            print(f"\n[{position}/{len(queue)}] {item['name']}{tag}", flush=True)
+            try:
+                result = ev.run_scenarios([by_name[item["name"]]], run_args, thresholds)[0]
+                status, detail = classify(result)
+            except KeyboardInterrupt:
+                return stop("Interrupted.", state, items, json_path, md_path)
+            except Exception as error:  # a crash in one scenario must not lose the others' results
+                status, detail = "error", clean(f"{type(error).__name__}: {error}")
+            ran += 1
+            previous = state["scenarios"].get(item["name"], {})
+            state["scenarios"][item["name"]] = {
+                "status": status, "detail": detail, "at": now(), "runs": item["runs"],
+                "runs_passed": result.get("runs_passed") if status != "error" else None,
+                "attempts": previous.get("attempts", 0) + 1, "usage": result.get("usage")}
+            save(state, items, json_path, md_path)
+            record_result(args.results_file, state, item["name"], state["scenarios"][item["name"]])
+            print(f"  -> {status}{': ' + detail if detail else ''}")
+            if status != "error":
+                consecutive_errors = 0
+                continue
+            consecutive_errors += 1
+            if BUDGET.search(detail):
+                return stop("This looks like the model budget or quota running out. Wait for it to reset, then resume.",
+                            state, items, json_path, md_path)
+            if LOGIN.search(detail):
+                return stop(f"This looks like a login problem. Log in to {args.engine} yourself, then resume.",
+                            state, items, json_path, md_path)
+            if not proven or consecutive_errors >= args.max_errors:
+                reason = ("Nothing has run successfully yet, so the setup is the likely problem; fix it before spending more."
+                          if not proven else f"{consecutive_errors} errors in a row.")
+                return stop(f"Stopping. {reason}", state, items, json_path, md_path)
+    else:
+        state_lock = threading.Lock()
+        consecutive_errors, ran = 0, 0
+        stop_early = None
+        queue_iter = iter(enumerate(queue, 1))
+
+        def execute_item(item):
+            item_run_args = argparse.Namespace(**vars(run_args))
+            item_run_args.jobs = 1
+            try:
+                res = ev.run_scenarios([by_name[item["name"]]], item_run_args, thresholds)[0]
+                st, det = classify(res)
+                return item, st, det, res
+            except Exception as error:
+                return item, "error", clean(f"{type(error).__name__}: {error}"), {}
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as executor:
+            active_futures = {}
+
+            while len(active_futures) < args.jobs:
+                if args.limit and ran + len(active_futures) >= args.limit:
+                    break
+                try:
+                    pos, item = next(queue_iter)
+                    tag = f" (critical, {item['runs']} runs)" if item["critical"] else ""
+                    print(f"[{pos}/{len(queue)}] {item['name']}{tag}", flush=True)
+                    f = executor.submit(execute_item, item)
+                    active_futures[f] = (pos, item)
+                except StopIteration:
+                    break
+
+            while active_futures and not stop_early:
+                done, _ = concurrent.futures.wait(active_futures.keys(), return_when=concurrent.futures.FIRST_COMPLETED)
+                for f in done:
+                    pos, item = active_futures.pop(f)
+                    ran += 1
+                    try:
+                        item, status, detail, result = f.result()
+                    except Exception as error:
+                        item, status, detail, result = item, "error", clean(f"{type(error).__name__}: {error}"), {}
+
+                    with state_lock:
+                        previous = state["scenarios"].get(item["name"], {})
+                        state["scenarios"][item["name"]] = {
+                            "status": status, "detail": detail, "at": now(), "runs": item["runs"],
+                            "runs_passed": result.get("runs_passed") if status != "error" else None,
+                            "attempts": previous.get("attempts", 0) + 1, "usage": result.get("usage")}
+                        save(state, items, json_path, md_path)
+                        record_result(args.results_file, state, item["name"], state["scenarios"][item["name"]])
+                        print(f"  -> {item['name']}: {status}{': ' + detail if detail else ''}", flush=True)
+
+                        proven = any(e["status"] in ("pass", "fail") for e in state["scenarios"].values())
+                        if status != "error":
+                            consecutive_errors = 0
+                        else:
+                            consecutive_errors += 1
+                            if BUDGET.search(detail):
+                                stop_early = "This looks like the model budget or quota running out. Wait for it to reset, then resume."
+                                break
+                            if LOGIN.search(detail):
+                                stop_early = f"This looks like a login problem. Log in to {args.engine} yourself, then resume."
+                                break
+                            if not proven or consecutive_errors >= args.max_errors:
+                                reason = ("Nothing has run successfully yet, so the setup is the likely problem; fix it before spending more."
+                                          if not proven else f"{consecutive_errors} errors in a row.")
+                                stop_early = f"Stopping. {reason}"
+                                break
+
+                    if not stop_early:
+                        if not args.limit or ran + len(active_futures) < args.limit:
+                            try:
+                                next_pos, next_item = next(queue_iter)
+                                next_tag = f" (critical, {next_item['runs']} runs)" if next_item["critical"] else ""
+                                print(f"[{next_pos}/{len(queue)}] {next_item['name']}{next_tag}", flush=True)
+                                next_f = executor.submit(execute_item, next_item)
+                                active_futures[next_f] = (next_pos, next_item)
+                            except StopIteration:
+                                pass
+
+            if stop_early:
+                for f in active_futures:
+                    f.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
+                return stop(stop_early, state, items, json_path, md_path)
+
+            if args.limit and ran >= args.limit and any(i["name"] not in state["scenarios"] for i in queue):
+                return stop(f"Stopped after {ran} scenario(s) as --limit asked.", state, items, json_path, md_path)
 
     result = verdict(state, items, partial=bool(args.only))
     done, counts, pending = progress(state, items)
