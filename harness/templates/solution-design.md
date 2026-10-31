@@ -28,6 +28,9 @@ adapter, name the test that runs it against the real dependency or a recorded re
 
 How data gets in, where it is stored and the exact key or path layout. State what is fixed before the first
 write and why. Say what one stored unit contains, so that it can be restored alone. Link the ADR.
+For each derived value (a total, a status, a macro): the one place it is calculated, whether a reader sees it
+immediately or eventually after a write, and which readers calculate it themselves instead of trusting the stored
+copy (CODE.10).
 
 ## Expected size and cost
 
