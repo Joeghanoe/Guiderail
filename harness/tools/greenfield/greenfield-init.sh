@@ -25,8 +25,6 @@ place() { # place <from> <to>
 place "$templates/solution-design.md" docs/solution-design.md
 place "$templates/repo/AGENTS.md" AGENTS.md
 place "$templates/repo/scripts/verify.sh" scripts/verify.sh
-place "$templates/repo/Directory.Build.props" Directory.Build.props
-place "$templates/repo/BannedSymbols.txt" BannedSymbols.txt
 chmod +x "$target/scripts/verify.sh"
 mkdir -p "$target/docs/adr"
 

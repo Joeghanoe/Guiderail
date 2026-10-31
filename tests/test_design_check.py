@@ -53,8 +53,6 @@ class DesignCheckTests(unittest.TestCase):
         write(self.root, "docs/adr/0002-run.md", ADR)
         write(self.root, "AGENTS.md", AGENTS)
         write(self.root, "scripts/verify.sh", "dotnet format; dotnet build -warnaserror; dotnet test")
-        write(self.root, "Directory.Build.props", "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>")
-        write(self.root, "BannedSymbols.txt", "x")
         write(self.root, "src/Program.cs", PROGRAM)
         write(self.root, "src/Interfaces.cs", "interface IStore {} interface ISource {} interface IClock {} interface IRunner {} interface IEventSink {}")
         write(self.root, "src/Impl.cs", "class FileStore : IStore {}")

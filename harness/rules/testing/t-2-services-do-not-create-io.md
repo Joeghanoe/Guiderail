@@ -25,8 +25,9 @@ structure. This rule owns the prohibited I/O and ambient-state access that preve
 
 # Enforcement
 
-`harness/templates/repo/BannedSymbols.txt` with `Microsoft.CodeAnalysis.BannedApiAnalyzers` turns most of this into
-a build error. The composition root opts out with one scoped suppression.
+Review and the tests. A repo may also opt in to `harness/templates/repo/BannedSymbols.txt` with
+`Microsoft.CodeAnalysis.BannedApiAnalyzers`, which turns most of this into a build error (the composition root opts
+out with one scoped suppression); no repo is required to.
 
 # Boundary
 

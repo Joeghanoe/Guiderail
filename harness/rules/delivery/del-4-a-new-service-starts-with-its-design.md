@@ -28,7 +28,8 @@ changes:
   Where neither exists, a short `NNNN-title.md` with context, decision and consequences is enough.
 - **The repo's own `AGENTS.md`** from `templates/repo/AGENTS.md`: layout, vocabulary, current decisions,
   how a change crosses boundaries (CODE.7), how to verify, when to ask. The base file is not a substitute.
-- **`scripts/verify.sh`, `Directory.Build.props` and `BannedSymbols.txt`** (T.1, T.2), so "done" has a command.
+- **`scripts/verify.sh`** (T.1), so "done" has a command. A repo may add `Directory.Build.props` and
+  `BannedSymbols.txt` for T.2; the harness does not require them.
 
 `tools/greenfield/greenfield-init.sh` writes all of these as skeletons; `scripts/verify.sh` runs
 `tools/greenfield/design-check.py` and fails while a template prompt is left or a structural check fails.

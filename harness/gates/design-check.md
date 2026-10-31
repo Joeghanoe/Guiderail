@@ -12,7 +12,7 @@ tags: [architecture, greenfield, dotnet]
 
 Static, no build, no network, a few milliseconds. `generic` profile: a filled `docs/solution-design.md` (D01), at
 least one ADR (D02), the repo's own filled `AGENTS.md` (D03), `scripts/verify.sh` with format, warnings-as-errors and
-tests plus analyzer files (D04), container registrations in `Program.cs` (D05), no operation, service or handler
+tests (D04), container registrations in `Program.cs` (D05), no operation, service or handler
 class constructing a collaborator that implements an interface (D07), and tests that exercise components without
 the entry point (D09). `service` profile adds two ADRs, source/store/clock interfaces (D06) and the OBS.3 contract:
 an error-code catalogue, event names and a status or health call (D08).

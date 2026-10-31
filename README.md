@@ -17,7 +17,7 @@ change touches, rather than loading every instruction file up front.
 | Layer | What | Hard or soft |
 |---|---|---|
 | 1. Identity | Agents use a read-only cloud login; the review job has no service connection | **Hard**: the real boundary |
-| 2. Tools | `scripts/verify.sh`, `cloud-read.sh`, `check-scenarios.py`, analyzers (`BannedSymbols.txt`) | Hard for what goes through them |
+| 2. Tools | `scripts/verify.sh`, `cloud-read.sh`, `check-scenarios.py`, analyzers (optional `BannedSymbols.txt`) | Hard for what goes through them |
 | 3. Hooks and settings | Claude Code `PreToolUse` guards, the `Stop` verify, permission deny rules | Guardrail |
 | 4. Instructions | `AGENTS.base.md`, rules, examples | Soft |
 
@@ -40,8 +40,8 @@ harness/              the bundle (~/.golden-path-harness/harness after install.s
   playbooks/          review a change, add an example, process feedback, classify a test failure, write a business test plan,
                       write a spec, scaffold from a repo's conventions, optimize build duration, compress harness prose
   templates/          example.md, finding.md, spec.md, solution-design.md, project-terms.txt, business-testplan.spec.json;
-                      repo/ is what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
-                      BannedSymbols.txt, .harness-scenarios.json
+                      repo/ is what a project repo owns itself: AGENTS.md, scripts/verify.sh, .harness-scenarios.json;
+                      Directory.Build.props and BannedSymbols.txt are optional (T.2 build gate)
   tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/,
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
@@ -93,7 +93,7 @@ Only what is specific to the repo:
   Codex read it natively. Start from `harness/templates/repo/AGENTS.md`.
 - `scripts/verify.sh`: the repo's format, analyzer, build and test steps; `--fast` for the Stop hook.
 - Optional: `.harness-scenarios.json` (components and their scenario folders, T.5), and for .NET
-  `Directory.Build.props` with `BannedSymbols.txt`.
+  `Directory.Build.props` with `BannedSymbols.txt` (the T.2 build gate; copy them from `harness/templates/repo/`).
 - The PR pipeline: add `infra/pipelines/ai-review.yml` as a template; see its header. Pin a tag and pass its commit
   SHA as `harnessCommit`; a tag can move, the SHA cannot. The run links the checkout as `.harness/` and
   removes it at the end, also after a failure.
