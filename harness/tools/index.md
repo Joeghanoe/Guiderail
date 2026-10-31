@@ -22,4 +22,4 @@ running app only through the read wrappers (CLD.1, SEC.2); the guard hook and th
 
 New script: put it in the folder of the system it talks to; create a folder when a new system appears, and add a line here.
 
-* [code/](code/index.md) - Roslyn CODE.5 structural check with audit and baseline comparison modes and JSON evidence.
+* [code/](code/index.md) - Roslyn CODE.5 structural check with audit and baseline comparison modes and JSON evidence; `openapi-drift.py` is the gate for DEL.5: a committed OpenAPI snapshot that differs from the document the build generates fails the PR, listing the operations added and removed.
