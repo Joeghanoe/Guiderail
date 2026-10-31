@@ -57,6 +57,32 @@ expect 0 "brownfield runner controls (stand-in adapter and grader, no model)" py
 expect 0 "run diagnosis controls (evidence only, no model)" python3 -I "$here/tests/test_diagnose_run.py"
 expect 0 "harness usage and denied-command report (traces only, no model)" python3 -I "$here/tests/test_harness_usage.py"
 expect 0 "T.1 test-presence check and select --brief" python3 -I "$here/tests/test_test_presence.py"
+
+echo "== node-verify (a stub package manager on PATH)"
+nv="$h/tools/code/node-verify.sh"
+mkdir -p "$tmp/nv/bin" "$tmp/nv/app" "$tmp/nv/nolock" "$tmp/nv/partial"
+cat >"$tmp/nv/bin/bun" <<'STUB'
+#!/usr/bin/env bash
+echo "bun $*" >>"$NV_LOG"
+[[ "${NV_FAIL:-}" == "$*" ]] && exit 1
+exit 0
+STUB
+chmod +x "$tmp/nv/bin/bun"
+printf '{"scripts":{"format:check":"x","build":"x","test":"x"}}' >"$tmp/nv/app/package.json"
+: >"$tmp/nv/app/bun.lock"
+printf '{"scripts":{"test":"x"}}' >"$tmp/nv/partial/package.json"
+: >"$tmp/nv/partial/bun.lock"
+printf '{"scripts":{"test":"x"}}' >"$tmp/nv/nolock/package.json"
+export NV_LOG="$tmp/nv/log"
+: >"$NV_LOG"
+expect 0 "node-verify installs frozen, then runs the scripts the project has" env PATH="$tmp/nv/bin:$PATH" bash "$nv" "$tmp/nv/app"
+expect 0 "node-verify order is install, format:check, build, test" bash -c "[[ \"\$(tr '\n' '|' <'$NV_LOG')\" == 'bun install --frozen-lockfile|bun run format:check|bun run build|bun run test|' ]]"
+: >"$NV_LOG"
+expect 0 "node-verify names the steps a project does not define" bash -c "PATH='$tmp/nv/bin:$PATH' bash '$nv' '$tmp/nv/partial' 2>&1 | grep -q \"no 'build' script\""
+expect 1 "node-verify fails when a step fails" env PATH="$tmp/nv/bin:$PATH" NV_FAIL="run test" bash "$nv" "$tmp/nv/app"
+expect 1 "node-verify refuses a project without a lockfile" env PATH="$tmp/nv/bin:$PATH" bash "$nv" "$tmp/nv/nolock"
+expect 1 "node-verify refuses a folder without package.json" env PATH="$tmp/nv/bin:$PATH" bash "$nv" "$tmp/nv"
+unset NV_LOG
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
 expect 0 "overnight evidence: stub, scenario match, verdicts (no model)" python3 -I "$here/tests/test_overnight_evidence.py"
 expect 0 "review usage: tokens, cost, time per run; clean-commit check (no model)" python3 -I "$here/tests/test_usage.py"
