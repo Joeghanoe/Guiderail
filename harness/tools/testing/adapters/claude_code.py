@@ -11,10 +11,12 @@ import sys
 
 import common
 
+# The python3 entries let the agent run the bundle's own tools (bundle.py select, design-check.py) as AGENTS.base.md tells it.
 # The last three mirror what install.sh and the repo's verify command give a real install: the harness's own
 # scaffold command and the repo's verify command (T.1). Nothing else outside dotnet, git, ls and mkdir is allowed.
 ALLOWED = ["Read", "Write", "Edit", "Glob", "Grep", "Bash(dotnet *)", "Bash(git *)", "Bash(ls *)", "Bash(mkdir *)",
            "Bash(bash .harness/tools/greenfield/greenfield-init.sh *)", "Bash(bash .harness/tools/greenfield/greenfield-init.sh)",
+           "Bash(python3 -I .harness/tools/*)", "Bash(python3 .harness/tools/*)",
            "Bash(scripts/verify.sh *)", "Bash(scripts/verify.sh)", "Bash(bash scripts/verify.sh *)", "Bash(bash scripts/verify.sh)"]
 
 
