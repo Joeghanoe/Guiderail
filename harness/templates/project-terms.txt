@@ -1,14 +1,15 @@
 # Names that make an example project-specific. bundle.py rejects an example that contains one (whole words, any example).
 # Add customers, partners, projects and internal system names; a repo may add its own with --terms.
-NCJ
-Telindus
-Proximus
-Gemeente Amsterdam
-GemeenteAmsterdam
-Royal Flora Holland
-RoyalFloraHolland
 TeamNOW
 Aquarium
 IntegrationPlatform
-LMN
 Bizure.Backup
+hub-conn
+b2b-ext
+b2b-hook
+aq-back
+DataHub
+FreshService
+TimeChimp
+Nmbrs
+TeamValue

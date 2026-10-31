@@ -1,0 +1,16 @@
+{
+  "scenario_id": "greenfield-002",
+  "provider": "anthropic",
+  "model": "claude-sonnet-5-5",
+  "options": {"cli": "claude -p", "setting_sources": "project", "permission_mode": "acceptEdits"},
+  "adapter_version": "claude_code.py@<harness commit>; image harness-eval:local",
+  "adapter": {
+    "argv": ["python3", "/adapters/claude_code.py", "--workspace", "{workspace}", "--prompt-file", "{prompt}",
+             "--trace-dir", "{trace_dir}", "--model", "claude-sonnet-5-5"]
+  },
+  "isolation": {"mode": "container", "evidence": null},
+  "container": {"image": "harness-eval:local", "home_volume": "harness-eval-home", "memory": "5g", "cpus": 2, "network": "bridge"},
+  "protected_paths": [],
+  "human_interventions": 0,
+  "review_minutes": null
+}

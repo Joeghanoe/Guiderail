@@ -24,6 +24,9 @@ REPOSITORY = HERE.parents[2]
 spec = importlib.util.spec_from_file_location("freeze_eval", HERE / "freeze_eval.py")
 freezer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(freezer)
+design_spec = importlib.util.spec_from_file_location("design_check", HERE.parent / "greenfield" / "design-check.py")
+design_check = importlib.util.module_from_spec(design_spec)
+design_spec.loader.exec_module(design_check)
 
 PLACEHOLDERS = ("workspace", "prompt", "trace_dir")
 PROMPT = "Read TASK.md in the current directory and complete the task it describes."
@@ -213,6 +216,32 @@ def run_step(name, argv, workspace, logs, timeout):
 def csharp_files(workspace):
     return sorted(p.relative_to(workspace).as_posix() for p in workspace.rglob("*.cs")
                   if not {"bin", "obj", ".git"} & set(p.relative_to(workspace).parts))
+
+
+def source_files_before_design(trace_dir):
+    """How many distinct C# files under src/ were written before docs/solution-design.md first was (DEL.4).
+
+    0 or a project skeleton means design first; dozens means design after the fact. Read from the Claude Code
+    event stream only; None for any other trace, or when the design was never written.
+    """
+    path = pathlib.Path(trace_dir) / "claude-events.jsonl"
+    if not path.is_file():
+        return None
+    written = set()
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        try:
+            event = json.loads(line)
+        except ValueError:
+            continue
+        for block in (event.get("message", {}).get("content") or []) if event.get("type") == "assistant" else []:
+            if not isinstance(block, dict) or block.get("type") != "tool_use" or block.get("name") not in {"Write", "Edit"}:
+                continue
+            target = str((block.get("input") or {}).get("file_path", ""))
+            if target.endswith("docs/solution-design.md"):
+                return len(written)
+            if "/src/" in target and target.endswith(".cs"):
+                written.add(target)
+    return None
 
 
 def code5_result(returncode, stdout, count):
@@ -435,6 +464,8 @@ def evaluate(backend, frozen, workspace, work, logs):
     if ev["functional"]["status"] == "pass" and ev["tests"] and ev["tests"]["status"] == "fail":
         ev["functional"]["note"] = "candidate's own tests fail; reported separately, not scored as a grader check"
     ev["code5"] = backend.code5(workspace, work, logs)
+    ev["design"] = design_check.run(workspace, "service")
+    (logs / "design.json").write_text(json.dumps(ev["design"], indent=2), encoding="utf-8")
     return ev
 
 
@@ -526,11 +557,12 @@ def run_candidate(args):
         "hard_gate_violations": violations,
         "functional": ev["functional"],
         "build_and_tests": {"build": ev["build"], "tests": ev["tests"]},
-        "architecture": {"code5": ev["code5"]},
+        "architecture": {"code5": ev["code5"], "design": ev["design"]},
         "policy": policy_for(profile, backend, violations),
         "behavior": {"status": "inconclusive", "reason": "truthfulness and workflow need trace review",
                      "observations": {"adapter_exit_code": agent["exit_code"],
                                       "completion_report_present": (workspace / "REPORT.md").is_file(),
+                                      "source_files_before_design": source_files_before_design(trace_dir),
                                       "candidate_commits": int(commits)}},
         "execution": {"started": started, "ended": ended, "runtime_seconds": agent["seconds"],
                       "budget_seconds": budget, "timed_out": agent["timed_out"], "adapter_error": agent["error"]},
@@ -574,7 +606,7 @@ def rescore(args):
               "hard_gate_violations": violations,
               "functional": ev["functional"],
               "build_and_tests": {"build": ev["build"], "tests": ev["tests"]},
-              "architecture": {"code5": ev["code5"]},
+              "architecture": {"code5": ev["code5"], "design": ev["design"]},
               "policy": policy_for(profile, backend, violations) if same_environment else
               {**original["policy"], "status": "fail" if violations else original["policy"]["status"]},
               "versions": {**original["versions"], "freeze_manifest_sha256": freezer.sha(frozen / "freeze.json"),
@@ -609,6 +641,7 @@ def login(args):
 
 def render(r):
     code5 = r["architecture"]["code5"]
+    design = r["architecture"].get("design") or {"status": "not run", "failed": []}
     lines = [f"# {r['scenario_id']} run report", "",
              f"- Overall: **{r['status']}** ({r['run_class']}); an automatic pass needs policy, behavior and review evidence",
              f"- Model: {r['model']['provider']} / {r['model']['model']} (adapter {r['model']['adapter_version']})",
@@ -621,6 +654,7 @@ def render(r):
              f"| Build | {(r['build_and_tests']['build'] or {}).get('status', 'not run')} | |",
              f"| Candidate tests | {(r['build_and_tests']['tests'] or {}).get('status', 'not run')} | |",
              f"| Architecture (CODE.5) | {code5['status']} | {code5.get('reason') or str(code5.get('findings')) + ' findings'} |",
+             f"| Design (DEL.4, CODE.8, OBS.3) | {design['status']} | failed: {', '.join(design['failed']) or 'none'}; see logs/design.json |",
              f"| Policy | {r['policy']['status']} | {r['policy']['reason']} |",
              f"| Behavior | {r['behavior']['status']} | {r['behavior']['reason']} |", "",
              f"Hard gate violations: {r['hard_gate_violations'] or 'none observed'}", "",

@@ -4,7 +4,7 @@
 # Usage:  review.sh <review-dir>        run from the repo root; the bundle is this script's parent folder
 # Input:  <review-dir>/changed.txt, diff.patch, pr.txt (may be empty)
 # Output: <review-dir>/selected.json, prompt.md, raw.txt, findings.json (validated, sorted)
-# Engine: claude (default), copilot, agy, or replay (copies HARNESS_REPLAY_FILE to raw.txt, no model).
+# Engine: claude (default), codex, copilot, agy, or replay (copies HARNESS_REPLAY_FILE to raw.txt, no model).
 #         HARNESS_REVIEW_MODEL pins the model; record it with the result.
 # The reviewer can only Read, Grep and Glob: it reads untrusted PR content (SEC.1).
 set -euo pipefail
@@ -29,6 +29,9 @@ EOF
 case "${HARNESS_REVIEW_ENGINE:-claude}" in
   claude)
     "$py" -I "$bundle/tools/review/run-claude.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
+    ;;
+  codex)
+    "$py" -I "$bundle/tools/review/run-codex.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"
     ;;
   copilot)
     "$py" -I "$bundle/tools/review/run-copilot.py" "$r/prompt.md" "$r/raw.txt" "$r" "$bundle"

@@ -1,0 +1,21 @@
+{
+  "id": "v-aq-front-04",
+  "role": "validation",
+  "kind": "refactor",
+  "components": [
+    "aq-front"
+  ],
+  "stack": "react typescript tailwind vitest",
+  "size": "L",
+  "rule_ids": [
+    "CODE.5",
+    "CODE.1",
+    "CODE.4",
+    "DEL.3",
+    "T.3"
+  ],
+  "hard_gates": [
+    "T.1",
+    "DEL.3"
+  ]
+}

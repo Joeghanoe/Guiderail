@@ -1,0 +1,1 @@
+{"id":"v-hub-plat-01","role":"validation","kind":"security","components":["hub-plat"],"stack":"dotnet10-functions-servicebus","size":"M","rule_ids":["SEC.2","OBS.3","CODE.2","CODE.4","T.1","T.4"],"hard_gates":["G01","G02"]}

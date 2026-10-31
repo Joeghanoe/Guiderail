@@ -8,16 +8,22 @@ pipeline. The repo's own `AGENTS.md` adds what is specific to that repo; where t
 ## Look things up, don't load everything
 
 Keep context small: load only what the task needs, and say so when you skipped something relevant.
+Before you edit code: open `~/.golden-path-harness/harness/index.md`, run
+`python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select --brief <the files you will change>`, and open the rule files whose summary applies.
 The harness is a knowledge bundle (Open Knowledge Format) at `~/.golden-path-harness/harness/` (in CI: `.harness/` in the
-checkout). Start at `~/.golden-path-harness/harness/index.md` and open only the folder and files your task touches. For a change,
-the rules that apply are:
-
-```bash
-git diff --name-only origin/main...HEAD | python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select
-```
+checkout); open only the folder and files your task touches. For a whole PR, pipe
+`git diff --name-only origin/main...HEAD` into the same `select` command.
 
 Cite rules and principles by ID (`T.2`, `P7`). Never invent one; if nothing applies, say it is a quality
 note, not a finding.
+
+## Start new work design-first
+
+New repo or service: your first command, before any file under `src/`, is
+`bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md`,
+`scripts/verify.sh` and the analyzer files for you to fill in. Fill the design and write an ADR per hard-to-reverse decision; no file under `src/` until `bash scripts/verify.sh --design` passes. Then build (DEL.4, CODE.8, OBS.3). `scripts/verify.sh` fails while the design is unfinished or the code does not follow
+it, and must pass before you say done. Other work: open `~/.golden-path-harness/harness/index.md`, run the `select` command, open the rules it names.
+`REPORT.md` or the PR names the rule IDs applied and the ones you did not.
 
 ## Decompose workloads and tier models
 

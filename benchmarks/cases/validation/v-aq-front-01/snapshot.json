@@ -1,0 +1,30 @@
+{
+  "component": "aq-front",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "src/lib/api.ts",
+      "sha256": "7f75db82e71665fd649d6521017f63b363de26839f9893e3adae9099037e7bc3"
+    },
+    {
+      "path": "src/lib/api-model.ts",
+      "sha256": "3dccdd52eee59f944069f829b0d4486cd235b0303ceae66bbac0c5da80acb7a5"
+    },
+    {
+      "path": "src/hooks/use-customers.ts",
+      "sha256": "fedfca79c79a45f2681d614eab2864b6d45248402b9360ba681976c6596f2501"
+    },
+    {
+      "path": "src/lib/query-keys.ts",
+      "sha256": "63e5afdf4eda2893ac70eee3c0c0f1195a523c65a1f196dd29c8d6db72778a61"
+    },
+    {
+      "path": "src/hooks/__tests__/use-customers.test.ts",
+      "sha256": "b68a28cdb2c767c9087c748672c7dc5d674f16e608d1eb01c5c63aebd2d43a21"
+    },
+    {
+      "path": "src/pages/overview-redirect-page.tsx",
+      "sha256": "e1cf7d2b0206f34f0f8ff7e118efaeae3adb6ae0d90d9ad1370023030cc6a561"
+    }
+  ]
+}

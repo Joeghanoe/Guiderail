@@ -3,6 +3,7 @@
 - **Status:** Draft — requires team review
 - **Date:** 2026-10-29
 - **Scope:** Provider-neutral harness contracts, adapters, benchmarking and authentication boundaries
+- **Amended by:** ADR 0007 (per-run resource fields)
 - **Depends on:** ADR 0002, ADR 0004, ADR 0005
 
 ## Context
@@ -19,7 +20,7 @@ The initial engineering workflow uses Claude Code, but the harness is intended t
 4. Require common authorization and policy enforcement **outside** the agent's own prompts; adapters must not bypass these boundaries.
 5. Compare either **models under materially equivalent harness conditions** or explicitly label tests as **model + adapter/harness stack** comparisons when execution capabilities differ.
 6. Prefer sequential isolated runs and replay of captured artifacts to minimize cost; concurrency is not necessary for correctness.
-7. Track versioned model identifiers where possible, provider usage limits, context differences and unavailable metrics. Mark unknown financial cost as unknown, not zero.
+7. Track versioned model identifiers where possible, provider usage limits, context differences and unavailable metrics. Mark unknown financial cost as unknown, not zero. Every adapter writes `tokens_in`, `tokens_out`, `wall_seconds` and `cost_estimate` per run, with `null` for what the engine does not report (ADR 0007 decision 3).
 8. Never assume that a subscription login grants unlimited automation rights; confirm support and terms per provider.
 
 ## Architecture sketch

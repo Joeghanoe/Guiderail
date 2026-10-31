@@ -1,0 +1,26 @@
+{
+  "component": "aq-back-v",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "Services/AzureManagementService.cs",
+      "sha256": "a56d95e3fc69282dbd0f166dd32a58cacdc22668d5396b45dc58c2c5efda3dd3"
+    },
+    {
+      "path": "Durable/AzureMonitorIngestActivities.cs",
+      "sha256": "0e3a081d3d2a803abc4ebc0944ec1cfa49edd8c9c5fb6c1a546f43024213dd90"
+    },
+    {
+      "path": "Durable/SubscriptionIngestOrchestration.cs",
+      "sha256": "2b00ba2d30258a7070e0c0e4b18b43b21795b0a83119cefcb108682313862428"
+    },
+    {
+      "path": "Services/TableStorageLoadStateService.cs",
+      "sha256": "d6deb27a44ed173fa14cfbec14699c6c7ee19218b2bc05cc64a14a42b7458ef5"
+    },
+    {
+      "path": "Services/Interfaces/IAzureManagementService.cs",
+      "sha256": "db1e980e81d6db02d117aa230410e566c427853ab94dd1888aad313f51872e2f"
+    }
+  ]
+}

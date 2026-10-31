@@ -1,0 +1,20 @@
+{
+  "id": "v-aq-back-v-02",
+  "role": "validation",
+  "kind": "defect",
+  "components": [
+    "aq-back-v"
+  ],
+  "stack": "dotnet-isolated azure-functions durable-tasks",
+  "size": "S",
+  "rule_ids": [
+    "CODE.2",
+    "OBS.3",
+    "T.4",
+    "T.2"
+  ],
+  "hard_gates": [
+    "T.1",
+    "T.4"
+  ]
+}

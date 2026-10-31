@@ -66,6 +66,29 @@ class EvaluationTests(unittest.TestCase):
             "src/Example.bicep",
         )
 
+    def test_marked_multifile_example_writes_each_source_file(self):
+        scenario = next(s for s in evaluation.from_cases(ROOT / "harness")
+                        if s[0] == "example-e-020-code-5-one-type-per-file-no-small-type-exception-good")
+        _, spec, _, write, _ = scenario
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = pathlib.Path(temporary)
+            write(repo)
+            self.assertTrue((repo / "src/MenuService.cs").is_file())
+            self.assertTrue((repo / "src/Menu.cs").is_file())
+            self.assertTrue((repo / "src/IMenuRepository.cs").is_file())
+        self.assertNotIn("file", spec["expect"].get("must_find", [{}])[0])
+
+    def test_tree_example_writes_the_directory_layout_as_changed_files(self):
+        scenario = next(s for s in evaluation.from_cases(ROOT / "harness")
+                        if s[0] == "example-e-021-growing-service-needs-owned-folders-bad")
+        _, spec, _, write, _ = scenario
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = pathlib.Path(temporary)
+            write(repo)
+            self.assertTrue((repo / "src/WorkProcessor/Services/SystemAAdapter.cs").is_file())
+            self.assertTrue((repo / "src/WorkProcessor/Models/WorkItem.cs").is_file())
+        self.assertNotIn("file", spec["expect"]["must_find"][0])
+
     def test_snippet_findings_are_matched_by_rule_and_file_not_short_line_range(self):
         finding = {"rule_id": "T.2", "file": "src/Example.cs", "line": 8, "severity": "major"}
         result = evaluation.score(
@@ -180,6 +203,23 @@ class EvaluationTests(unittest.TestCase):
         runner = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(runner)
         self.assertEqual(runner.CLI_ENVIRONMENT, evaluation.CLI_ENVIRONMENT)
+
+    def test_codex_runner_and_evaluator_share_one_environment_allowlist(self):
+        spec = importlib.util.spec_from_file_location(
+            "run_codex", ROOT / "harness" / "tools" / "review" / "run-codex.py")
+        runner = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(runner)
+        self.assertEqual(runner.CLI_ENVIRONMENT, evaluation.CODEX_CLI_ENVIRONMENT)
+
+    def test_codex_eval_environment_keeps_auth_but_drops_pipeline_tokens(self):
+        parent = {"PATH": "/usr/bin", "HOME": "/home/user", "CODEX_HOME": "/home/user/.codex",
+                  "OPENAI_API_KEY": "openai-token", "SYSTEM_ACCESSTOKEN": "pipeline-token"}
+        with patch.dict("os.environ", parent, clear=True):
+            child = evaluation.review_environment(SimpleNamespace(engine="codex", model=None), "test")
+        self.assertEqual(child, {
+            "PATH": "/usr/bin", "HOME": "/home/user", "CODEX_HOME": "/home/user/.codex",
+            "OPENAI_API_KEY": "openai-token", "HARNESS_REVIEW_ENGINE": "codex",
+        })
 
     def test_provider_routing_variables_are_kept_but_pipeline_tokens_are_not(self):
         parent = {"PATH": "/usr/bin", "ANTHROPIC_BASE_URL": "https://gateway", "CLAUDE_CODE_USE_BEDROCK": "1",

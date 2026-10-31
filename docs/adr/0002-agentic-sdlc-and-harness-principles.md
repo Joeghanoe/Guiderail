@@ -4,6 +4,7 @@
 - **Date:** 2026-10-29
 - **Scope:** Shared agent execution standards and evaluation boundaries
 - **Depends on:** ADR 0001
+- **Amended by:** ADR 0007 (scope of "no hard gates", owner)
 
 ## Context
 
@@ -53,6 +54,10 @@ A reusable evaluation corpus and evidence contract become maintained engineering
 
 1. Which company principles are mandatory **hard gates**, and which are recommendations?
    - **Answer:** All of them apply, but none are hard gates. Exceptions can be made with the right grounding.
+   - **Scope (ADR 0007):** this answer is about software design decisions. The harness does not tie a project to
+     a framework or language, and the principles reach the code through examples. It does not cover the
+     harness's own safety and verification gates (SEC.1, SEC.2, CLD.1, CLD.2, H.1, T.1, the harness pin and the
+     benchmark score), which stay hard.
 2. Who can approve deviations/exceptions, and are exceptions per-story, per-repository, or time-limited?
    - **Answer:** Exceptions can be made at any level: the smallest owning authority decides, as long as it is documented.
 3. Should the harness prescribe a fixed engineering workflow or allow agent choice as long as outcomes and evidence meet the contract?
@@ -61,5 +66,7 @@ A reusable evaluation corpus and evidence contract become maintained engineering
    - **Answer:** Read-only only. Humans apply updates, creates and deletes.
 5. Who maintains and approves the eval suite and benchmark holdouts?
    - **Answer:** The team (TeamValue/Bizure developers).
+   - **Current owner (ADR 0007):** joeghanoe maintains and reviews the eval suite and holdouts until a second
+     maintainer is named.
 6. What evidence is mandatory for a PR to be considered review-ready?
    - **Answer:** When the requirements/acceptance criteria are proven by an automated test or other proof.

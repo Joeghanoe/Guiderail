@@ -1,0 +1,34 @@
+{
+  "component": "aq-front",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "src/pages/configure-page.tsx",
+      "sha256": "cd9031be0d996ce6e027c367e45fbb4506317c0e05023d30df9dc037ad2a4007"
+    },
+    {
+      "path": "src/hooks/use-domains.ts",
+      "sha256": "99ed7add8c39dd7bc2e8a08f538e778e6804d2cbc063606931a092a27afee0bb"
+    },
+    {
+      "path": "src/hooks/use-update-domain.ts",
+      "sha256": "5c3ceaeb80206d92e168206f556492afd76184af7547f68d11db4a926d8cb1ca"
+    },
+    {
+      "path": "src/hooks/use-delete-domain.ts",
+      "sha256": "8ad2e1762412248a029286eb8ada35be5e4ff8775926f82d8a0feae98dbc7542"
+    },
+    {
+      "path": "src/lib/parse-resource-id.ts",
+      "sha256": "de69530dd34702465cc036b48f0606b6e1fa64733d467e9251e819f4a7ed9989"
+    },
+    {
+      "path": "src/lib/__tests__/parse-resource-id.test.ts",
+      "sha256": "dc83c8948b270247b79326d89378a3225fbd74738ba21d20c3a5b4264ac3b851"
+    },
+    {
+      "path": "src/components/ui/select.tsx",
+      "sha256": "e20ee6b70aaabc2fa1c3367a247c175f97ded173e35d1efdb04902537d480c2b"
+    }
+  ]
+}

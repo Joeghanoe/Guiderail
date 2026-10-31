@@ -25,7 +25,7 @@ tests mock the boundary and integration tests run it against a container.
 
 # Enforcement
 
-`infra/templates/repo/BannedSymbols.txt` with `Microsoft.CodeAnalysis.BannedApiAnalyzers` turns most of this into
+`harness/templates/repo/BannedSymbols.txt` with `Microsoft.CodeAnalysis.BannedApiAnalyzers` turns most of this into
 a build error. The composition root opts out with one scoped suppression.
 
 # Boundary

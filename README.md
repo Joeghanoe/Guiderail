@@ -39,7 +39,9 @@ harness/              the bundle (~/.golden-path-harness/harness after install.s
   gates/              registration of each deterministic check (tool, owner, coverage, blind spots)
   playbooks/          review a change, add an example, process feedback, classify a test failure, write a business test plan,
                       write a spec, scaffold from a repo's conventions, optimize build duration, compress harness prose
-  templates/          example.md, finding.md, spec.md, project-terms.txt, business-testplan.spec.json
+  templates/          example.md, finding.md, spec.md, solution-design.md, project-terms.txt, business-testplan.spec.json;
+                      repo/ is what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
+                      BannedSymbols.txt, .harness-scenarios.json
   tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/,
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
@@ -47,8 +49,6 @@ feedback/             draft examples from every repo (~/.golden-path-harness/fee
 adapters/             /tv-review for Claude Code, installed by install.sh
 benchmarks/          agent evaluation scenarios (task, criteria, run profiles); tests/ verifies the harness itself
 infra/scripts/        CI and local helper scripts (context budget, review-changed, eval-home-setup)
-infra/templates/repo/  what a project repo owns itself: AGENTS.md, scripts/verify.sh, Directory.Build.props,
-                      BannedSymbols.txt, .harness-scenarios.json
 infra/pipelines/ai-review.yml   Azure DevOps steps template: pin, verify, T.5, AI review, receipt, clean-up
 install.sh            installs the harness for your user; removes the old AI Hub wiring
 tests/run.sh          tests for the tools, hooks and install; no network
@@ -90,7 +90,7 @@ Requirements: bash, jq, python3 and git. On Windows, Claude Code runs hooks thro
 Only what is specific to the repo:
 
 - `AGENTS.md`: the repo's own instructions, including its naming convention (IAC.6). Claude Code, Copilot and
-  Codex read it natively. Start from `infra/templates/repo/AGENTS.md`.
+  Codex read it natively. Start from `harness/templates/repo/AGENTS.md`.
 - `scripts/verify.sh`: the repo's format, analyzer, build and test steps; `--fast` for the Stop hook.
 - Optional: `.harness-scenarios.json` (components and their scenario folders, T.5), and for .NET
   `Directory.Build.props` with `BannedSymbols.txt`.

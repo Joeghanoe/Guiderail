@@ -41,8 +41,18 @@ echo "== CODE.5 structural checker"
 expect 0 "CODE.5 checker builds" dotnet build "$h/tools/code/CheckTypes.csproj"
 expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test_code_types.py
 expect 0 "provider-neutral backup grader controls" python3 -I "$here/tests/test_backup_eval.py"
+expect 0 "greenfield design checks" python3 -I "$here/tests/test_design_check.py"
+gf="$tmp/greenfield"; mkdir -p "$gf"
+expect 0 "greenfield-init writes the skeletons" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
+expect 0 "greenfield-init keeps what exists" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
+expect 1 "design gate fails a fresh skeleton" python3 -I "$h/tools/greenfield/design-check.py" "$gf" --profile service
+expect 0 "verify.sh names the service profile" grep -q "^DESIGN_PROFILE=service" "$gf/scripts/verify.sh"
 expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_freeze_eval.py"
 expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
+expect 0 "brownfield runner controls (stand-in adapter and grader, no model)" python3 -I "$here/tests/test_run_brownfield.py"
+expect 0 "run diagnosis controls (evidence only, no model)" python3 -I "$here/tests/test_diagnose_run.py"
+expect 0 "harness usage and denied-command report (traces only, no model)" python3 -I "$here/tests/test_harness_usage.py"
+expect 0 "T.1 test-presence check and select --brief" python3 -I "$here/tests/test_test_presence.py"
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
 
 echo "== guard-bash"
@@ -234,6 +244,9 @@ printf 'src/Services/PartnerService.cs\n' >"$tmp/changed"
 python3 -I "$h/tools/harness/bundle.py" select <"$tmp/changed" >"$tmp/select.json"
 expect 0 "select picks T.2 for a .cs file" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select.json"
 expect 0 "select skips IAC rules for a .cs file" jq -e '.rules | to_entries | map(.value) | index("IAC.1") == null' "$tmp/select.json"
+python3 -I "$h/tools/harness/bundle.py" select src/Orders.cs >"$tmp/select-args.json" </dev/null
+expect 0 "select takes paths as arguments, not only on stdin" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select-args.json"
+expect 0 "select prints a summary for every rule it picks" jq -e '(.rules | length) > 0 and (.summary | length) == (.rules | length)' "$tmp/select-args.json"
 cp -R "$h" "$tmp/withexample"
 find "$tmp/withexample/examples" -name "e-*.md" -delete   # fixtures start without the real examples
 cat >"$tmp/example.md" <<'CASE'
@@ -282,7 +295,7 @@ sed 's/^var http = new HttpClient();$/<code snippet>/' "$tmp/example.md" >"$tmp/
 expect 1 "check-example rejects the template placeholder" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/placeholder.md"
 sed 's#^rule: .*#rule: /rules/nope.md#' "$tmp/example.md" >"$tmp/norule.md"
 expect 1 "check-example rejects an unknown rule" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/norule.md"
-sed 's/^Example\.$/The Contoso partner integration for NCJ./' "$tmp/example.md" >"$tmp/specific.md"
+sed 's/^Example\.$/The TeamNOW partner integration./' "$tmp/example.md" >"$tmp/specific.md"
 expect 1 "check-example rejects a project-specific name" python3 -I "$h/tools/harness/bundle.py" check-example "$tmp/specific.md"
 echo "Fabrikam" >"$tmp/terms.txt"
 sed 's/^Example\.$/Built for Fabrikam./' "$tmp/example.md" >"$tmp/specific2.md"

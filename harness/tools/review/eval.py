@@ -36,6 +36,11 @@ COPILOT_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDA
                            "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                            "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "COPILOT_HOME", "HTTPS_PROXY",
                            "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
+# Keep identical to CLI_ENVIRONMENT in run-codex.py.
+CODEX_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
+                         "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT", "CODEX_HOME",
+                         "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "OPENAI_API_KEY", "OPENAI_BASE_URL",
+                         "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY", "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
 # Keep identical to CLI_ENVIRONMENT in run-agy.py.
 AGY_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
                        "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
@@ -104,6 +109,64 @@ def case_examples(body, kind):
             yield lang, code, suffix
 
 
+def marked_source_files(code):
+    """Split a snippet whose `// File.ext` lines represent separate source files."""
+    marker = re.compile(r"^//\s+([A-Za-z0-9_.-]+\.(?:cs|ts|tsx))\s*$", re.I)
+    files, target, lines = {}, None, []
+    for line in code.splitlines():
+        match = marker.fullmatch(line)
+        if match:
+            if target is not None:
+                files[target] = "\n".join(lines).strip() + "\n"
+            target, lines = safe_repo_path(f"src/{match.group(1)}"), []
+        elif target is not None:
+            lines.append(line)
+    if target is not None:
+        files[target] = "\n".join(lines).strip() + "\n"
+    return files
+
+
+def tree_source_files(code):
+    """Turn an indented directory tree into changed placeholder files for layout evals."""
+    files, directories = {}, []
+    for line in code.splitlines():
+        if not line.strip():
+            continue
+        spaces = len(line) - len(line.lstrip(" "))
+        if spaces % 2:
+            raise ValueError("evaluation tree indentation must use two spaces per level")
+        level, name = spaces // 2, line.strip()
+        if name.endswith("/"):
+            directories = directories[:level] + [name[:-1]]
+            continue
+        target = safe_repo_path(pathlib.PurePosixPath(*directories[:level], name).as_posix())
+        files[target] = f"// Evaluation fixture for {target}.\n"
+    return files
+
+
+def case_source_files(meta, lang, code):
+    if bundle.unquote(meta.get("eval_split_files", "")).lower() == "true":
+        files = marked_source_files(code)
+        if not files:
+            raise ValueError("eval_split_files needs at least one // File.ext marker")
+        return files, None
+    if bundle.unquote(meta.get("eval_tree", "")).lower() == "true":
+        files = tree_source_files(code)
+        if not files:
+            raise ValueError("eval_tree needs at least one file")
+        return files, None
+    target = safe_repo_path(bundle.unquote(meta.get("example_file", "")) or
+                            f"src/Example.{LANG_EXT.get(lang, 'txt')}")
+    return {target: code + "\n"}, target
+
+
+def write_source_files(repo, files):
+    for target, content in files.items():
+        destination = repo / target
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_text(content, encoding="utf-8")
+
+
 def safe_repo_path(value):
     path = pathlib.PurePosixPath(value)
     windows_path = pathlib.PureWindowsPath(value)
@@ -159,19 +222,19 @@ def from_cases(root):
         kinds = (("Good", "clean"),) if verdict == "boundary" else (("Bad", "find"), ("Good", "clean"))
         for kind, expect in kinds:
             for lang, code, suffix in case_examples(body, kind):
-                target = safe_repo_path(bundle.unquote(meta.get("example_file", "")) or
-                                        f"src/Example.{LANG_EXT.get(lang, 'txt')}")
+                files, target = case_source_files(meta, lang, code)
+                finding = {"rule_id": bad_rule_id if expect == "find" else rule_id}
+                if target:
+                    finding["file"] = target
                 spec = {"description": f"{path.stem}: {kind.lower()} example", "tags": ["example", kind.lower()],
                         "critical": bundle.unquote(meta.get("eval_critical", "")).lower() == "true",
                         "verified": bundle.human_verified(meta),
                         "advisory": advisory,
                         "mask_example": verdict != "boundary",
                         "example_path": path.relative_to(root).as_posix(),
-                        "expect": {"must_find": [{"rule_id": bad_rule_id if expect == "find" else rule_id,
-                                                  "file": target}]}
+                        "expect": {"must_find": [finding]}
                         if expect == "find" else {"must_not_find": [rule_id]}}
-                write = lambda repo, t=target, c=code: ((repo / t).parent.mkdir(parents=True, exist_ok=True),
-                                                        (repo / t).write_text(c + "\n", encoding="utf-8"))
+                write = lambda repo, source_files=files: write_source_files(repo, source_files)
                 before = lambda repo, files=context_files: write_case_context(repo, files)
                 yield f"example-{path.stem}-{suffix}", spec, before, write, pr
         for variant_kind, lang, code, suffix in variant_examples(body):
@@ -218,7 +281,8 @@ def score(spec, findings):
     found, missed = [], []
     for want in expect.get("must_find", []):
         line_range = want.get("lines")
-        hit = any(f["rule_id"] == want["rule_id"] and f["file"].lstrip("/") == want["file"]
+        hit = any(f["rule_id"] == want["rule_id"]
+                  and (not want.get("file") or f["file"].lstrip("/") == want["file"])
                   and (not line_range or line_range[0] - LINE_TOLERANCE <= f["line"] <= line_range[1] + LINE_TOLERANCE)
                   for f in findings)
         (found if hit else missed).append(want["rule_id"])
@@ -240,7 +304,8 @@ def copy_evaluation_bundle(source, destination, spec):
 
 
 def review_environment(args, name):
-    allowed = {"copilot": COPILOT_CLI_ENVIRONMENT, "agy": AGY_CLI_ENVIRONMENT}.get(args.engine, CLI_ENVIRONMENT)
+    allowed = {"codex": CODEX_CLI_ENVIRONMENT, "copilot": COPILOT_CLI_ENVIRONMENT,
+               "agy": AGY_CLI_ENVIRONMENT}.get(args.engine, CLI_ENVIRONMENT)
     environment = {key: os.environ[key] for key in allowed if key in os.environ}
     environment["HARNESS_REVIEW_ENGINE"] = args.engine
     if args.engine == "replay":
@@ -357,7 +422,7 @@ def run_scenarios(scenarios, args, thresholds):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--engine", default="claude", choices=["claude", "copilot", "agy", "replay"])
+    parser.add_argument("--engine", default="claude", choices=["claude", "codex", "copilot", "agy", "replay"])
     parser.add_argument("--replay-dir")
     parser.add_argument("--model", help="model to pin, recorded in the result")
     parser.add_argument("--only", action="append", help="run only this scenario (repeatable)")

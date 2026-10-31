@@ -4,6 +4,7 @@
 - **Date:** 2026-10-29
 - **Scope:** Benchmark lifecycle, evaluation ownership, continuous improvement and evidence
 - **Depends on:** ADR 0001, ADR 0002, ADR 0004
+- **Amended by:** ADR 0007 (benchmark score, trajectory checks, clean-commit evidence, owner)
 
 ## Context
 
@@ -20,7 +21,7 @@ The harness must make company engineering principles measurable, rather than rel
 | Harness unit/integration tests | Whether harness code, policy scripts and runners behave correctly | Conventional automated tests |
 | Deterministic conventions | Class/file structure, formatting, compilation, static analysis, tests | Parsers, analyzers and executable assertions |
 | Security/tool policy | Allowed and prohibited actions | Deny/allow matrices plus independent execution enforcement |
-| Behavioral evals | Tool choices, remediation, truthful reporting, respect for denials | Captured traces with explicit rubric |
+| Behavioral evals | Tool choices, remediation, truthful reporting, respect for denials | Captured traces with explicit rubric; the trajectory checks in ADR 0007 decision 4 |
 | Functional outcome evals | Approved business acceptance criteria | Independent acceptance tests and observable artifacts |
 | Qualitative review | Architecture fitness and maintainability requiring judgment | Calibrated review rubric; human review as needed |
 
@@ -38,6 +39,11 @@ The harness must make company engineering principles measurable, rather than rel
 
 - Functional correctness, architectural compliance, behavioral compliance and command-policy compliance are separate result dimensions.
 - Hard-gate violations cannot be offset by a favorable aggregate score.
+- The benchmark score is the weakest dimension, not a weighted average, and any hard-gate breach sets it to 0.
+  The pass threshold is 85. Cost and latency have their own budget check outside the score (ADR 0007
+  decision 5).
+- Only a run on a clean, committed tree counts as gate evidence. Dirty and back-filled runs are advisory
+  (ADR 0007 decision 1).
 - `inconclusive` and `not applicable` are valid outcomes when evidence is insufficient or a rule does not apply.
 - The candidate agent must not change hidden grader definitions, approved acceptance criteria, or scoring thresholds during its run.
 - Keep a holdout of projects/scenarios unseen during tuning; avoid using a holdout's results to iteratively optimize and then claiming it remains unseen.
@@ -64,13 +70,16 @@ The harness must make company engineering principles measurable, rather than rel
 
 1. Who can approve a new rule or change an existing rule's severity?
    - **Answer:** Anyone can propose. The team must agree and the behaviour (eval) must be validated.
+   - **Until a second maintainer is named (ADR 0007):** joeghanoe decides. A change to a gate, threshold or hard
+     rule needs a passing clean-commit eval run before it merges.
 2. What minimum evidence constitutes a review-ready PR?
    - **Answer:** That it works or is measurably better. (Recorded against this question; confirm it was not meant for Q5.)
 3. Which scenarios form calibration, regression and holdout sets?
 4. Which compliance rules are hard gates, advisory warnings or legitimately project-specific?
    - **Answer:** The human must stay in control.
 5. What constitutes a meaningful improvement: pass rate, review time, reliability, cost, or all of these?
-   - **Answer:** All of them.
+   - **Answer:** All of them. Pass rate and reliability go into the benchmark score. Review time and cost are
+     reported next to it, not inside it (ADR 0007 decision 5).
 6. How are false positives, rule disagreements and emergency exceptions reported?
    - **Answer:** In the repo, the Teams channel and in team meetings.
 

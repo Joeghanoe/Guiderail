@@ -1,0 +1,42 @@
+{
+  "component": "aq-back-v",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "Durable/AzureMonitorDataset.cs",
+      "sha256": "fc3a1aa713b7643630435a5535d30132682ec874071089ec3f367a7e81475d81"
+    },
+    {
+      "path": "Durable/DatasetRegistry.cs",
+      "sha256": "41fcea4b79e0ab4b2adfa0448be28d32f2af73a59c04ab294e5c45cce7097799"
+    },
+    {
+      "path": "Durable/AzureMonitorIngestActivities.cs",
+      "sha256": "0e3a081d3d2a803abc4ebc0944ec1cfa49edd8c9c5fb6c1a546f43024213dd90"
+    },
+    {
+      "path": "Durable/SubscriptionIngestOrchestration.cs",
+      "sha256": "2b00ba2d30258a7070e0c0e4b18b43b21795b0a83119cefcb108682313862428"
+    },
+    {
+      "path": "Services/AzureManagementService.cs",
+      "sha256": "a56d95e3fc69282dbd0f166dd32a58cacdc22668d5396b45dc58c2c5efda3dd3"
+    },
+    {
+      "path": "Services/Interfaces/IAzureManagementService.cs",
+      "sha256": "db1e980e81d6db02d117aa230410e566c427853ab94dd1888aad313f51872e2f"
+    },
+    {
+      "path": "Objects/AzureMonitorConstants.cs",
+      "sha256": "1d95498505a7f85a8885985fb6c71ce37204f49ae8d8e1d911dfcaf77536f9ba"
+    },
+    {
+      "path": "Objects/AzureMonitorDurableContracts.cs",
+      "sha256": "0482d0bde0c00de1fbf16fdb4fdf765c68ac23d3a9a39fe3b646b6dc99971aa0"
+    },
+    {
+      "path": "Configuration/AzureMonitorConfiguration.cs",
+      "sha256": "4462c3ff72351cfec6f6404f8c6a76d2b33d2640c886db8ae611bcfed4aff2e3"
+    }
+  ]
+}

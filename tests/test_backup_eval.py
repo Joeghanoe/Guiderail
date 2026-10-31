@@ -31,10 +31,32 @@ class BackupEvaluationTests(unittest.TestCase):
                               ("false-success", "f04"), ("versions", "f05"),
                               ("schedule", "f06"), ("retention", "f06"),
                               ("integrity", "f07"), ("counts", "f08"),
-                              ("alerts", "f09"), ("leak", "f10")]:
+                              ("alerts", "f09"), ("leak", "f10"),
+                              ("status-writes", "f11"), ("health-always", "f12"), ("health-writes", "f12"),
+                              ("dryrun-writes", "f13"), ("exclusion-stored", "f14"),
+                              ("events-leak", "f15"), ("events-missing", "f15"), ("traversal", "f16")]:
             with self.subTest(defect=defect), tempfile.TemporaryDirectory() as temp:
                 with self.assertRaises(AssertionError):
                     getattr(self.grader(temp, defect), check)()
+
+    def test_extended_criteria_pass_the_positive_control(self):
+        with tempfile.TemporaryDirectory() as temp:
+            report = evaluation.Grader([sys.executable, str(CONTROL), "none"], temp,
+                                       criteria=[f"F{n:02}" for n in range(1, 17)]).run()
+            self.assertEqual(report["functional_status"], "pass", report["checks"])
+            self.assertEqual(len(report["checks"]), 16)
+
+    def test_hostile_identifier_acceptance_is_a_hard_gate(self):
+        with tempfile.TemporaryDirectory() as temp:
+            report = evaluation.Grader([sys.executable, str(CONTROL), "traversal"], temp, criteria=["F16"]).run()
+            self.assertEqual(report["hard_gate_violations"], ["F16"])
+
+    def test_scenario_file_selects_the_criteria(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = pathlib.Path(temp) / "backup_eval.py"
+            self.assertIsNone(evaluation.scenario_criteria(path))
+            (pathlib.Path(temp) / "scenario.json").write_text('{"eval_ids": ["F01", "F11", "CODE.5"]}')
+            self.assertEqual(evaluation.scenario_criteria(path), ["F01", "F11"])
 
     def test_untrusted_artifact_cannot_escape_store(self):
         with tempfile.TemporaryDirectory() as temp:
