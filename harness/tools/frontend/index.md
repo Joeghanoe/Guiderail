@@ -4,3 +4,4 @@
 * `auth-state.mjs` - the format, validation and seed script of an auth state file (values are never printed; the seed runs only in the top frame of one origin)
 * [auth-examples/](auth-examples/) - producers of a state file, for example MSAL with client credentials
 * `compare-ui.mjs` - compares two `screenshot.mjs` runs and reports fixed, new, reduced and unchanged findings per viewport; exit 2 when a fix introduced a new finding; it bounds regression risk and does not score the design (playbook: verify-frontend)
+* `contrast.mjs` - checks the colour tokens of a style guide against WCAG 2.2 contrast (4.5:1 small text, 3:1 large text) before screens are built from them; exit 1 on a failing pair (rule UI.1; playbook: verify-frontend)
