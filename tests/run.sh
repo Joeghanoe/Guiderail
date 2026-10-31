@@ -96,6 +96,38 @@ expect 2 "printenv" bash_hook "printenv"
 expect 2 "Python environment dump" bash_hook "python3 -c 'import os; print(os.environ)'"
 expect 2 "Node environment dump" bash_hook "node -e 'console.log(process.env)'"
 expect 2 "PowerShell environment dump" bash_hook "Get-ChildItem Env:"
+# Text a command only carries is data. These all used to be blocked as "dumping the environment" or "reading a dotenv file".
+expect 0 "C# setter in a file heredoc is data" bash_hook $'cat > Foo.cs <<\'EOF\'\npublic int X { get; set; }\nEOF'
+expect 0 "process.env in a comment of a file heredoc is data" bash_hook $'cat > a.ts <<\'EOF\'\n// reads process.env.PORT\nEOF'
+expect 0 "a dotenv path in the prose of a file heredoc is data" bash_hook $'cat > README.md <<\'EOF\'\nNever read the .env file; copy .env.example.\nEOF'
+expect 0 "tofu and az login in a document written to a file are data" bash_hook $'cat > README.md <<EOF\nrun tofu plan, then az login\nEOF'
+expect 0 "tee to a file with a heredoc is data" bash_hook $'tee notes.md <<\'EOF\'\nterraform apply\nEOF'
+expect 0 "env in a commit message is data" bash_hook 'git commit -m "document the env layout and never read the .env file"'
+expect 0 "set and printenv in an echoed sentence are data" bash_hook 'echo "use set; then printenv to compare"'
+expect 0 "env running a program is not a dump" bash_hook "env FOO=1 dotnet test"
+# What a command does is still checked: code fed to an interpreter, a real dump, a real read.
+expect 2 "python heredoc that dumps the environment" bash_hook $'python3 - <<\'EOF\'\nimport os\nprint(os.environ)\nEOF'
+expect 2 "bash heredoc that dumps the environment" bash_hook $'bash <<\'EOF\'\nprintenv\nEOF'
+expect 2 "heredoc piped into bash is code" bash_hook $'cat <<\'EOF\' | bash\nprintenv\nEOF'
+expect 2 "heredoc inside command substitution is code" bash_hook $'bash -c "$(cat <<\'EOF\'\nprintenv\nEOF\n)"'
+expect 2 "writing the harness through a heredoc is still blocked" bash_hook $'cat > .harness/hooks/x <<\'EOF\'\nhi\nEOF'
+expect 2 "a bare env is a dump" bash_hook "env"
+expect 2 "env piped on is a dump" bash_hook "env | sort"
+expect 2 "env in a command substitution is a dump" bash_hook 'echo $(env)'
+expect 2 "an inline python script that reads the dotenv file" bash_hook "python3 -c \"print(open('.env').read())\""
+expect 2 "a dotenv read after a commit message" bash_hook 'git commit -m "x" && cat .env'
+# A script fed to an interpreter is judged by what it does with the environment, not by the words it contains. This is the case
+# that used to force the agent to write the script with the Write tool: a patch that only mentions the dotenv file and process.env.
+expect 0 "a python patch script that only mentions dotenv, process.env and a setter" bash_hook $'python3 - <<\'EOF\'\np = "docs/a.md"\ns = open(p).read()\ns = s.replace("x", "never read the .env file; process.env.PORT is fine; { get; set; }")\nopen(p, "w").write(s)\nEOF'
+expect 0 "a node script that reads one named variable" bash_hook $'node - <<\'EOF\'\nconst port = process.env.PORT ?? "3000";\nconsole.log(port);\nEOF'
+expect 0 "a python script that reads one named variable" bash_hook $'python3 - <<\'EOF\'\nimport os\nprint(os.environ["HOME"], os.environ.get("X"))\nEOF'
+expect 0 "a node script that forwards the environment to a child" bash_hook $'node - <<\'EOF\'\nrequire("child_process").spawn("ls", { env: { ...process.env, A: "1" } });\nEOF'
+expect 2 "a python script that opens the dotenv file" bash_hook $'python3 - <<\'EOF\'\nprint(open(".env").read())\nEOF'
+expect 2 "a node script that reads the dotenv file" bash_hook $'node - <<\'EOF\'\nconsole.log(require("fs").readFileSync(".env", "utf8"));\nEOF'
+expect 2 "a node script that prints the whole environment" bash_hook $'node - <<\'EOF\'\nconsole.log(process.env);\nEOF'
+expect 2 "a python script that prints the whole environment as a dict" bash_hook $'python3 - <<\'EOF\'\nimport os\nprint(dict(os.environ))\nEOF'
+expect 2 "a python script that iterates the environment" bash_hook $'python3 - <<\'EOF\'\nimport os\nfor k, v in os.environ.items():\n    print(k)\nEOF'
+expect 2 "a python script that loads a dotenv file" bash_hook $'python3 - <<\'EOF\'\nfrom dotenv import load_dotenv\nload_dotenv()\nEOF'
 expect 0 "push a named feature branch" bash_hook "git push -u origin feature/x"
 expect 0 "push a feature branch by refspec" bash_hook "git push origin feature/x:feature/x"
 expect 0 "push a feature branch after cd" bash_hook "cd repo && git push -u origin codex/x"

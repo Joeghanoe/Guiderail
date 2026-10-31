@@ -5,6 +5,15 @@ set -euo pipefail
 
 input="$(cat)"
 cmd="$(jq -r '.tool_input.command // ""' <<<"$input")"
+
+# What the command DOES, as opposed to text it only carries (see guard-scopes.pl). The shell scope drops heredoc bodies that are file
+# content and the quoted arguments of prose flags; heredoc bodies fed to a script interpreter go to the narrow checks below, so
+# a script that merely mentions an environment variable or a dotenv path is not blocked, and one that dumps the environment or reads
+# a dotenv file is. A guardrail, not a sandbox (CLD.1): the Write tool can create the same file without passing through here.
+scopes="$(dirname "${BASH_SOURCE[0]}")/guard-scopes.pl"
+raw="$cmd"
+cmd="$(perl "$scopes" shell <<<"$raw")"
+interp="$(perl "$scopes" interp <<<"$raw")"
 lc="$(tr '[:upper:]' '[:lower:]' <<<"$cmd")"
 
 block() {
@@ -31,11 +40,26 @@ stripped="${lc//.env.example/}"
 if grep -Eq '(^|[^a-z0-9_])\.env([^a-z0-9_]|$)|\.env\.[a-z]' <<<"$stripped"; then
   block SEC.2 ".env files are never read. Use .env.example for the structure."
 fi
-if word 'env|printenv' || grep -Eq '(^|[;&|[:space:]])set[[:space:]]*($|[;&|])|/proc/[^[:space:]]*/environ' <<<"$lc"; then
+# `env` and `set` dump the environment only as a command (start of the line, or after ; & | or a subshell), not as a word in text;
+# `env FOO=1 dotnet test` runs a program and is fine. `printenv` is a dump wherever it appears.
+if word 'printenv' || grep -Eq '(^|[;&|(`])[[:space:]]*env([[:space:]]+-[a-z0-9-]+)*[[:space:]]*($|[;&|)`])|(^|[;&|(`])[[:space:]]*set[[:space:]]*($|[;&|)`])|/proc/[^[:space:]]*/environ' <<<"$lc"; then
   block SEC.2 "dumping the environment."
 fi
 if grep -Eq 'os[[:space:]]*\.[[:space:]]*environ|process[[:space:]]*\.[[:space:]]*env|get-childitem[[:space:]]+env:' <<<"$lc"; then
   block SEC.2 "dumping the environment through a scripting language."
+fi
+
+# SEC.2 for code that arrives as a heredoc to a script interpreter: judge what it does with the environment and with dotenv files, not which
+# words it contains. Reading one named variable (process.env.PORT, os.environ['HOME']) is how programs get configuration and is fine;
+# printing or iterating the whole environment, or opening a dotenv file, is not.
+if [[ -n "$interp" ]]; then
+  ilc="$(tr '[:upper:]' '[:lower:]' <<<"$interp")"
+  if grep -Eq '(print|println|pprint|pp|puts|console\.(log|error|info|dir|table)|json\.(dumps|dump|stringify)|write|echo)[[:space:]]*\(?[[:space:]]*(dict\(|list\(|object\.[a-z]+\()?[[:space:]]*(os[[:space:]]*\.[[:space:]]*environ|process[[:space:]]*\.[[:space:]]*env)[[:space:]]*[,)]|os[[:space:]]*\.[[:space:]]*environ[[:space:]]*\.[[:space:]]*(items|keys|values|copy)[[:space:]]*\(|dict\([[:space:]]*os[[:space:]]*\.[[:space:]]*environ|(^|[^a-z_])for[[:space:]]+[a-z_, ]+[[:space:]]+in[[:space:]]+(os[[:space:]]*\.[[:space:]]*environ|process[[:space:]]*\.[[:space:]]*env)|object\.(keys|entries|values)\([[:space:]]*process[[:space:]]*\.[[:space:]]*env[[:space:]]*\)|getenvironmentvariables[[:space:]]*\(|get-childitem[[:space:]]+env:' <<<"$ilc"; then
+    block SEC.2 "a script that prints or iterates the whole environment. Read the one variable you need, by name."
+  fi
+  if grep -Eq '(open|readfile|readfilesync|read_text|read_file|load_dotenv|dotenv_values|file_get_contents)[[:space:]]*\([^)]*\.env([^a-z0-9_]|$)|get-content[[:space:]]+[^[:space:]]*\.env([^a-z0-9_]|$)|(from|import|require)[[:space:](]*.?dotenv|dotenv[./](config|load)' <<<"$ilc"; then
+    block SEC.2 "a script that reads a dotenv file. Use .env.example for the structure."
+  fi
 fi
 
 # CLD.1: logging in or switching accounts is always done by the user
