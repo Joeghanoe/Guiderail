@@ -59,6 +59,15 @@ class TestPresenceTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn("comment only change", result.stderr)
 
+    def test_a_repo_with_no_commit_yet_does_not_fail_on_head(self):
+        fresh = pathlib.Path(tempfile.mkdtemp())
+        subprocess.run(["git", "init", "-q"], cwd=fresh, check=True)
+        (fresh / "Thing.cs").write_text("namespace D;\npublic class Thing { }\n", encoding="utf-8")
+        result = subprocess.run(["bash", str(SCRIPT)], cwd=fresh, capture_output=True, text=True)
+        self.assertNotIn("bad revision", result.stderr)
+        self.assertEqual(result.returncode, 1)  # new source and no test: still a finding, for the right reason
+        self.assertIn("Thing.cs", result.stderr)
+
     def test_non_csharp_changes_do_not_need_a_test(self):
         self.write("README.md", "docs\n")
         self.assertEqual(self.check().returncode, 0)
