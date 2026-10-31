@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 # Start a new repo or service design-first (DEL.4): write the files a new repo owns into the current directory,
 # for you to fill in, and say what to do next. Never overwrites a file that exists.
-# Usage: bash greenfield-init.sh [--service] [target-dir]   (run through bash: copies do not always keep the exec bit)
+# Usage: bash greenfield-init.sh [--service | --web-app] [target-dir]   (run through bash: copies do not always keep the exec bit)
+#   --web-app  the repo is an HTTP application that talks to other systems: ports for each of them (CODE.8) under any names,
+#              an error-code catalogue and a health endpoint (OBS.1, OBS.3), without the run, source and store roles of a service.
 #   --service  the repo is a service that runs operations and reports them: the verify gate also checks the
 #              CODE.8 source/store interfaces and the OBS.3 event and error-code contract.
 set -euo pipefail
 
 profile=generic
-if [[ "${1:-}" == "--service" ]]; then profile=service; shift; fi
+case "${1:-}" in
+  --service) profile=service; shift ;;
+  --web-app) profile=web-app; shift ;;
+esac
 target="${1:-.}"
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 templates="$here/templates"

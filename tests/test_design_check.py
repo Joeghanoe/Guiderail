@@ -62,6 +62,38 @@ class DesignCheckTests(unittest.TestCase):
         write(self.root, "tests/UnitC.cs", "[Fact] void a(){}" * 4)
         self.assertEqual(self.statuses(), {k: "pass" for k in self.statuses()})
 
+    def web_app_workspace(self):
+        write(self.root, "docs/solution-design.md", DESIGN)
+        write(self.root, "docs/adr/0001-layout.md", ADR)
+        write(self.root, "docs/adr/0002-run.md", ADR)
+        write(self.root, "AGENTS.md", AGENTS)
+        write(self.root, "scripts/verify.sh", "dotnet format; dotnet build -warnaserror; dotnet test")
+        write(self.root, "Directory.Build.props", "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>")
+        write(self.root, "BannedSymbols.txt", "x")
+        write(self.root, "src/Program.cs", PROGRAM + 'app.MapGet("/api/health", () => 1);')
+        write(self.root, "src/Ports.cs", "interface IClientDirectory {} interface IMenuGateway {} interface IPdfRenderer {} interface IMailer {}")
+        write(self.root, "src/Adapters.cs", "class DirectusClients : IClientDirectory {} class DirectusMenus : IMenuGateway {} "
+                                            "class QuestPdf : IPdfRenderer {} class Smtp : IMailer {} class Uses { TimeProvider t; }")
+        write(self.root, "src/ErrorCodes.cs", "class ErrorCodes { const string X = \"x\"; }")
+        for name in "ABC":
+            write(self.root, f"tests/Unit{name}.cs", "[Fact] void a(){}" * 5)
+
+    def test_web_app_profile_passes_without_service_role_names(self):
+        self.web_app_workspace()
+        result = dc.run(self.root, "web-app")
+        self.assertEqual(result["status"], "pass", result["checks"])
+        self.assertEqual(dc.run(self.root, "service")["status"], "fail")  # the same code is not a batch service
+
+    def test_web_app_without_a_health_endpoint_fails_d08(self):
+        self.web_app_workspace()
+        write(self.root, "src/Program.cs", PROGRAM)
+        self.assertEqual({c["id"]: c["status"] for c in dc.run(self.root, "web-app")["checks"]}["D08"], "fail")
+
+    def test_web_app_with_interfaces_nobody_implements_fails_d06(self):
+        self.web_app_workspace()
+        write(self.root, "src/Adapters.cs", "class Uses { TimeProvider t; }")
+        self.assertEqual({c["id"]: c["status"] for c in dc.run(self.root, "web-app")["checks"]}["D06"], "fail")
+
     def test_operation_building_its_collaborator_fails_d07(self):
         write(self.root, "src/FileStore.cs", "class FileStore : IStore {}")
         write(self.root, "src/BackupOperation.cs", "class BackupOperation { IStore s = new FileStore(); }")
