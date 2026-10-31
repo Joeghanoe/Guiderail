@@ -1,27 +1,26 @@
 ---
 type: Example
-title: "E-032 A health check reports Unhealthy and the endpoint turns that into a failing status code"
-description: A dependency check returns Unhealthy instead of throwing, and the health endpoint answers with a non-200 so probes and the availability timer notice.
+title: "E-032 A dependency probe reports failure and preserves cancellation"
+description: A dependency probe performs real I/O, reports failure as Unhealthy and propagates caller cancellation instead of assuming success.
 example_id: E-032
 rule: /rules/observability/obs-1-health-reflects-reality.md
 verdict: compliant
 status: draft
 tags: [health, observability, azure-functions]
-example_file: src/HealthEndpoint.cs
+example_file: src/StoreHealthCheck.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 ---
 
 # Situation
 
-A function app depends on a document database and an external API. Each dependency has its own health check class.
-One HTTP function runs all registered checks and returns the report.
+A service depends on a document database. Its health check must establish that the dependency is reachable,
+report a failed probe and respect cancellation by the caller.
 
 # Why (verdict)
 
-The check answers "can this service do its work" by touching the dependency (listing containers, reading the
-external API), not by returning true. A failure becomes `Unhealthy`, only cancellation is rethrown. The endpoint maps
-anything other than `Healthy` to a failing status code (424 here), so the platform probe and the availability
-test see an outage that a 200 with "unhealthy" in the body would hide (OBS.1).
+A probe performs bounded, non-destructive I/O instead of assuming the dependency is healthy. A dependency
+failure becomes `Unhealthy`; caller cancellation propagates rather than becoming an outage report (OBS.1).
+[E-014](/examples/e-014-health-reports-unhealthy.md) owns dependency coverage and HTTP status mapping.
 
 # Compliant pattern
 
@@ -47,30 +46,30 @@ public sealed class StoreHealthCheck(StoreClient store) : IHealthCheck
         }
     }
 }
-
-[Function("health")]
-public async Task<HttpResponseData> Health([HttpTrigger(AuthorizationLevel.Function, "get", Route = "health")] HttpRequestData req)
-{
-    var report = await healthChecks.CheckHealthAsync();
-    var response = req.CreateResponse(report.Status == HealthStatus.Healthy ? HttpStatusCode.OK : HttpStatusCode.FailedDependency);
-    await response.WriteAsJsonAsync(new { status = report.Status.ToString() });
-    return response;
-}
 ```
 
 ## Bad example
 
 ```csharp
-[Function("health")]
-public async Task<HttpResponseData> Health([HttpTrigger(AuthorizationLevel.Function, "get", Route = "health")] HttpRequestData req)
+public sealed class StoreHealthCheck(StoreClient store) : IHealthCheck
 {
-    var report = await healthChecks.CheckHealthAsync();
-    var response = req.CreateResponse(HttpStatusCode.OK);
-    await response.WriteAsJsonAsync(new { status = report.Status.ToString() });
-    return response;
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken ct = default)
+    {
+        try
+        {
+            await store.ListContainersAsync(ct);
+        }
+        catch (Exception)
+        {
+            // Dependency failures and caller cancellation both disappear.
+        }
+
+        return HealthCheckResult.Healthy("Store is reachable.");
+    }
 }
 ```
 
 # Not verified
 
-Whether one slow dependency should degrade the whole report or only its own entry is a per-service decision.
+The SDK's probe timeout and required permissions must be checked in the implementing service. Endpoint
+status mapping is evaluated separately by E-014.

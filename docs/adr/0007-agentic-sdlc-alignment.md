@@ -133,7 +133,8 @@ pass  = score >= 85
 
 ### 6. Review for generated-code failure modes
 
-The existing examples (e-008, e-023, e-025, e-026, e-029, e-033) cover weak error handling. Two new examples
+The existing examples (e-008, e-023, e-025, e-029, e-033) cover weak error handling. The duplicate draft
+e-026 was consolidated under e-008. Two new examples
 cover what they miss:
 
 - **e-036:** a package or API that does not exist, or is not in the lockfile.

@@ -86,10 +86,9 @@ integration suite can reach comes with a scenario (T.5). A defect found in DEV o
 
 - A review finding cites a rule ID, `file:line` and evidence, with a confidence. See
   `~/.golden-path-harness/harness/playbooks/review-change.md`. You never approve; a human does.
-- When the user corrects output that came from a rule, write an example from `~/.golden-path-harness/harness/templates/example.md`
-  into `~/.golden-path-harness/feedback/` (`status: draft`, no `verified`) and carry on. Defend principles and hard rules
-  with their ID and the existing examples; when the example shows a rule does not fit, propose a boundary, not a
-  removal (H.1).
+- When the user corrects output that came from a rule, follow
+  `~/.golden-path-harness/harness/playbooks/process-feedback.md` to capture a draft and carry on (H.1).
+  That playbook owns classification, conflicts with existing guidance and submission.
 - The second time you do the same task, propose a playbook; a playbook that is mostly commands becomes a
   script (H.2). Name what you proposed in your summary.
 

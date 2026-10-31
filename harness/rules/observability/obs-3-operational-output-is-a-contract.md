@@ -19,8 +19,8 @@ sources:
 - The design lists the events a run emits (started, per source started and finished, finished) and their
   properties. Event and property names are constants (CODE.4): an alert or a report depends on them, and a
   rename must break a test.
-- Events are emitted through one event sink interface (CODE.8). Operations never format or write them; the
-  sink does. A test asserts the exact sequence of events on a recording sink, for a success and for a partial failure.
+- Use the event-sink structure defined by [CODE.8](/rules/code/code-8-dependencies-point-inward.md).
+  A test asserts the exact sequence of events on a recording sink, for a success and for a partial failure.
 - Every event carries the run identifier and, per source, the source identifier, an outcome, counts, bytes,
   a duration and a reason code. Nothing carries file names, payload, exception text or credentials (SEC.2).
 - Reason codes come from one catalogue (a type plus a runbook table). An unknown failure maps to a generic code,

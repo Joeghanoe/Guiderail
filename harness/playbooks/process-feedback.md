@@ -29,9 +29,25 @@ status: stable
 | The same task again | An `automation-candidate` example: the playbook or script it should become. |
 
 3. Write the example from `/templates/example.md` into `~/.golden-path-harness/feedback/`: `status: draft`,
-   `generated` with your actor, no `verified`. A human reviews it and can run
-   `python3 -I ~/.golden-path-harness/harness/tools/harness/bundle.py submit-feedback <draft.md>` to prepare a local branch and
-   worktree. A human reviews, commits, pushes and opens the PR.
+   `generated` with your actor, no `verified`. Principles and hard rules remain authoritative (H.1).
+   A legitimate boundary proposes where a rule does not apply; it does not remove the rule.
 4. Check it does not contradict a human-reviewed example. If it does, say which one and why this differs; never
    overwrite it.
 5. Tell the user what you proposed; a human verifies or rejects it. Git history records the change.
+
+# Human review and submission
+
+Review drafts weekly. Accept an example by assigning an unused example number, setting `status: stable`
+and adding human `verified` metadata under H.1; rejected drafts can be deleted. Accepted examples belong
+in `harness/examples/`.
+
+To prepare a draft without changing the active harness checkout, run this before adding `verified`:
+
+```bash
+python3 -I ~/.golden-path-harness/harness/tools/harness/bundle.py submit-feedback ~/.golden-path-harness/feedback/<draft.md>
+```
+
+The command validates the draft, creates a local branch and worktree under
+`~/.golden-path-harness/workspaces/feedback/`, copies it into `harness/examples/`, refreshes the index and
+stages those two files. It does not contact a remote or create a PR. Review the staged diff, apply the
+acceptance metadata, run the required checks, then commit, push and open the PR yourself.

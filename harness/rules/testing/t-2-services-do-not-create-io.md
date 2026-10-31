@@ -20,8 +20,8 @@ Outside the composition root (`Program.cs`, `Startup.cs`), code does not:
 - read `DateTime.Now`, `DateTime.UtcNow` or `DateTimeOffset.UtcNow` (use `TimeProvider`);
 - touch the file system directly when the data could come from a stream or an interface.
 
-Every external system sits behind an interface at the boundary (`IBackupSink`, `IApimApiClient`), so unit
-tests mock the boundary and integration tests run it against a container.
+[CODE.8](/rules/code/code-8-dependencies-point-inward.md) owns capability interfaces and composition-root
+structure. This rule owns the prohibited I/O and ambient-state access that prevent isolated tests.
 
 # Enforcement
 
