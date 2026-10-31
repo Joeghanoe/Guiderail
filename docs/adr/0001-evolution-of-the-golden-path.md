@@ -3,6 +3,7 @@
 - **Status:** Proposed — pending company approval
 - **Date:** 2026-10-29
 - **Decision owners:** Engineering leadership / Golden Path maintainers (to confirm)
+- **Amended by:** ADR 0007 (prototype work, harness-repository review exception, local isolation)
 - **Scope:** Company engineering way of working; agent-assisted software delivery
 - **Supersedes:** None. Proposes amendments to the current Way-of-Work, not an immediate replacement.
 - **References:** `Way-of-Work.pdf` (TeamValue/Bizure), ADR 0002, ADR 0003
@@ -117,7 +118,12 @@ flowchart TD
 - Make the harness produce a structured PR evidence report: requirement mapping, test results, architecture checks, exceptions, and known uncertainties.
 - Retain existing PR policies, build gates, static analysis, and deployment approval enforcement.
 - Introduce TEST/ACC automatic promotion only after the Way-of-Work and relevant pipeline approvals are explicitly amended.
-- Require appropriate credential and execution isolation for agent runs.
+- Require appropriate credential and execution isolation for agent runs. For local work the read-only identity is
+  the boundary, and sandboxing is an accepted risk (ADR 0007 decision 8).
+- There is no prototype mode. Agent-written code in a project repository is production code. Useful
+  exploration done elsewhere starts again at the approved-spec step (ADR 0007 decision 7).
+- The independent-review requirement (item 5) applies to product repositories. The harness repository has a
+  documented exception while it has a single maintainer (ADR 0007 decision 2).
 - Define measurable indicators: cycle time, escaped defects, regression detection, review effort, compliance drift, and traceability coverage.
 
 ## Open decisions / ratification gates

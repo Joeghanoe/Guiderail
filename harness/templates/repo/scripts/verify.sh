@@ -22,6 +22,9 @@ fi
 
 [[ "${1:-}" == "--design" ]] && exit 0
 
+# T.1: new behaviour ships with a test. Static, takes milliseconds, runs in both modes.
+[[ -n "$harness" && -f "$harness/tools/code/test-presence.sh" ]] && bash "$harness/tools/code/test-presence.sh"
+
 sln="${SOLUTION:-}"
 for candidate in ./*.slnx ./*.sln; do
   [[ -z "$sln" && -f "$candidate" ]] && sln="$candidate"

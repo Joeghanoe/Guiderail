@@ -4,6 +4,7 @@
 - **Date:** 2026-10-29
 - **Scope:** Responsibilities, ownership, interfaces, and intentional exclusions of the Golden Path Harness
 - **Depends on:** ADR 0001, ADR 0002, ADR 0003
+- **Amended by:** ADR 0007 (harness owner, no prototype mode, sandboxing as accepted risk)
 
 ## Context
 
@@ -22,6 +23,8 @@ The Golden Path is evolving toward a human-controlled, agent-assisted developmen
 5. Produce traceable artifacts: changes, tests, execution traces, findings, exceptions, and evidence linked to the story and commit.
 6. Support greenfield and brownfield work, including identification of inherited versus newly introduced violations.
 7. Support interchangeable agent/model adapters while maintaining a common scenario and evidence contract.
+8. Treat every piece of agent-written code in a project repository as production code. There is no relaxed
+   prototype mode (ADR 0007 decision 7).
 
 ### Out of scope
 
@@ -42,7 +45,8 @@ The Golden Path is evolving toward a human-controlled, agent-assisted developmen
 | PR acceptance | Independent human reviewer | Prepare PR and evidence, never approve |
 | TEST/ACC promotion | Pipeline with approved environment gates, **subject to company policy ratification** | Supply evidence; not unilaterally change deployment policy |
 | Production release | Product Owner or authorized delegate | Never authorize approval |
-| Evaluation suite | Named maintainers independent from the candidate run (to confirm) | Execute trusted evaluators |
+| Evaluation suite | joeghanoe, independent from the candidate run (ADR 0007) | Execute trusted evaluators |
+| Harness rules, examples, gates and their review | joeghanoe, owner and reviewer; a documented exception to segregation of duties for this repository only (ADR 0007 decision 2) | Apply the versioned harness; never edit it during a run (H.1) |
 
 ## Options considered
 
@@ -59,6 +63,9 @@ The Golden Path is evolving toward a human-controlled, agent-assisted developmen
 - Human review remains a throughput constraint by design.
 - Internal folder layout and installation under `~/.golden-path-harness` are implementation details; they must not redefine the responsibility boundary.
 - This ADR does **not** itself authorize changes to existing environment approval policies.
+- **Accepted risk (ADR 0007 decision 8):** day-to-day local agent work is not sandboxed. The hooks are a
+  guardrail, and the read-only cloud identity is the boundary. Benchmark runs use a container. Revisit this
+  when the harness is used on untrusted repositories.
 
 ## Open questions
 

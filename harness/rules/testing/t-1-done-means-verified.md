@@ -1,7 +1,7 @@
 ---
 type: Rule
 title: "T.1 Done means verified, with the same command locally and in CI"
-description: One verify command runs format, analyzers, build and tests; work is done only when it passes or every skipped step is named.
+description: One verify command runs format, analyzers, build and tests; new behaviour ships with a test; work is done only when it passes or every skipped step is named.
 rule_id: T.1
 principle: /principles/p-06-automation-by-default.md
 tags: [testing, verification, ci]

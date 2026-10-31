@@ -52,6 +52,7 @@ expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$h
 expect 0 "brownfield runner controls (stand-in adapter and grader, no model)" python3 -I "$here/tests/test_run_brownfield.py"
 expect 0 "run diagnosis controls (evidence only, no model)" python3 -I "$here/tests/test_diagnose_run.py"
 expect 0 "harness usage and denied-command report (traces only, no model)" python3 -I "$here/tests/test_harness_usage.py"
+expect 0 "T.1 test-presence check and select --brief" python3 -I "$here/tests/test_test_presence.py"
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
 
 echo "== guard-bash"
@@ -245,6 +246,7 @@ expect 0 "select picks T.2 for a .cs file" jq -e '.rules | to_entries | map(.val
 expect 0 "select skips IAC rules for a .cs file" jq -e '.rules | to_entries | map(.value) | index("IAC.1") == null' "$tmp/select.json"
 python3 -I "$h/tools/harness/bundle.py" select src/Orders.cs >"$tmp/select-args.json" </dev/null
 expect 0 "select takes paths as arguments, not only on stdin" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select-args.json"
+expect 0 "select prints a summary for every rule it picks" jq -e '(.rules | length) > 0 and (.summary | length) == (.rules | length)' "$tmp/select-args.json"
 cp -R "$h" "$tmp/withexample"
 find "$tmp/withexample/examples" -name "e-*.md" -delete   # fixtures start without the real examples
 cat >"$tmp/example.md" <<'CASE'

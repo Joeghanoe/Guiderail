@@ -9,7 +9,7 @@ pipeline. The repo's own `AGENTS.md` adds what is specific to that repo; where t
 
 Keep context small: load only what the task needs, and say so when you skipped something relevant.
 Before you edit code: open `~/.golden-path-harness/harness/index.md`, run
-`python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select <the files you will change>`, and open the rules it lists.
+`python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select --brief <the files you will change>`, and open the rule files whose summary applies.
 The harness is a knowledge bundle (Open Knowledge Format) at `~/.golden-path-harness/harness/` (in CI: `.harness/` in the
 checkout); open only the folder and files your task touches. For a whole PR, pipe
 `git diff --name-only origin/main...HEAD` into the same `select` command.

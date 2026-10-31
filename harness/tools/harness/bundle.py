@@ -487,7 +487,7 @@ def cmd_submit_feedback(root, args):
 
 def cmd_select(root, args):
     changed = list(args.paths) or [line.strip() for line in sys.stdin if line.strip()]
-    rules, examples = {}, []
+    rules, examples, summary = {}, [], {}
     for path, meta, _ in concepts(root):
         if not meta:
             continue
@@ -497,6 +497,7 @@ def cmd_select(root, args):
             globs = [glob_to_regex(g) for g in json.loads(meta.get("applies_to", "[]"))]
             if any(g.match(f) for g in globs for f in changed):
                 rules[rel] = unquote(meta.get("rule_id", ""))
+                summary[rules[rel]] = unquote(meta.get("description", ""))
         elif kind == "Example":
             examples.append((rel, meta))
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -504,7 +505,11 @@ def cmd_select(root, args):
     stale = [rel for rel, m in relevant if is_stale(m, now)]
     precedent = [rel for rel, m in relevant if human_verified(m) and rel not in stale]
     hints = [rel for rel, m in relevant if not human_verified(m) and rel not in stale]
-    print(json.dumps({"rules": rules, "precedent": precedent, "hints": hints, "stale": stale}, indent=2))
+    if args.brief:
+        for rule_id, text in sorted(summary.items()):
+            print(f"{rule_id}: {text}")
+        return 0
+    print(json.dumps({"rules": rules, "summary": dict(sorted(summary.items())), "precedent": precedent, "hints": hints, "stale": stale}, indent=2))
     return 0
 
 
@@ -581,6 +586,7 @@ def main():
     budget.add_argument("--update", action="store_true", help="record the measured sizes as the new budget")
     budget.add_argument("--baseline", help="budget file from the base branch; fail if this one raises a value")
     select = sub.add_parser("select")
+    select.add_argument("--brief", action="store_true", help="print only 'ID: summary' per rule (for an agent about to edit)")
     select.add_argument("paths", nargs="*", help="changed paths; read from stdin when none are given")
     findings = sub.add_parser("findings")
     findings.add_argument("file")
