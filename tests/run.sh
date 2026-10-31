@@ -54,6 +54,8 @@ expect 0 "run diagnosis controls (evidence only, no model)" python3 -I "$here/te
 expect 0 "harness usage and denied-command report (traces only, no model)" python3 -I "$here/tests/test_harness_usage.py"
 expect 0 "T.1 test-presence check and select --brief" python3 -I "$here/tests/test_test_presence.py"
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
+expect 0 "overnight evidence: stub, scenario match, verdicts (no model)" python3 -I "$here/tests/test_overnight_evidence.py"
+expect 0 "review usage: tokens, cost, time per run; clean-commit check (no model)" python3 -I "$here/tests/test_usage.py"
 
 echo "== guard-bash"
 expect 0 "dotnet test is allowed" bash_hook "dotnet test Bizure.Backup.slnx -c Release"

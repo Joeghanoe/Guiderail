@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
-"""Invoke Claude with bounded turns and wall-clock time, then write its review response."""
+"""Invoke Claude with bounded turns and wall-clock time, then write its review response and usage.json."""
 
+import importlib.util
 import json
 import os
 import pathlib
 import shutil
 import subprocess
 import sys
+import time
+
+
+def load_usage():
+    """usage.py beside this file; -I leaves the script folder off sys.path."""
+    spec = importlib.util.spec_from_file_location("review_usage", pathlib.Path(__file__).with_name("usage.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+usage = load_usage()
 
 
 MAX_TURNS = 10
@@ -44,21 +57,31 @@ def main():
         command.extend(["--model", model])
     environment = {key: os.environ[key] for key in CLI_ENVIRONMENT if key in os.environ}
 
+    started = time.monotonic()
     try:
         result = subprocess.run(command, capture_output=True, text=True, timeout=TIMEOUT_SECONDS, check=False,
                                 env=environment)
     except subprocess.TimeoutExpired:
+        usage.write(review_dir, "claude", model, time.monotonic() - started,
+                    cost_reason="timed out before the Claude CLI reported usage")
         print(f"review: claude exceeded the {TIMEOUT_SECONDS}s time limit", file=sys.stderr)
         return 124
+    wall = time.monotonic() - started
+
+    try:
+        payload = json.loads(result.stdout)
+        error = None
+    except json.JSONDecodeError as problem:
+        payload, error = {}, problem
+    if not isinstance(payload, dict):
+        payload = {}
+    usage.write(review_dir, "claude", model, wall,
+                **(usage.from_claude(payload) if payload else {"cost_reason": "the Claude CLI returned no JSON"}))
 
     if result.returncode:
         if result.stderr:
             print(result.stderr, file=sys.stderr, end="")
         else:
-            try:
-                payload = json.loads(result.stdout)
-            except json.JSONDecodeError:
-                payload = {}
             message = payload.get("result") if payload.get("is_error") else None
             if isinstance(message, str) and message:
                 print(f"review: claude failed: {message}", file=sys.stderr)
@@ -66,9 +89,7 @@ def main():
                 print(f"review: claude exited with status {result.returncode}", file=sys.stderr)
         return result.returncode
 
-    try:
-        payload = json.loads(result.stdout)
-    except json.JSONDecodeError as error:
+    if error:
         print(f"review: claude returned invalid JSON: {error}", file=sys.stderr)
         return 1
     response = payload.get("result")

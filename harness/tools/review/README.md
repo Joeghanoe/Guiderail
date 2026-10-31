@@ -73,6 +73,31 @@ python3 -I harness/tools/review/eval-queue.py run --engine claude --no-advisory
 It cannot know your quota. It recognises the usual wording of a quota or login failure; for any other wording it
 relies on the consecutive-error stop, and always prints the engine's message.
 
+# Tokens, cost and time per run
+
+Every engine adapter writes `usage.json` beside the review, through `usage.py` (ADR 0007 decision 3). It holds
+`input_tokens` (cached included), `cached_input_tokens`, `output_tokens`, `cost` with `cost_reason`, and
+`wall_seconds`. What the engine does not report is `null`, never 0.
+
+| Engine | Tokens | Cost |
+|---|---|---|
+| Claude | from `--output-format json` | as the CLI reports it (API list price) |
+| Codex | from `--json` events | from your price file, else null |
+| Copilot | from `--usage-output-file` | as the CLI reports it, else your price file |
+| agy | not reported | null; only the time is measured |
+
+The price file is yours and never committed: `~/.config/harness/prices.json` (or `$HARNESS_PRICES`), with a
+`checked` date and per-model `input_per_mtok`, `cached_input_per_mtok` and `output_per_mtok`. A cost only gets
+priced when you pin the model with `--model`. Prices older than 120 days are still used, and the reason says
+they are stale.
+
+`eval.py` and `eval-queue.py` add the runs up per scenario, per results line and per `history.jsonl` entry, as
+`usage` with `runs`, `runs_with_tokens` and `runs_with_cost`, so a partial measurement is visible. The PR
+pipeline's `receipt.json` carries the review's `usage.json`.
+
+The evals' own files (`eval-results.jsonl`, `history.jsonl`) do not make the checkout dirty. Any other tracked
+change does, and then no history line is written.
+
 ## Where results live, and what is known (2026-10-29)
 
 - The checklist is local, not in the repo: `~/.golden-path-harness/state/evals/<engine>-<model>-<bundle hash>/checklist.md` (and

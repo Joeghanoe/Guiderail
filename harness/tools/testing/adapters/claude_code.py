@@ -35,7 +35,12 @@ def main():
                 for block in e.get("message", {}).get("content", []) if block.get("type") == "tool_use")
     if result:
         usage = result.get("usage", {})
-        common.write_usage(args, {"input_tokens": usage.get("input_tokens"), "output_tokens": usage.get("output_tokens"),
+        # Claude's input_tokens leaves out cache reads and writes; the harness counts all input (as Codex does).
+        parts = [usage.get(k) for k in ("input_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")]
+        known = [p for p in parts if p is not None]
+        common.write_usage(args, {"input_tokens": sum(known) if known else None,
+                                  "cached_input_tokens": usage.get("cache_read_input_tokens"),
+                                  "output_tokens": usage.get("output_tokens"),
                                   "cost": result.get("total_cost_usd"), "retries": None, "tool_calls": tools,
                                   "turns": result.get("num_turns"), "model_reported": list(result.get("modelUsage", {}))})
     return code

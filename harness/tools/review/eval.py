@@ -10,6 +10,7 @@ Run with: python3 -I harness/tools/review/eval.py
 
 import argparse
 import datetime
+import importlib.util
 import json
 import os
 import pathlib
@@ -54,6 +55,25 @@ HIGH = {"blocker", "major"}
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(BUNDLE_ROOT / "tools" / "harness"))
 import bundle  # noqa: E402
+
+_usage_spec = importlib.util.spec_from_file_location("review_usage", HERE / "usage.py")
+usage = importlib.util.module_from_spec(_usage_spec)
+_usage_spec.loader.exec_module(usage)
+
+# Files the evals write about themselves. A change to only these leaves the harness a clean commit; anything else
+# tracked and changed makes it dirty. eval-queue.py writes eval-results.jsonl after every scenario, so without this
+# a full queue run could never append its own history line.
+EVIDENCE_FILES = ("tools/review/eval-results.jsonl", "tools/review/history.jsonl")
+
+
+def harness_commit(root=BUNDLE_ROOT):
+    """(commit, dirty) of the harness checkout. Untracked files do not count, as with `git describe --dirty`."""
+    commit = subprocess.run(["git", "-C", str(root), "describe", "--always"], capture_output=True, text=True).stdout.strip()
+    status = subprocess.run(["git", "-C", str(root), "status", "--porcelain", "--untracked-files=no"],
+                            capture_output=True, text=True).stdout
+    changed = [line[3:].split(" -> ")[-1].strip('"') for line in status.splitlines() if line.strip()]
+    dirty = any(not path.endswith(EVIDENCE_FILES) for path in changed)
+    return commit, dirty
 
 
 def git(repo, *args):
@@ -366,10 +386,12 @@ def run_one(name, spec, before, after, pr, args):
         copy_evaluation_bundle(args.bundle, repo / ".harness", spec)
         proc = subprocess.run(["bash", str(repo / ".harness/tools/review/review.sh"), str(review)], cwd=repo,
                               capture_output=True, text=True, env=review_environment(args, name))
+        spent = usage.read(review)   # written by the engine adapter; None for replay or an adapter that never ran
         if proc.returncode != 0:
-            return {"passed": False, "error": proc.stderr.strip()[-500:]}
+            return {"passed": False, "error": proc.stderr.strip()[-500:], "usage": spent}
         findings = json.loads((review / "findings.json").read_text())
         result = score(spec, findings)
+        result["usage"] = spent
         result["dropped"] = proc.stderr.count("dropped finding")
         if not result["passed"]:
             # Evidence for the failure (AI Evaluation Standard: preserve failed outcomes); generated test data only.
@@ -415,7 +437,8 @@ def run_scenarios(scenarios, args, thresholds):
         result = next((run for run in runs if not run["passed"]), runs[0])
         result.update(name=name, tags=spec.get("tags", []), critical=spec.get("critical", False),
                       advisory=spec.get("advisory", False),
-                      runs=len(runs), runs_passed=sum(run["passed"] for run in runs))
+                      runs=len(runs), runs_passed=sum(run["passed"] for run in runs),
+                      usage=usage.total(run.get("usage") for run in runs))
         results.append(result)
     return results
 
@@ -460,7 +483,9 @@ def main():
     gate = (not critical_failures and pass_rate >= thresholds["min_pass_rate"]
             and (bool(args.only) or counted >= thresholds["min_scenarios"]))
 
-    commit = subprocess.run(["git", "-C", str(BUNDLE_ROOT), "describe", "--always", "--dirty"], capture_output=True, text=True).stdout.strip()
+    commit, dirty = harness_commit()
+    commit += "-dirty" if dirty else ""
+    spent = usage.total(r["usage"] for r in results)
     engine_cli = None if args.engine == "replay" else args.engine
     engine_version = subprocess.run([shutil.which(engine_cli) or engine_cli, "--version"], capture_output=True, text=True).stdout.strip() \
         if engine_cli else "replay"
@@ -469,7 +494,7 @@ def main():
               "thresholds": thresholds, "summary": {"scenarios": total, "passed": passed, "pass_rate": round(pass_rate, 3),
                                                     "critical_failures": critical_failures, "partial": partial,
                                                     "advisory": {"scenarios": advisory_total, "failed": advisory_failed},
-                                                    "gate": "pass" if gate else "fail"},
+                                                    "gate": "pass" if gate else "fail", "usage": spent},
               "scenarios": results}
     if args.engine != "replay":
         args.out.mkdir(parents=True, exist_ok=True)
@@ -477,7 +502,7 @@ def main():
         out.write_text(json.dumps(record, indent=2) + "\n")
         print(f"recorded {out}")
         # Evidence for a harness version: only a full run on a clean commit, summary only (raw output stays local).
-        if not partial and not commit.endswith("-dirty"):
+        if not partial and not dirty:
             line = {k: record[k] for k in ("harness", "engine_version", "model", "at")}
             line.update(record["summary"], failed=[r["name"] for r in gated if not r["passed"]])
             with (HERE / "history.jsonl").open("a", encoding="utf-8") as history:
@@ -486,6 +511,7 @@ def main():
     print(f"{passed}/{total} passed, critical failures: {critical_failures or 'none'}, gate: {record['summary']['gate']}")
     print(f"advisory (drafts, not gating): {advisory_total - len(advisory_failed)}/{advisory_total} passed"
           + (f", failed: {advisory_failed}" if advisory_failed else ""))
+    print(f"usage: {usage.describe(spent)}")
     return 0 if gate else 1
 
 

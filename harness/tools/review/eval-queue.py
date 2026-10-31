@@ -40,6 +40,7 @@ Usage:
 
 import argparse
 import datetime
+import functools
 import hashlib
 import importlib.util
 import json
@@ -179,7 +180,7 @@ def import_results(state, path):
             state["scenarios"][line["scenario"]] = {
                 "status": line["status"], "detail": line.get("detail", ""), "at": line.get("at", ""),
                 "runs": line.get("runs", 1), "runs_passed": line.get("runs_passed"), "attempts": 0,
-                "imported": True}
+                "usage": line.get("usage"), "imported": True}
 
 
 def record_result(path, state, name, entry):
@@ -196,7 +197,7 @@ def record_result(path, state, name, entry):
              and line.get("scenario") != name]
     kept.append({"engine": state["engine"], "model": state["model"], "bundle_hash": state["bundle_hash"],
                  "scenario": name, "status": entry["status"], "detail": entry["detail"], "runs": entry["runs"],
-                 "runs_passed": entry["runs_passed"], "at": entry["at"]})
+                 "runs_passed": entry["runs_passed"], "at": entry["at"], "usage": entry.get("usage")})
     kept.sort(key=lambda l: (l["engine"], l["model"], l["scenario"]))
     write_atomic(path, "".join(json.dumps(l, sort_keys=True) + "\n" for l in kept))
 
@@ -226,6 +227,7 @@ def render_markdown(state, items):
              f"Checked off {len(done)} of {len(items)} scenarios: {counts['pass']} pass, {counts['fail']} fail; "
              f"{counts['error']} could not run and will be retried. Still to run: {len(pending)} scenarios, "
              f"about {runs_left} reviews.", "",
+             f"Spent so far: {spent(state, items, ev_usage())}.", "",
              "`[x]` pass   `[!]` fail (the reviewer was wrong, a real result)   `[?]` could not run   `[ ]` not run yet", ""]
     for title, wanted in (("Gating", False), ("Drafts (advisory, cannot fail the gate)", True)):
         group = [i for i in items if i["advisory"] == wanted]
@@ -247,6 +249,26 @@ def save(state, items, json_path, md_path):
     write_atomic(md_path, render_markdown(state, items))
 
 
+@functools.lru_cache(maxsize=None)
+def ev_usage():
+    """usage.py, the same module the adapters write with; loaded once."""
+    spec = importlib.util.spec_from_file_location("review_usage", HERE / "usage.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def usage_total(state, items, usage):
+    """Tokens, cost and time of every scenario in this checklist that has a result, drafts included."""
+    entries = state["scenarios"]
+    return usage.total(entries[i["name"]].get("usage") or {"runs": entries[i["name"]].get("runs", 1)}
+                       for i in items if entries.get(i["name"], {}).get("status") in ("pass", "fail"))
+
+
+def spent(state, items, usage):
+    return usage.describe(usage_total(state, items, usage))
+
+
 def verdict(state, items, partial):
     """The gate, as eval.py computes it, once every gating scenario has a result."""
     gated = [i for i in items if not i["advisory"]]
@@ -262,13 +284,14 @@ def verdict(state, items, partial):
     draft_failed = [n for n in drafts if entries.get(n, {}).get("status") == "fail"]
     return {"scenarios": len(gated), "passed": passed, "pass_rate": round(rate, 3), "critical_failures": critical_failures,
             "partial": partial, "advisory": {"scenarios": len(drafts), "failed": draft_failed},
-            "gate": "pass" if gate else "fail", "failed": [i["name"] for i in gated if entries[i["name"]]["status"] == "fail"]}
+            "gate": "pass" if gate else "fail", "failed": [i["name"] for i in gated if entries[i["name"]]["status"] == "fail"],
+            "usage": usage_total(state, items, ev_usage())}
 
 
 def append_history(ev, state, result):
-    commit = subprocess.run(["git", "-C", str(BUNDLE_ROOT), "describe", "--always", "--dirty"],
-                            capture_output=True, text=True).stdout.strip()
-    if state["engine"] == "replay" or result["partial"] or commit.endswith("-dirty"):
+    # eval-results.jsonl and history.jsonl are this tool's own output; changes to them alone do not make it dirty.
+    commit, dirty = ev.harness_commit(BUNDLE_ROOT)
+    if state["engine"] == "replay" or result["partial"] or dirty:
         why = ("a replay run" if state["engine"] == "replay" else "a partial run" if result["partial"]
                else "the harness has uncommitted changes")
         print(f"history.jsonl not appended: {why}. Only a complete run on a clean commit counts as evidence.")
@@ -277,7 +300,7 @@ def append_history(ev, state, result):
     version = subprocess.run([cli, "--version"], capture_output=True, text=True).stdout.strip()
     line = {"harness": commit, "engine_version": version, "model": state["model"], "at": now()}
     line.update({k: result[k] for k in ("scenarios", "passed", "pass_rate", "critical_failures", "partial", "advisory", "gate")},
-                failed=result["failed"])
+                failed=result["failed"], usage=result["usage"])
     with (HERE / "history.jsonl").open("a", encoding="utf-8") as history:
         history.write(json.dumps(line) + "\n")
     print("appended harness/tools/review/history.jsonl; commit it with the harness change")
@@ -374,7 +397,7 @@ def cmd_run(args):
         state["scenarios"][item["name"]] = {
             "status": status, "detail": detail, "at": now(), "runs": item["runs"],
             "runs_passed": result.get("runs_passed") if status != "error" else None,
-            "attempts": previous.get("attempts", 0) + 1}
+            "attempts": previous.get("attempts", 0) + 1, "usage": result.get("usage")}
         save(state, items, json_path, md_path)
         record_result(args.results_file, state, item["name"], state["scenarios"][item["name"]])
         print(f"  -> {status}{': ' + detail if detail else ''}")
@@ -405,6 +428,7 @@ def cmd_run(args):
           f"{result['advisory']['scenarios']} passed"
           + (f", failed: {result['advisory']['failed']}" if result["advisory"]["failed"] else "")
           + (f" ({len(skipped_drafts)} drafts skipped)" if skipped_drafts else ""))
+    print(f"usage: {ev.usage.describe(result['usage'])}")
     print(f"checklist: {md_path}")
     if args.append_history:
         append_history(ev, state, result)

@@ -97,9 +97,11 @@ steps:
           npm install --global "@anthropic-ai/claude-code@${{ parameters.claudeCodeVersion }}" >/dev/null
           .harness/tools/review/review.sh "$r"
           .harness/tools/azure-devops/ado-post-findings.sh "$r/findings.json"
+          usage="$(cat "$r/usage.json" 2>/dev/null || echo null)"   # tokens, cost, time (ADR 0007); null if the engine wrote none
           jq -n --arg harness "$(cat "$(Agent.TempDirectory)/harness-commit")" --slurpfile sel "$r/selected.json" --slurpfile f "$r/findings.json" \
+            --argjson usage "$usage" \
             '{harness: $harness, rules: ($sel[0].rules | to_entries | map(.value)), findings: ($f[0] | length),
-              blockers: ($f[0] | map(select(.severity == "blocker")) | length)}' >"$r/receipt.json"
+              blockers: ($f[0] | map(select(.severity == "blocker")) | length), usage: $usage}' >"$r/receipt.json"
           cat "$r/receipt.json"
         displayName: "AI review (advisory)"
         workingDirectory: $(Pipeline.Workspace)/s/repo

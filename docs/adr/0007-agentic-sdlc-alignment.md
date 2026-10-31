@@ -52,6 +52,9 @@ After the current feature branch merges, the owner runs `python3 -I harness/tool
 
 - `eval.py` records runs on a dirty tree, and back-filled runs, as advisory only. They never count as gate
   evidence.
+- The evals' own record files (`eval-results.jsonl`, `history.jsonl`) do not make the tree dirty. Before
+  2026-10-31 they did: `eval-queue.py` wrote `eval-results.jsonl` after every scenario, so a full run could
+  never append its history line.
 - Gate evidence is a `history.jsonl` entry with `dirty: false`, a `harness` SHA on `main`, and `gate: pass`.
 
 ### 2. Ownership and review of the harness
@@ -78,13 +81,20 @@ company adopts it as the Golden Path harness (ADR 0001). Whichever comes first.
 
 The adapters record, per run, whenever the engine reports them:
 
-- `tokens_in` and `tokens_out`
+- `input_tokens` (all input, cached included), `cached_input_tokens` and `output_tokens`
 - `wall_seconds`
-- `cost_estimate`
+- `cost`, with `cost_reason` saying where it came from: reported by the engine, estimated from the user's
+  own price file (`~/.config/harness/prices.json`), or why there is none
 
-Unknown values are `null`, never `0` (ADR 0006 item 7). The adapters are `harness/tools/review/run-*.py` and
-`harness/tools/testing/adapters/`. `eval.py` sums these fields per history entry, and the review
-`receipt.json` carries the same fields.
+These names match the ones the benchmark adapters already used, so there is one set of names.
+
+Unknown values are `null`, never `0` (ADR 0006 item 7). The review adapters (`harness/tools/review/run-*.py`)
+write `usage.json` through `harness/tools/review/usage.py`, and the benchmark adapters are in
+`harness/tools/testing/adapters/`. `eval.py` and `eval-queue.py` add the runs up into each history entry and
+results line. The review `receipt.json` carries the same fields.
+
+Status (2026-10-31): built. Claude reports tokens and cost, Codex reports tokens, Copilot reports through
+`--usage-output-file`, and agy reports nothing, so only its time is measured.
 
 ### 4. Trajectory evaluation
 
