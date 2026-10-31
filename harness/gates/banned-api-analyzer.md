@@ -1,12 +1,17 @@
 ---
 type: Gate
 title: "Banned API analyzer (T.2)"
-description: Microsoft.CodeAnalysis.BannedApiAnalyzers with BannedSymbols.txt turns T.2 violations into build errors.
+description: Optional. Microsoft.CodeAnalysis.BannedApiAnalyzers with BannedSymbols.txt turns T.2 violations into build errors.
 tool: Microsoft.CodeAnalysis.BannedApiAnalyzers 3.3.4, rule RS0030, rule set harness/templates/repo/BannedSymbols.txt
 owner: team:teamvalue-aicoe
 status: stable
 tags: [testing, dotnet]
 ---
+
+# Scope
+
+Optional. A repo opts in by copying `harness/templates/repo/Directory.Build.props` and `BannedSymbols.txt`; the
+harness does not scaffold or require them, and `design-check` does not look for them.
 
 # Coverage
 

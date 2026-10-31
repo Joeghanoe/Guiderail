@@ -95,13 +95,10 @@ def repo_agents(root):
 def verify_command(root):
     path = root / "scripts" / "verify.sh"
     body = text(path) if path.is_file() and not path.is_symlink() else ""
-    props = text(root / "Directory.Build.props")
     ok = (bool(body) and "dotnet format" in body and "-warnaserror" in body and "dotnet test" in body
-          and "TreatWarningsAsErrors" in props and (root / "BannedSymbols.txt").is_file())
+          )
     return check("D04", "T.1", ok,
-                 f"scripts/verify.sh {'runs format, warnings-as-errors build and tests' if body else 'missing'}; "
-                 f"Directory.Build.props analyzers {'present' if 'TreatWarningsAsErrors' in props else 'missing'}; "
-                 f"BannedSymbols.txt {'present' if (root / 'BannedSymbols.txt').is_file() else 'missing'}")
+                 f"scripts/verify.sh {'runs format, warnings-as-errors build and tests' if body else 'missing'}")
 
 
 def composition_root(root):
