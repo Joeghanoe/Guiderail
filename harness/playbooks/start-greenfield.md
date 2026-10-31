@@ -24,6 +24,11 @@ The repo has no source yet, or the task asks for a new service or application. A
    to almost every service. Name what you skipped.
 3. **State what done means.** Quote the task's own requirements and acceptance criteria; they are the spec
    ([write-spec](write-spec.md)). Do not invent criteria. List ambiguities with the reading you took.
+3a. **Count the layers.** `python3 ~/.golden-path-harness/harness/tools/orchestration/orchestrate.py layers --spec "<the task>" --report REPORT.md`.
+   Three or more layers (backend, frontend, data, infrastructure, end-to-end tests, identity) means the work is split into bounded
+   workloads with their own file paths, verification command and model tier ([orchestrate-workload](orchestrate-workload.md)):
+   put the output of `orchestrate.py plan` in `REPORT.md`, or write `Decomposition: single thread - <reason>` there. The check exits 3
+   until one of the two is in the report. It counts words and paths: a quick prompt to decide on purpose, not a measure of size.
 4. **Fill `docs/solution-design.md`.** Answer every heading. Decide
    these before code, because they are expensive to change after data exists: the stored layout, what one
    restore point or unit contains, the identity of a run and what repeating it does, the failure model, the

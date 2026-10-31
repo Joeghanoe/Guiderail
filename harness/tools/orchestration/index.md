@@ -6,7 +6,7 @@ Playbook: [orchestrate-workload.md](../../playbooks/orchestrate-workload.md).
 
 ## Tools
 
-* `orchestrate.py` - Evaluates task complexity, recommends cost-effective model tiers (`economy`, `builder`, `reasoner`), and generates multi-agent work package decomposition plans.
+* `orchestrate.py` - Evaluates task complexity, recommends cost-effective model tiers (`economy`, `builder`, `reasoner`), and generates multi-agent work package decomposition plans; `orchestrate.py layers` counts the layers a task or a change touches and exits 3 when three or more need a plan and the report holds neither the plan nor a stated reason for one thread.
 
 ## Model Tiers
 
