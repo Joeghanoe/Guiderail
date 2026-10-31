@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # Design gate (DEL.4, CODE.8, OBS.3, T.3): static, takes milliseconds, runs in both modes.
-DESIGN_PROFILE=generic # generic | service; greenfield-init.sh writes this
+DESIGN_PROFILE=generic # generic | service | web-app; greenfield-init.sh writes this
 harness=""
 for candidate in ./.harness "$HOME/.golden-path-harness/harness"; do
   [[ -z "$harness" && -f "$candidate/tools/greenfield/design-check.py" ]] && harness="$candidate"
@@ -54,3 +54,19 @@ dotnet restore "$sln"
 dotnet format "$sln" --verify-no-changes
 dotnet build "$sln" --no-restore -c Release -warnaserror
 dotnet test "$sln" --no-build -c Release
+
+# Other toolchains in this repo (a frontend, an extension): list their folders and each is installed from its lockfile, then
+# format-checked, built and tested with its own scripts (T.1). A step the project does not define is named, never skipped silently.
+NODE_PROJECTS=() # for example (src/frontend src/directus/extensions/macro-hook)
+for project in ${NODE_PROJECTS[@]+"${NODE_PROJECTS[@]}"}; do
+  bash "$harness/tools/code/node-verify.sh" "$project"
+done
+
+# Layer 1 integration against containers (T.3). Skipped, and said so, when Docker is not available: CI runs it.
+if [[ -f scripts/integration.sh ]]; then
+  if docker info >/dev/null 2>&1; then
+    bash scripts/integration.sh
+  else
+    echo "verify: integration tests SKIPPED (Docker not available); CI runs them" >&2
+  fi
+fi

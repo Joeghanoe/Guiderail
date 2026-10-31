@@ -14,8 +14,8 @@ The repo has no source yet, or the task asks for a new service or application. A
 
 # Steps
 
-1. **Scaffold.** `bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service` (omit `--service` for a repo that
-   runs no operations) writes the design skeleton, the repo's `AGENTS.md`, and `scripts/verify.sh`, and never
+1. **Scaffold.** `bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service` (`--web-app` for an HTTP application, which is judged on ports and a health
+   endpoint rather than on run sources and stores; omit the flag for a repo that runs no operations) writes the design skeleton, the repo's `AGENTS.md`, and `scripts/verify.sh`, and never
    overwrites. `scripts/verify.sh` runs the design gate
    (`tools/greenfield/design-check.py`) and the CODE.5 checker; it fails until the design is filled in and the code
    follows it.
@@ -42,6 +42,8 @@ The repo has no source yet, or the task asks for a new service or application. A
    implementation per kind; the operations; the entry point. Each slice compiles and has tests in its layer
    (T.3): unit tests per component against fakes, and scenario tests through the real entry point (T.5).
    Interfaces for sources, stores, clock and runners from the first slice (CODE.8). One type per file (CODE.5).
+   Each adapter gets one test against the real dependency (a container, an emulator) or a recorded real response in the
+   same slice, not at the end (T.6): that is where wrong field shapes and effects that arrive after the response show up.
 8. **Keep design and code one story.** When the code forces a different choice, change the design doc and the
    ADR in the same step. A design that no longer describes the code is a finding.
 9. **Verify** with `scripts/verify.sh` (T.1), including the format check.

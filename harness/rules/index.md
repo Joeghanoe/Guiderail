@@ -8,4 +8,4 @@
 * [iac](iac/) - 8 concepts
 * [observability](observability/) - 3 concepts
 * [security](security/) - 3 concepts
-* [testing](testing/) - 5 concepts
+* [testing](testing/) - 6 concepts

@@ -5,8 +5,13 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
+# A repo with no commit yet has no HEAD to diff against: compare with the empty tree, so the first run does not fail with
+# "bad revision HEAD" and every file counts as changed.
+head="HEAD"
+git rev-parse --verify --quiet HEAD >/dev/null || head="$(git hash-object -t tree /dev/null)"
+
 changed="$({
-  git diff --name-only HEAD --
+  git diff --name-only "$head" --
   git ls-files --others --exclude-standard
   base="$(git merge-base origin/main HEAD 2>/dev/null || true)"
   [[ -n "$base" ]] && git diff --name-only "$base" HEAD -- || true
