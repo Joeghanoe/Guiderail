@@ -28,6 +28,12 @@ parts are real here and which are stand-ins (a local folder for a bucket) and wh
 How data gets in, where it is stored and the exact key or path layout. State what is fixed before the first
 write and why. Say what one stored unit contains, so that it can be restored alone. Link the ADR.
 
+## Expected size and cost
+
+For each collection a component loops over: the expected size, the largest size the spec or data allows, the algorithm
+shape chosen for that largest size (CODE.9), what a search does when it hits a limit (inconclusive, never a negative
+answer), and the scale test that runs at ten times the expected size with its time budget.
+
 ## Identity of a run, and repeating it
 
 How a run is named, what a second call with the same name does, and how two runs are kept apart.
