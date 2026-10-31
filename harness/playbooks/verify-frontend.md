@@ -23,13 +23,19 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
 # Steps
 
 1. **Run the app on synthetic data.** Start it the way `AGENTS.md` says and wait until it answers. Never point this
-   at a page with real personal data (SEC.2). If the screen needs a login or a role, use a seeded test account or
-   the repo's mock mode, and never type a real credential.
+   at a page with real personal data (SEC.2). If the screen needs a login or a role, do not drive the login screen and
+   never type a real credential: write an **auth state file** for a synthetic user and pass it with `--auth-state` in
+   step 2. The file is the browser storage the app reads on boot (an MSAL cache in `sessionStorage`, a session in
+   `localStorage`, a cookie), produced out of band, for example by fetching a token with a service credential. See
+   `tools/frontend/auth-state.mjs` for the format and `tools/frontend/auth-examples/` for a producer. Keep the file
+   outside the repo or ignored by git (the tool refuses it otherwise) and never print it. If the repo's own seeded-user
+   or mock mode is simpler, use that; say which you used.
 2. **Capture the baseline.** This is the screen as it is before you fix anything the checks find. One call, own line (the guard hook refuses `|`, `;` and `&&`):
    `node ~/.golden-path-harness/harness/tools/frontend/screenshot.mjs --url http://localhost:<port>/<path> --name <screen>`
    The run is saved in `~/.golden-path-harness/cache/screenshots/<repo>/<timestamp>/`, outside every repo, and the tool deletes runs
    older than 7 days or beyond 200 MB (oldest first) before each capture (`--keep-days`, `--max-mb`). Screenshots are
    1x by default; use `--scale 2` only to inspect fine detail.
+   For a screen behind a login add `--auth-state <file>` to every call, the same file for baseline and comparison.
    Repeat `--url` for several screens. Add `--scheme both` when the product has a dark mode and `--full-page`
    when the screen scrolls. The tool needs Chrome, Edge or Chromium and Node 22+; it opens only localhost unless
    you pass `--allow-remote`, which only the user may ask for. If the repo has `axe-core` installed, the tool runs
