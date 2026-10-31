@@ -15,6 +15,11 @@ Splitting the workload among focused subagents coordinated by a lead orchestrati
 - Standard feature implementation runs efficiently on balanced builder models.
 - Deep architectural design, security boundaries, and final integration review use high-reasoning models.
 
+# Trigger
+
+`orchestrate.py layers --spec "<task>" --report REPORT.md` counts the layers a task touches; three or more means this playbook applies.
+It exits 3 until the report holds the plan or a named reason for one thread (`Decomposition: single thread - <reason>`).
+
 # Input
 
 - The requirement, epic, or issue description (e.g., from backlog or user prompt).

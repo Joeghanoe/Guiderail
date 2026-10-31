@@ -195,6 +195,47 @@ def classify_tier(text: str, changed_files: list[str] | None = None) -> dict:
     }
 
 
+# The layers a task can touch. A task that spans three or more is split into bounded workloads (orchestrate-workload), because one
+# thread that holds backend, frontend, data and infrastructure at once loses the thread and cannot be reviewed in pieces.
+LAYER_WORDS = {
+    "backend": ["backend", "api", ".net", "c#", "asp.net", "endpoint", "domain logic", "service layer", "fastapi", "nestjs", "express"],
+    "frontend": ["frontend", "react", "vue", "angular", "svelte", "ui ", " ui", "pwa", "css", "screens", "pages"],
+    "data": ["database", "sql", "schema", "migration", "directus", "postgres", "data model", "collections"],
+    "infrastructure": ["infrastructure", "docker", "bicep", "terraform", "railway", "kubernetes", "pipeline", "deploy", "edge proxy", "nginx"],
+    "tests-e2e": ["e2e", "end-to-end", "integration test", "walkthrough", "cypress", "playwright"],
+    "security-identity": ["sso", "oauth", "openid", "roles and permissions", "authentication", "authorization", "rbac"],
+}
+LAYER_PATHS = {
+    "backend": (".cs", ".csproj", ".py", "/api/", "/backend/", "/server/"),
+    "frontend": (".tsx", ".jsx", ".vue", ".svelte", ".css", "/frontend/", "/web/", "vite.config"),
+    "data": (".sql", "migrations/", "snapshot.yaml", "schema", "/directus/", "seed"),
+    "infrastructure": ("dockerfile", ".bicep", ".tf", "docker-compose", "/infra/", ".railway", "azure-pipelines", ".github/workflows"),
+    "tests-e2e": ("/e2e/", "cypress", "playwright", "/integration/"),
+}
+DECOMPOSE_AT = 3
+PLAN_MARKERS = ("workload orchestration plan", "decomposition: single thread")
+
+
+def detect_layers(text: str = "", paths: list[str] | None = None) -> list[str]:
+    lowered = f" {text.lower()} "
+    found = {layer for layer, words in LAYER_WORDS.items() if any(word in lowered for word in words)}
+    for path in paths or []:
+        normal = "/" + path.replace("\\", "/").lower().lstrip("/")
+        found |= {layer for layer, marks in LAYER_PATHS.items() if any(mark in normal for mark in marks)}
+    return sorted(found)
+
+
+def decomposition_recorded(report: pathlib.Path) -> bool:
+    """True when the report holds a plan (orchestrate.py plan output) or a named reason for staying in one thread."""
+    try:
+        body = report.read_text(encoding="utf-8").lower()
+    except OSError:
+        return False
+    if "decomposition: single thread" in body:
+        return "decomposition: single thread -" in body and len(body.split("decomposition: single thread -", 1)[1].strip().split("\n")[0].strip()) >= 10
+    return "workload orchestration plan" in body
+
+
 def generate_plan(spec_text: str, split_count: int | None = None) -> dict:
     """Decompose a task into discrete, decoupled subagent workloads (flexible 3-10 splits)."""
     text_lower = spec_text.lower()
@@ -335,7 +376,29 @@ def main():
     plan_parser.add_argument("--split", type=int, default=None, help="Target number of workloads (e.g. 3, 5, 10).")
     plan_parser.add_argument("--format", choices=["json", "markdown"], default="json", help="Output format.")
 
+    layers_parser = subparsers.add_parser("layers",
+                                          help="Count the layers a task touches and say whether it must be decomposed (3 or more).")
+    layers_parser.add_argument("--spec", type=str, default="", help="The task, spec or backlog item.")
+    layers_parser.add_argument("--paths", nargs="*", default=[], help="Files the change touches or will create.")
+    layers_parser.add_argument("--report", type=str, default=None,
+                               help="REPORT.md to check: exit 3 when decomposition is needed and the report holds neither a plan "
+                                    "nor a line 'Decomposition: single thread - <reason>'.")
+
     args = parser.parse_args()
+    if args.command == "layers":
+        text = args.spec
+        if not text and not args.paths and not sys.stdin.isatty():
+            text = sys.stdin.read().strip()
+        found = detect_layers(text, args.paths)
+        needed = len(found) >= DECOMPOSE_AT
+        recorded = bool(args.report) and decomposition_recorded(pathlib.Path(args.report))
+        print(json.dumps({"layers": found, "count": len(found), "decompose": needed, "recorded": recorded if needed else None}, indent=2))
+        if needed and args.report and not recorded:
+            print(f"orchestrate: {len(found)} layers ({', '.join(found)}): split the work into bounded workloads with "
+                  f"`orchestrate.py plan` and put the plan in {args.report}, or add the line "
+                  "'Decomposition: single thread - <reason>' (orchestrate-workload).", file=sys.stderr)
+            return 3
+        return 0
     providers = load_providers(args.models)
     chosen, entry = resolve_provider(providers, args.provider)
     stale_note = None
@@ -411,4 +474,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main() or 0)
