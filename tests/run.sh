@@ -523,6 +523,7 @@ expect 1 "screenshot refuses a remote host" node "$shot" --url https://example.c
 expect 1 "screenshot refuses a non-http url" node "$shot" --url file:///etc/hosts
 expect 1 "screenshot refuses a bad viewport" node "$shot" --url http://localhost:1/ --viewports 390
 expect 1 "screenshot refuses an unknown option" node "$shot" --url http://localhost:1/ --bogus
+expect 0 "contrast tool: ratios, tokens, failing and passing pairs" node --test "$here/tests/frontend-contrast.test.mjs"
 expect 1 "screenshot refuses a missing auth state file" node "$shot" --url http://localhost:1/ --auth-state "$tmp/none.json"
 expect 0 "auth state: validation, seed script, MSAL example, git refusal and a logged-in capture" node --test "$here/tests/frontend-auth-state.test.mjs"
 expect 0 "guard allows the screenshot tool" bash_hook "node ~/.golden-path-harness/harness/tools/frontend/screenshot.mjs --url http://localhost:5173/ --name home"

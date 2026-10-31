@@ -30,6 +30,12 @@ say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI an
    `tools/frontend/auth-state.mjs` for the format and `tools/frontend/auth-examples/` for a producer. Keep the file
    outside the repo or ignored by git (the tool refuses it otherwise) and never print it. If the repo's own seeded-user
    or mock mode is simpler, use that; say which you used.
+1a. **Check the style guide's colours first.** When the repo has a style guide with colour tokens, list the pairs it
+   uses (body text on the page, link, button text on its fill, text on a card) and run
+   `node ~/.golden-path-harness/harness/tools/frontend/contrast.mjs --css <file> --pair <fg>/<bg> --large <fg>/<bg>`
+   once, before building from them. A guide can ship a pair that fails AA (a "darker green" at 4.3:1, a brand orange stated as
+   3.9:1 that is 3.58:1). Where one fails, pick a darker value of the same hue, write it into the guide as an accessibility
+   note, and say so; do not add a new hue (UI.1).
 2. **Capture the baseline.** This is the screen as it is before you fix anything the checks find. One call, own line (the guard hook refuses `|`, `;` and `&&`):
    `node ~/.golden-path-harness/harness/tools/frontend/screenshot.mjs --url http://localhost:<port>/<path> --name <screen>`
    The run is saved in `~/.golden-path-harness/cache/screenshots/<repo>/<timestamp>/`, outside every repo, and the tool deletes runs
