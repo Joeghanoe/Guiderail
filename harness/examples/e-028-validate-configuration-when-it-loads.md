@@ -44,7 +44,7 @@ public abstract class IntegrationConfigurationProvider<T> where T : IntegrationC
             throw new InvalidOperationException($"Configuration for integration {integrationId} is missing or empty");
         }
 
-        try { Configuration = JsonConvert.DeserializeObject<T>(json)!; }
+        try { Configuration = JsonConvert.DeserializeObject<T>(json) ?? throw new JsonException("null"); }
         catch (JsonException ex)
         {
             throw new InvalidOperationException($"Configuration for integration {integrationId} cannot be read", ex);

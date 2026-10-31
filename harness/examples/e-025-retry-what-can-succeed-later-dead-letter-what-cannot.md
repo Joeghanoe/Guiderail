@@ -39,8 +39,7 @@ try
 }
 catch (Exception ex) when (IsTransient(ex))
 {
-    logger.LogWarning(ex, "Message {MessageId} failed transiently; the broker will retry", message.MessageId);
-    throw;                                                    // redelivered until the max delivery count
+    throw;                                                    // redelivered; logged where it is finally handled (CODE.2)
 }
 catch (RejectedMessageException ex)
 {
