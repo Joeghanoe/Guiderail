@@ -6,6 +6,7 @@ workspace, but unlike the Claude and Copilot engines agy has no tool allowlist: 
 """
 
 import importlib.util
+import json
 import os
 import pathlib
 import shutil
@@ -48,7 +49,8 @@ def main():
     prompt_path, output_path, review_dir, bundle_dir = map(pathlib.Path, sys.argv[1:])
     command = [
         shutil.which("agy") or "agy", "--print", TOOL_NOTICE + prompt_path.read_text(encoding="utf-8"),
-        "--mode", "plan", "--output-format", "text",
+        "--mode", "plan", "--output-format", "json",
+        "--dangerously-skip-permissions",
         "--add-dir", str(review_dir), "--add-dir", str(bundle_dir),
         "--print-timeout", f"{TIMEOUT_SECONDS}s",
     ]
@@ -65,10 +67,21 @@ def main():
         print("review: agy was not found on PATH", file=sys.stderr)
         return 127
     except subprocess.TimeoutExpired:
-        usage.write(review_dir, "agy", model, time.monotonic() - started, cost_reason=NO_USAGE)
+        usage.write(review_dir, "agy", model, time.monotonic() - started,
+                    cost_reason="timed out before agy reported usage")
         print(f"review: agy exceeded the {TIMEOUT_SECONDS}s time limit", file=sys.stderr)
         return 124
-    usage.write(review_dir, "agy", model, time.monotonic() - started, cost_reason=NO_USAGE)
+
+    wall_seconds = time.monotonic() - started
+    payload = None
+    if result.stdout.strip():
+        try:
+            payload = json.loads(result.stdout)
+        except ValueError:
+            pass
+
+    usage_data = usage.from_agy(payload) if payload else {"cost_reason": NO_USAGE}
+    usage.write(review_dir, "agy", model, wall_seconds, **usage_data)
 
     if result.returncode:
         message = result.stderr or result.stdout
@@ -76,11 +89,12 @@ def main():
               file=sys.stderr)
         return result.returncode
 
-    if not result.stdout.strip():
+    response_text = payload.get("response", "") if isinstance(payload, dict) else result.stdout
+    if not response_text.strip():
         print("review: agy returned an empty response" + (f": {result.stderr.strip()[-600:]}" if result.stderr.strip() else ""),
               file=sys.stderr)
         return 1
-    output_path.write_text(result.stdout, encoding="utf-8")
+    output_path.write_text(response_text, encoding="utf-8")
     return 0
 
 

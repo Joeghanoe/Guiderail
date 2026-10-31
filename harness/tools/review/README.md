@@ -84,7 +84,7 @@ Every engine adapter writes `usage.json` beside the review, through `usage.py` (
 | Claude | from `--output-format json` | as the CLI reports it (API list price) |
 | Codex | from `--json` events | from your price file, else null |
 | Copilot | from `--usage-output-file` | as the CLI reports it, else your price file |
-| agy | not reported | null; only the time is measured |
+| agy | from `--output-format json` | from your price file, else null |
 
 The price file is yours and never committed: `~/.config/harness/prices.json` (or `$HARNESS_PRICES`), with a
 `checked` date and per-model `input_per_mtok`, `cached_input_per_mtok` and `output_per_mtok`. A cost only gets

@@ -354,7 +354,7 @@ def cmd_run(args):
     ev, thresholds, digest, pairs, folder, json_path, md_path = context(args)
     by_name = {item["name"]: scenario for item, scenario in pairs}
     items = order([item for item, _ in pairs])
-    run_args = argparse.Namespace(engine=args.engine, model=args.model, replay_dir=args.replay_dir, jobs=1,
+    run_args = argparse.Namespace(engine=args.engine, model=args.model, replay_dir=args.replay_dir, jobs=args.jobs,
                                   bundle=args.bundle.resolve())
     preflight = ev.engine_preflight_error(run_args)
     if preflight:
@@ -442,6 +442,8 @@ def main():
     parser.add_argument("--model", help="model to pin; a different model is a different checklist")
     parser.add_argument("--replay-dir")
     parser.add_argument("--only", action="append", help="only this scenario (repeatable); the run is partial")
+    parser.add_argument("--jobs", type=int, default=1,
+                        help="maximum concurrent eval runs per scenario (default: 1, max: 8)")
     parser.add_argument("--limit", type=int, default=0, help="stop after this many scenarios, to spread tokens over days")
     parser.add_argument("--no-advisory", action="store_true", help="skip the draft examples, which cannot fail the gate")
     parser.add_argument("--retry-failed", action="store_true",
@@ -455,8 +457,8 @@ def main():
     parser.add_argument("--bundle", type=pathlib.Path, default=BUNDLE_ROOT)
     parser.add_argument("--thresholds", type=pathlib.Path, default=HERE / "thresholds.json")
     args = parser.parse_args()
-    if args.limit < 0 or args.max_errors < 1:
-        parser.error("--limit must be 0 or more and --max-errors 1 or more")
+    if args.limit < 0 or args.max_errors < 1 or not 1 <= args.jobs <= 8:
+        parser.error("--limit must be 0 or more, --max-errors 1 or more, and --jobs between 1 and 8")
     return {"run": cmd_run, "status": cmd_status, "reset": cmd_reset}[args.command](args)
 
 

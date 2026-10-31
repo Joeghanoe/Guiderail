@@ -55,6 +55,16 @@ class Engines(unittest.TestCase):
     def test_codex_without_events_reports_nothing(self):
         self.assertEqual(usage.from_codex("plain text"), {"cost_reason": "Codex reported no usage"})
 
+    def test_agy_extracts_usage_and_sums_thinking(self):
+        payload = {"status": "SUCCESS", "usage": {
+            "input_tokens": 100, "cache_read_tokens": 30, "output_tokens": 15, "thinking_tokens": 5}}
+        found = usage.from_agy(payload)
+        self.assertEqual((found["input_tokens"], found["cached_input_tokens"], found["output_tokens"]),
+                         (100, 30, 20))
+
+    def test_agy_without_usage_reports_no_usage(self):
+        self.assertEqual(usage.from_agy({}), {"cost_reason": "agy reported no usage"})
+
     def test_usage_file_prefers_a_total_over_per_model_entries(self):
         document = {"totals": {"inputTokens": 900, "outputTokens": 90},
                     "models": [{"name": "a", "inputTokens": 600, "outputTokens": 60},

@@ -152,6 +152,21 @@ def from_codex(stdout):
             "cost_reason": "Codex reports tokens, not cost"}
 
 
+def from_agy(payload):
+    """agy --output-format json. Thinking tokens are included in output_tokens."""
+    usage = (payload or {}).get("usage") or {}
+    input_tokens = usage.get("input_tokens")
+    cached = usage.get("cache_read_tokens")
+    output = usage.get("output_tokens")
+    thinking = usage.get("thinking_tokens") or 0
+    total_output = (output + thinking) if output is not None else None
+    if input_tokens is None and total_output is None:
+        return {"cost_reason": "agy reported no usage"}
+    return {"input_tokens": input_tokens, "cached_input_tokens": cached,
+            "output_tokens": total_output,
+            "cost_reason": "agy reports tokens, not cost"}
+
+
 KEYS = {
     "input_tokens": {"inputtokens", "prompttokens"},
     "cached_input_tokens": {"cachedinputtokens", "cachereadtokens", "cachereadinputtokens"},
