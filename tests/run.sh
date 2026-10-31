@@ -47,6 +47,10 @@ expect 0 "greenfield-init writes the skeletons" bash "$h/tools/greenfield/greenf
 expect 0 "greenfield-init keeps what exists" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
 expect 1 "design gate fails a fresh skeleton" python3 -I "$h/tools/greenfield/design-check.py" "$gf" --profile service
 expect 0 "verify.sh names the service profile" grep -q "^DESIGN_PROFILE=service" "$gf/scripts/verify.sh"
+gw="$tmp/greenfield-web"
+expect 0 "greenfield-init --web-app writes the skeletons" bash "$h/tools/greenfield/greenfield-init.sh" --web-app "$gw"
+expect 0 "verify.sh names the web-app profile" grep -q "^DESIGN_PROFILE=web-app" "$gw/scripts/verify.sh"
+expect 1 "design gate fails a fresh web-app skeleton" python3 -I "$h/tools/greenfield/design-check.py" "$gw" --profile web-app
 expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_freeze_eval.py"
 expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
 expect 0 "brownfield runner controls (stand-in adapter and grader, no model)" python3 -I "$here/tests/test_run_brownfield.py"

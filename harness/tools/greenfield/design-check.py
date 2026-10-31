@@ -4,8 +4,10 @@
 Reads files only; never builds or runs the repo's code, never follows symlinks. Each check names the rule it
 stands for and says what it saw. These are structural proofs that the design exists, is filled in and shapes
 the code, not a judgement of quality: a reviewer still reads the documents.
-Profiles: `generic` (any new repo) and `service` (a service that runs operations and reports them: adds the
-CODE.8 source/store roles and the OBS.3 contract). Exit 0 when every check passes, 1 otherwise.
+Profiles: `generic` (any new repo); `service` (a service that runs operations and reports them: adds the CODE.8
+source/store roles and the OBS.3 contract); `web-app` (an HTTP application that talks to other systems: adds ports for
+what it talks to, whatever they are called, and an error-code catalogue plus a health endpoint, without asking for run
+events). Exit 0 when every check passes, 1 otherwise.
 """
 import argparse
 import json
@@ -123,6 +125,29 @@ def interfaces(root):
                  f"{' + TimeProvider' if uses_time_provider else ''}")
 
 
+def ports(root):
+    """CODE.8 for an application: every system it talks to sits behind an interface that something implements.
+    The roles are not named (a web app has a Directory, a Gateway, a Renderer, not a Source and a Sink)."""
+    sources = [(rel, text(p)) for rel, p in files(root, {".cs"}) if "tests" not in rel.parts]
+    names = {m.group(1) for _, body in sources for m in re.finditer(r"\binterface\s+(I[A-Z]\w+)", body)}
+    implemented = {n for n in names for _, body in sources
+                   if re.search(r"class\s+\w+[^{;]*?:\s*[^{;]*\b" + re.escape(n) + r"\b", body)}
+    uses_time_provider = any("TimeProvider" in body or "IClock" in body for _, body in sources)
+    ok = len(names) >= 4 and len(implemented) >= 4 and uses_time_provider
+    return check("D06", "CODE.8", ok, f"{len(names)} interfaces, {len(implemented)} with an implementation"
+                 f"{', time through TimeProvider or IClock' if uses_time_provider else ', no TimeProvider or IClock'}")
+
+
+def web_contract(root):
+    """OBS.1 and OBS.3 for an application: stable error codes and its own health endpoint."""
+    names = [rel.name for rel, _ in files(root, {".cs"}) if "tests" not in rel.parts]
+    bodies = "\n".join(text(p) for rel, p in files(root, {".cs"}) if "tests" not in rel.parts)
+    catalogue = any(re.search(r"(Error|Reason|Failure)Codes?\b", n) for n in names)
+    health = re.search(r"Map(Get|Methods)\s*\(\s*\"[^\"]*health", bodies, re.I) is not None or "MapHealthChecks" in bodies
+    return check("D08", "OBS.1", catalogue and health,
+                 f"error-code catalogue {'yes' if catalogue else 'no'}; health endpoint {'yes' if health else 'no'}")
+
+
 def concrete_construction(root):
     interface_impls = set()
     sources = [(rel, text(p)) for rel, p in files(root, {".cs"}) if "tests" not in rel.parts]
@@ -164,7 +189,8 @@ def test_layers(root):
 
 def run(root, profile="service", design_only=False):
     service = profile == "service"
-    checks = [design_document(root), adrs(root, 2 if service else 1), repo_agents(root)]
+    web = profile == "web-app"
+    checks = [design_document(root), adrs(root, 2 if service or web else 1), repo_agents(root)]
     if design_only:  # the gate before src/: the design exists, the code is not judged yet
         failed = [c["id"] for c in checks if c["status"] == "fail"]
         return {"status": "pass" if not failed else "fail", "profile": profile, "failed": failed, "checks": checks,
@@ -172,6 +198,8 @@ def run(root, profile="service", design_only=False):
     checks += [verify_command(root), composition_root(root), concrete_construction(root), test_layers(root)]
     if service:
         checks += [interfaces(root), observability_contract(root)]
+    if web:
+        checks += [ports(root), web_contract(root)]
     checks.sort(key=lambda c: c["id"])
     failed = [c["id"] for c in checks if c["status"] == "fail"]
     return {"status": "pass" if not failed else "fail", "profile": profile, "failed": failed, "checks": checks,
@@ -181,7 +209,7 @@ def run(root, profile="service", design_only=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("workspace", nargs="?", default=".")
-    parser.add_argument("--profile", choices=["generic", "service"], default="generic")
+    parser.add_argument("--profile", choices=["generic", "service", "web-app"], default="generic")
     parser.add_argument("--design-only", action="store_true", help="check only the design, ADRs and AGENTS.md (before src/)")
     parser.add_argument("--json", action="store_true", help="print the full result instead of the failing checks")
     args = parser.parse_args()
