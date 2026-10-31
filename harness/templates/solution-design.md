@@ -21,7 +21,8 @@ One paragraph: who uses it and why it exists. Then the question that drives ever
 ## Components
 
 A diagram (Mermaid) and a table: component, responsibility, depends on (interfaces only, CODE.8). Say which
-parts are real here and which are stand-ins (a local folder for a bucket) and why the stand-in is safe.
+parts are real here and which are stand-ins (a local folder for a bucket) and why the stand-in is safe. For each
+adapter, name the test that runs it against the real dependency or a recorded real response (T.6).
 
 ## Data flow and stored layout
 
