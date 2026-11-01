@@ -3,7 +3,8 @@ type: Playbook
 title: Triage a production or environment incident
 description: Investigate a reported incident ("something is broken", "errors in prod", "users are seeing failures"), classify the root cause, and produce an actionable report without changing any running system.
 tags: [incidents, observability, debugging, production]
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 ---
 
 # Input

@@ -8,7 +8,8 @@ tags: [delivery, architecture, greenfield, documentation]
 applies_to: ["**"]
 enforced_by: [script:verify, gate:/gates/design-check.md, review]
 severity: major
-status: draft
+status: stable
+approval_commit: fa181d8
 sources:
   - id: origin
     resource: first greenfield evaluation run (2026-10-29): all functional checks passed, yet no design, no ADR, no repo AGENTS.md and no verify command were produced

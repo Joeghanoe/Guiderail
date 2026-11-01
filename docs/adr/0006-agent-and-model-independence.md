@@ -1,6 +1,7 @@
 # ADR 0006: Agent and Model Independence
 
-- **Status:** Draft — requires team review
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Provider-neutral harness contracts, adapters, benchmarking and authentication boundaries
 - **Amended by:** ADR 0007 (per-run resource fields)
@@ -10,7 +11,7 @@
 
 The initial engineering workflow uses Claude Code, but the harness is intended to support Codex, Gemini and other compatible agents/models, including lower-cost alternatives. Company engineering standards should survive a provider change. A claim that one model is better than another is meaningful only if task definitions, evidence, permissions and evaluation remain comparable. The current budget favors sequential local runs, potentially using Rancher Desktop; supported CLI subscription authentication should be usable where provider policy and tooling permit, without requiring API keys merely to support an adapter.
 
-## Proposed decision (not yet ratified)
+## Decision
 
 **Make specifications, rules, evaluation criteria and result formats provider-neutral. Place provider-specific execution behind replaceable adapters.**
 
@@ -68,7 +69,7 @@ flowchart LR
 5. What is the threshold for adopting a cheaper model: equal hard-gate compliance, minimum task success, maximum human review effort, or another criterion?
    - **Answer:** Task success and quality.
 
-## Acceptance criteria for ratification
+## Implementation and verification criteria
 
 - At least two supported agent adapters can run the same scenario schema and emit the same evidence schema.
 - Eval definitions contain no provider-specific prompts or output assumptions unless explicitly scoped.

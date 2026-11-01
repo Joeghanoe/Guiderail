@@ -8,7 +8,8 @@ tags: [code, design, dependency-injection, dotnet]
 applies_to: ["**/*.cs"]
 enforced_by: [review]
 severity: major
-status: draft
+status: stable
+approval_commit: fa181d8
 sources:
   - id: origin
     resource: first greenfield evaluation run (2026-10-29): operations built their own concrete sources and wrote straight to the file system with no storage interface

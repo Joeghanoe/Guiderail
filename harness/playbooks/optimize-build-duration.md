@@ -3,7 +3,8 @@ type: Playbook
 title: Optimize build and pipeline duration
 description: Measure where an Azure DevOps pipeline spends its time, change one thing on the critical path, measure again over several runs, and hand every pipeline and infrastructure change to a human as a diff or command.
 tags: [delivery, pipelines, performance]
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 ---
 
 # Input

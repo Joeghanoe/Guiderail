@@ -4,6 +4,12 @@ Last reviewed: 2026-11-01. The owner approved the retained examples in this sess
 
 This is an editable record of current decisions, not an ADR. Revise a decision when experience changes it, record the reason in the history, and update its examples and checks. Git preserves earlier wording. Processed feedback lives in [the source records](../feedback/processed/); the active queue contains undecided feedback only.
 
+## Current disposition
+
+All active harness examples, rules, gates and playbooks are stable. The owner removed E-034 and its dedicated fixture on 2026-11-01; historical eval results remain intact. ADRs 0001–0007 are approved by the owner. Decision approval does not assert that every implementation/verification criterion has been completed.
+
+Still open: ADR 0008, the development-process proposal and the knowledge-base incident-triage automation idea. The owner plans to review these later this week. The dated sections below preserve the earlier audit history and are superseded by this current disposition where statuses differ.
+
 ## Current decisions
 
 | Topic | Decision | Examples or checks |
@@ -39,3 +45,27 @@ On 2026-11-01 the owner accepted promotion of examples that already had passing 
 Most snippets are unchanged since history commit `d7709e1`. E-032 and E-036 match the later committed snippets preceding their recorded passing Gemini Medium scenarios. This is historical evidence, not a fresh evaluation of the current full bundle. Promotion does not change the historical advisory/gating split or manufacture a current-bundle result.
 
 E-034 remains draft because its bad scenario has a recorded failure and no complete passing set was found. E-021 is accepted with mixed model evidence: Gemini Low passed both scenarios, while Gemini Medium missed the bad case. Both results stay recorded. Stable examples define accepted expectations; a model-specific failure remains a reviewer regression, not a reason to change the expectation to make the gate pass.
+
+## Rule, gate and playbook readiness
+
+On 2026-11-01, corrected the stale draft labels on CODE.11 and the design-check and OpenAPI-drift gates. CODE.11 is the convention the owner explicitly approved through E-041/E-048; both gates are implemented and covered by deterministic tests. Gate stability records an implemented tool contract with documented limits, not proof of every consuming service.
+
+The remaining 11 rule drafts and nine playbook drafts are not automatically promoted by example pass rates. They require review of the policy or workflow and evidence appropriate to their scope. Rules such as CODE.8 and DEL.5 have accepted examples supporting part of their scope, but those examples do not establish every clause. Tool tests for a helper do not by themselves demonstrate a whole operational playbook. ADRs retain their separately recorded approval status.
+
+## Prior approvals recovered
+
+On 2026-11-01, recovered prior owner adoption from merged PRs: #5 for CODE.8, DEL.4, OBS.3 and start-greenfield; #9 for T.6; #13 for DEL.5; #14 for CODE.10. Recorded the approval commits on those documents and corrected their stale draft labels. Subsequent explicit approvals resolved the other gaps, as recorded below. The temporary approval audit was removed after its outcome was captured here.
+
+## Explicit approval of the remaining conventions
+
+On 2026-11-01 the owner explicitly approved CODE.7, CODE.9, OBS.2, UI.1 and UI.2 and the diagnose-pipeline-failure, draw-integration-diagram, optimize-build-duration, review-and-fix, triage-incident, verify-deployment and verify-frontend playbooks. These twelve documents are stable, with the actual approval recorded in their metadata. This supersedes the earlier five-rule/eight-playbook pending count.
+
+E-034 and write-business-test-plan remain draft. The separate incident-triage automation idea and ADR ratification remain undecided; approval of the triage playbook does not expand authorization to automate ticket intake, messages or cloud changes.
+
+## Business test plan approval
+
+On 2026-11-01 the owner explicitly approved write-business-test-plan and reported that it helped substantially with acceptance testing. Marked the playbook stable and recorded the approval. This supplies both acceptance and reported operational use; it does not imply every generated plan has been executed. E-034 is now the only remaining draft concept in the harness. Separate proposals and ADR ratification retain their existing status.
+
+## E-034 removal and ADR approval
+
+On 2026-11-01 the owner requested removal of E-034 and approved ADRs 0001–0007. Removed the example and its otherwise unused fixture, kept the historical pass/fail evidence, and recorded the actual ADR approval. ADR 0008 remains a proposal, as do the development-process proposal and incident-triage automation idea. No cloud permissions or runtime policy changes are made by these documentation updates.

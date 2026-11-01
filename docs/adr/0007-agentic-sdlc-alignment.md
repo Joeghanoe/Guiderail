@@ -1,12 +1,13 @@
 # ADR 0007: Agentic SDLC Alignment — Evidence, Behaviour and Working Modes
 
-- **Status:** Draft — owner decisions recorded, ratification pending
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-31
 - **Owner and reviewer:** joeghanoe (sole maintainer; see decision 2)
 - **Scope:** How the harness measures agent behaviour, scores benchmarks, treats prototype work, and who maintains it
 - **Depends on:** ADR 0002, ADR 0004, ADR 0005, ADR 0006
 - **Amends:** ADR 0001 (implementation implications), ADR 0002 (Q1 scope, Q5 owner), ADR 0004 (ownership, scope, accepted risk), ADR 0005 (scoring, evidence, rule approval), ADR 0006 (resource fields)
-- **Reference:** Osmani, Saboo, Kartakis, _The New SDLC With Vibe Coding_ (Google, Kaggle 5-Day AI Agents Intensive, 2026). Compared through secondary summaries ([Okane Land](https://okaneland.com/study/new-sdlc-with-vibe-coding/), [Formoso](https://pabloformoso.com/en/google-new-sdlc-vibe-coding/), [DEV](https://dev.to/jamilxt/googles-new-sdlc-whitepaper-from-vibe-coding-to-agentic-engineering-5a1l)) because the Kaggle page did not render as text. Check against the paper itself before ratifying.
+- **Reference:** Osmani, Saboo, Kartakis, _The New SDLC With Vibe Coding_ (Google, Kaggle 5-Day AI Agents Intensive, 2026). Compared through secondary summaries ([Okane Land](https://okaneland.com/study/new-sdlc-with-vibe-coding/), [Formoso](https://pabloformoso.com/en/google-new-sdlc-vibe-coding/), [DEV](https://dev.to/jamilxt/googles-new-sdlc-whitepaper-from-vibe-coding-to-agentic-engineering-5a1l)) because the Kaggle page did not render as text. The primary paper has not been independently verified; this provenance limit remains recorded with the approved decision.
 
 ## Context
 
@@ -177,7 +178,7 @@ A already includes C in practice. B is the fallback if exploration in product re
 5. Should this be a new ADR or amendments?
    - **Answer:** Both. This ADR, plus amendments to ADR 0001, 0002, 0004, 0005 and 0006.
 
-## Acceptance criteria for ratification
+## Implementation and verification criteria
 
 - A clean-commit `history.jsonl` entry with `gate: pass` exists on `main`.
 - A history entry and a review receipt show token, duration and cost fields, or `null` with a reason.

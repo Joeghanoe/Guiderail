@@ -1,6 +1,7 @@
 # ADR 0003: Knowledge-to-Code Boundary (Vegviser and Harness)
 
-- **Status:** Draft — discovery and review required
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Responsibility boundaries between backlog, Vegviser, human approvers, and the harness
 - **Depends on:** ADR 0001, ADR 0002
@@ -9,7 +10,7 @@
 
 Vegviser is intended to help engineers use organizational knowledge to prepare specifications. The harness implements a specification. These responsibilities must not collapse into one opaque agent workflow. Requirements and their rationale should remain traceable in the existing backlog system.
 
-## Proposed decision (not yet ratified)
+## Decision
 
 The **backlog story/work item is the system of record** for business needs, human-approved specifications, and acceptance criteria. Vegviser is a knowledge assistant that can propose specification content. A human writes, edits, and explicitly approves the story/specification **after Vegviser and before harness execution**. The harness consumes the approved version and produces implementation and verification evidence back-linked to that story.
 

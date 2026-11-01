@@ -8,7 +8,8 @@ tags: [frontend, ux, content, minimalism]
 applies_to: ["**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.svelte", "**/*.razor", "**/*.cshtml", "**/*.html", "**/*.css", "**/*.scss"]
 enforced_by: [review]
 severity: major
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 sources:
   - id: origin
     resource: User feedback on a generated screen whose footer read "replaces the legacy RAG process" and whose header and cards carried badges nobody asked for

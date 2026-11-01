@@ -3,7 +3,8 @@ type: Playbook
 title: Write a business test plan
 description: Turn the process behind a change into a short end-to-end test plan in Excel that a project manager or business owner can follow, run and sign off.
 tags: [testing, e2e, business, acceptance, excel]
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T20:11:13Z }
 ---
 
 # When

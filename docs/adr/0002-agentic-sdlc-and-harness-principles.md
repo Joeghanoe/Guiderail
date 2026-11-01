@@ -1,6 +1,7 @@
 # ADR 0002: Agentic SDLC and Harness Principles
 
-- **Status:** Draft — discovery and review required
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Shared agent execution standards and evaluation boundaries
 - **Depends on:** ADR 0001
@@ -10,7 +11,7 @@
 
 The Golden Path needs a repeatable agent-assisted engineering implementation that is consistent across Claude Code, Codex, and future tools. Company principles are the source of intent; two reference repositories provide evidence of conventions, but are not automatically correct. Roughly 8–10 example projects can be audited and used for greenfield/brownfield evaluation.
 
-## Proposed decision (not yet ratified)
+## Decision
 
 1. **Principles precede tools.** Company architectural principles and approved conventions define required outcomes. Agent-specific prompts and skills only implement them.
 2. **The harness is an execution and enforcement mechanism, not the source of business truth.** It reads an approved, versioned story/specification, operates within scoped permissions, and emits auditable artifacts.
@@ -21,7 +22,7 @@ The Golden Path needs a repeatable agent-assisted engineering implementation tha
 7. **Human control at boundaries.** The harness does not approve specs, independently approve PRs, or authorize PRD deployment.
 8. **Security is not optional.** Command policies and credential boundaries must be enforced outside the agent's own instruction context; preserve failed/denied tool-call evidence.
 
-## Proposed harness responsibilities
+## Harness responsibilities
 
 - Consume approved specifications and traceability metadata.
 - Coordinate planning, implementation, testing, policy enforcement, and retry within budget.

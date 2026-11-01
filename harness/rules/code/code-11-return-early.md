@@ -8,7 +8,8 @@ tags: [code, readability, control-flow]
 applies_to: ["**/*.cs", "**/*.ts", "**/*.tsx", "**/*.js"]
 enforced_by: [review]
 severity: minor
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:30:32Z }
 sources:
   - id: origin
     resource: owner feedback on early returns and ternaries, processed into E-041 on 2026-11-01

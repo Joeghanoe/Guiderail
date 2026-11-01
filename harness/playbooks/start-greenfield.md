@@ -3,7 +3,8 @@ type: Playbook
 title: Start a new repo or service design-first
 description: Turn a task for a new repo or service into a solution design, ADRs, the repo's own AGENTS.md and a verify command before feature code, then build in verified slices and report what matches the design.
 tags: [greenfield, design, architecture, planning]
-status: draft
+status: stable
+approval_commit: fa181d8
 ---
 
 # When

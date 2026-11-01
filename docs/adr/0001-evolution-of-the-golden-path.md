@@ -1,6 +1,7 @@
 # ADR 0001: Evolution of the Golden Path
 
-- **Status:** Proposed — pending company approval
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Decision owners:** Engineering leadership / Golden Path maintainers (to confirm)
 - **Amended by:** ADR 0007 (prototype work, harness-repository review exception, local isolation)
@@ -123,7 +124,7 @@ flowchart TD
 - The independent-review requirement (item 5) applies to product repositories. The harness repository has a documented exception while it has a single maintainer (ADR 0007 decision 2).
 - Define measurable indicators: cycle time, escaped defects, regression detection, review effort, compliance drift, and traceability coverage.
 
-## Open decisions / ratification gates
+## Implementation questions and rollout checks
 
 1. Who is the accountable story owner within the collectively owning team, and how is that recorded?
    - **Answer:** Business and developer together, who give the commitment. Recorded in the backlog tool in use (Azure DevOps, GitHub Issues or Jira).

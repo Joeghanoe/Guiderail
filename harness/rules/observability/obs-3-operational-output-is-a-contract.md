@@ -8,7 +8,8 @@ tags: [observability, logging, privacy, dotnet]
 applies_to: ["**/*.cs"]
 enforced_by: [review]
 severity: major
-status: draft
+status: stable
+approval_commit: fa181d8
 sources:
   - id: origin
     resource: first greenfield evaluation run (2026-10-29): reports existed but no event catalogue, no error-code catalogue and no status or health call

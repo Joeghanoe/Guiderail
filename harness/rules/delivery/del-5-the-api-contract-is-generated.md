@@ -8,7 +8,8 @@ tags: [delivery, api, openapi, contracts, ai-readiness]
 applies_to: ["**/*.cs", "**/*.csproj", "**/*.ts", "**/*.py", "**/openapi*.json", "**/swagger*.json", "**/*.yml"]
 enforced_by: [gate:/gates/openapi-drift.md, review]
 severity: major
-status: draft
+status: stable
+approval_commit: 81d380d
 sources:
   - id: precedent
     resource: a TeamValue shared package that reflects over a built Azure Functions app and writes swagger.json into the build output on every build, offline, with no host or settings

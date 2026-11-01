@@ -8,7 +8,8 @@ tags: [testing, integration, adapters, fakes, stubs]
 applies_to: ["**/*.cs", "**/*.ts", "**/*.py", "**/*Tests*/**", "**/tests/**"]
 enforced_by: [review]
 severity: major
-status: draft
+status: stable
+approval_commit: cae82ed
 sources:
   - id: origin
     resource: FoodApp portal build (2026-10-31): the adapter tests passed against hand-written Directus JSON while the real Directus lacked the one-to-many field that exposes a recipe's lines, and ran its hooks after the response returned. Only the end-to-end journey against a real instance found both.

@@ -8,7 +8,8 @@ tags: [code, design, consistency, derived-data, hooks]
 applies_to: ["**/*.cs", "**/*.ts", "**/*.py", "**/*.md"]
 enforced_by: [review]
 severity: major
-status: draft
+status: stable
+approval_commit: 720cdc6
 sources:
   - id: origin
     resource: FoodApp portal build (2026-10-31): recipe macros are derived from ingredient lines by a Directus hook. The hook is an action that runs after the response returns, so a read right after a write could still show the previous figure; the first journey tests passed only by luck of timing. The portal now calculates the figures it shows live, and its tests wait for the stored ones.

@@ -1,6 +1,7 @@
 # ADR 0005: Evaluation and Continuous Improvement
 
-- **Status:** Draft — requires team review
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Benchmark lifecycle, evaluation ownership, continuous improvement and evidence
 - **Depends on:** ADR 0001, ADR 0002, ADR 0004
@@ -10,7 +11,7 @@
 
 The harness must make company engineering principles measurable, rather than relying on instructions or a model's claims. Two reference repositories provide candidate conventions; approximately 8–10 existing projects offer audit and evaluation material. The intended sequence is to distill standards, test a greenfield business case, then introduce brownfield projects one at a time. Existing projects are not automatically compliant or exemplary. A benchmark optimized against a single example can overfit and lose generality.
 
-## Proposed decision (not yet ratified)
+## Decision
 
 **Maintain a versioned, independent evaluation system with a controlled improvement loop.** Separate tests of the harness itself from evaluation of agent-generated work.
 
@@ -78,7 +79,7 @@ The harness must make company engineering principles measurable, rather than rel
 6. How are false positives, rule disagreements and emergency exceptions reported?
    - **Answer:** In the repo, the Teams channel and in team meetings.
 
-## Acceptance criteria for ratification
+## Implementation and verification criteria
 
 - Each active rule maps to an approved principle or explicitly reviewed convention.
 - A known-good and deliberately violating fixture demonstrate evaluator sensitivity.

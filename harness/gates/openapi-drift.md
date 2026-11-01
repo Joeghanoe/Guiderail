@@ -4,7 +4,7 @@ title: "OpenAPI drift check (DEL.5)"
 description: openapi-drift.py fails a PR whose committed OpenAPI snapshot differs from the document the build generates.
 tool: harness/tools/code/openapi-drift.py
 owner: team:teamvalue-aicoe
-status: draft
+status: stable
 tags: [api, openapi, contracts]
 ---
 

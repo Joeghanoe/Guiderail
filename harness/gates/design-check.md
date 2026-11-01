@@ -4,7 +4,7 @@ title: Design check (DEL.4, CODE.8, OBS.3, T.3)
 description: design-check.py fails a new repo or service whose design is missing, still a template, or not reflected in the code's structure.
 tool: harness/tools/greenfield/design-check.py, called from scripts/verify.sh
 owner: team:teamvalue-aicoe
-status: draft
+status: stable
 tags: [architecture, greenfield, dotnet]
 ---
 

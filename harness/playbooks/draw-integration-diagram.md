@@ -3,7 +3,8 @@ type: Playbook
 title: Draw an integration diagram
 description: Turn an integration analysis into a one-page draw.io diagram (which component talks to which system, through what) by writing a spec for the diagram generator, never new drawing code.
 tags: [diagrams, drawio, integration, lld]
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 ---
 
 # Steps

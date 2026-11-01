@@ -1,6 +1,7 @@
 # ADR 0004: Harness Scope and Boundaries
 
-- **Status:** Draft — requires team review
+- **Status:** Approved
+- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Responsibilities, ownership, interfaces, and intentional exclusions of the Golden Path Harness
 - **Depends on:** ADR 0001, ADR 0002, ADR 0003
@@ -10,7 +11,7 @@
 
 The Golden Path is evolving toward a human-controlled, agent-assisted development process. Without explicit boundaries, the harness could become a replacement backlog, specification authority, CI/CD platform, deployment approver, or knowledge base. That would weaken accountability and introduce unnecessary overlap. ADR 0001 establishes human approval of backlog specifications, independent PR review, and human PRD approval. ADR 0003 proposes Vegviser as a knowledge/specification assistant, with the approved backlog story as the source of truth.
 
-## Proposed decision (not yet ratified)
+## Decision
 
 **The harness is a controlled engineering execution and evidence-generation layer, not a decision authority.**
 
@@ -77,7 +78,7 @@ The Golden Path is evolving toward a human-controlled, agent-assisted developmen
 5. What is the supported scope beyond software (infrastructure, databases, operations)?
    - **Answer:** Software, infrastructure, databases and operations; no more than these four.
 
-## Acceptance criteria for ratification
+## Implementation and verification criteria
 
 - A reviewed responsibility matrix names systems of record, approving roles and harness permissions.
 - A demonstration shows an agent cannot approve its own spec/PR/PRD release.
