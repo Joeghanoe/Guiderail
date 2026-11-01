@@ -16,6 +16,8 @@ def parse_args(description):
     parser.add_argument("--model", required=True, help="exact model ID; never defaulted or substituted")
     parser.add_argument("--executable", help="override the CLI to launch (tests)")
     parser.add_argument("--deny-path", action="append", default=[], help="absolute path the agent must not read")
+    parser.add_argument("--sandbox", help="Codex sandbox mode; default workspace-write. Use danger-full-access only "
+                        "inside the evaluation container, which is the isolation boundary")
     return parser.parse_args()
 
 

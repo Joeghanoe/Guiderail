@@ -51,6 +51,12 @@ class AdapterTests(unittest.TestCase):
         self.assertEqual((usage["input_tokens"], usage["output_tokens"], usage["tool_calls"], usage["turns"]), (12, 4, 1, 2))
         self.assertIsNone(usage["cost"])
 
+    def test_codex_sandbox_can_be_overridden_for_the_container(self):
+        run, root = self.invoke("codex.py", "fake_codex.py", "--sandbox", "danger-full-access")
+        self.assertEqual(run.returncode, 0, run.stderr)
+        argv = json.loads((root / "ws/seen.json").read_text(encoding="utf-8"))["argv"]
+        self.assertEqual(argv[argv.index("-s") + 1], "danger-full-access")
+
     def test_a_model_is_required(self):
         run, _ = self.invoke("claude_code.py", "fake_claude.py", model=None)
         self.assertNotEqual(run.returncode, 0)

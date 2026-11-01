@@ -14,7 +14,7 @@ def main():
     args = common.parse_args(__doc__)
     last = common.pathlib.Path(args.trace_dir) / "codex-last-message.txt"
     command = [*common.resolve(args.executable, "codex"), "exec", "--json", "-C", args.workspace, "-m", args.model,
-               "-s", "workspace-write", "--ephemeral", "--ignore-user-config", "-o", str(last), "-"]
+               "-s", args.sandbox or "workspace-write", "--ephemeral", "--ignore-user-config", "-o", str(last), "-"]
     code, events = common.stream(command, args, "codex")
     completed = [e for e in events if e.get("type") == "turn.completed"]
     if completed:
