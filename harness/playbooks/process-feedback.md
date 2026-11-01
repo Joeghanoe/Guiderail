@@ -36,6 +36,8 @@ status: stable
 
 Review drafts weekly. Accept an example by assigning an unused example number, setting `status: stable` and adding human `verified` metadata under H.1; rejected drafts can be deleted. Accepted examples belong in `harness/examples/`.
 
+After a decision, move the processed source feedback from `feedback/` to `docs/feedback/processed/` and link the resulting examples or the reason it was declined. Keep undecided ideas in the queue. Record the current convention and a brief dated rationale in `docs/decisions/feedback-conventions.md`. These records are editable as experience changes the decision; update the examples and checks with it. This is not an ADR requirement, and moving a source record does not itself approve a rule or example.
+
 To prepare a draft without changing the active harness checkout, run this before adding `verified`:
 
 ```bash

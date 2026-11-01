@@ -34,8 +34,8 @@ harness/              the bundle (~/.golden-path-harness/harness after install.s
   playbooks/          review a change, add an example, process feedback, classify a test failure, write a business test plan,
                       write a spec, scaffold from a repo's conventions, optimize build duration, compress harness prose
   templates/          example.md, finding.md, spec.md, solution-design.md, project-terms.txt, business-testplan.spec.json;
-                      repo/ is what a project repo owns itself: AGENTS.md, scripts/verify.sh, .harness-scenarios.json;
-                      Directory.Build.props and BannedSymbols.txt are optional (T.2 build gate)
+                      repo/ has the project-owned AGENTS.md and scripts/verify.sh;
+                      scenario mapping and BannedSymbols/analyzer files are opt-in, not scaffolded requirements
   tools/              grouped by domain, see tools/index.md: harness/, review/, testing/, cloud/, azure-devops/, servicenow/,
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh

@@ -5,7 +5,7 @@ description: A shared policy duplicated product membership by branching on subsc
 example_id: C-NNN
 rule: /rules/code/code-6-use-what-the-platform-does.md
 verdict: violation
-status: draft
+status: processed
 tags: [apim, api-gateway, access, products, policy]
 generated: { by: copilot-sdk/unknown, at: 2026-10-21T11:29:30Z }
 sources:
@@ -90,3 +90,9 @@ The implementation snapshot supports separate API definitions, product membershi
 [^implementation]: SAP API module declares separate internal/external product arrays and attaches the separate API definitions to those arrays.
 
 [^policy]: The external API policy sets `Ocp-Apim-Subscription-Key` from a named value; the internal product policy separately validates bearer JWTs.
+
+# Processed examples
+
+Prepared as new, unverified examples on 2026-11-01:
+
+- [E-037](../../../harness/examples/e-037-apim-products-own-subscription-access.md)

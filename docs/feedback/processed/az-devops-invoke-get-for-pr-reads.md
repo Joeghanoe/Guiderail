@@ -5,7 +5,7 @@ description: Azure read commands use the user's current CLI login, while command
 example_id: C-NNN
 rule: /rules/cloud/cld-1-agents-read-cloud-state.md
 verdict: open
-status: draft
+status: processed
 tags: [cloud, azure-devops, wrapper]
 generated: { by: copilot-sdk/unknown, at: 2026-10-21T11:35:01Z }
 sources:
@@ -41,3 +41,9 @@ Adopted. Command authorization is decided from the command (HTTP method and argu
 # Not verified
 
 The precise read-only Azure DevOps resources and whether omitting `--http-method` reliably means GET need verification before permitting any `invoke` form. The denylist's known blind spots also remain: removing the config-directory requirement deliberately leaves layer 2 as the only restriction when the user's current identity has write permissions.
+
+# Processed examples
+
+Prepared as new, unverified examples on 2026-11-01:
+
+- [E-038](../../../harness/examples/e-038-cloud-get-uses-the-current-login.md)

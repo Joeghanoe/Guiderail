@@ -5,7 +5,7 @@ description: Control flow reads top to bottom when guard clauses return early; n
 case_id: C-NNN
 rule: /rules/code/code-3-names-say-what-it-is-for.md
 verdict: open
-status: draft
+status: processed
 tags: [code, readability, control-flow, guard-clauses, ternary]
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-25T06:14:20Z }
 sources:
@@ -83,3 +83,10 @@ return outcome.File is null ? BadRequest(outcome.Errors) : Ok(await service.Prev
 No analyzer or lint rule was identified that enforces this in C# or TypeScript. A reviewer rule is possible; a gate is not obviously available (CA1822-style analyzers do not cover it). The "two levels" threshold is a suggestion for the owner to confirm.
 
 [^origin]: repo owner feedback, 2026-10-25
+
+# Processed examples
+
+Prepared as new, unverified examples on 2026-11-01:
+
+- [E-041](../../../harness/examples/e-041-return-early-instead-of-nesting.md)
+- [E-048](../../../harness/examples/e-048-conditional-expressions-stay-simple.md)

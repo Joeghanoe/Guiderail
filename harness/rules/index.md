@@ -1,7 +1,7 @@
 # Folders
 
 * [cloud](cloud/) - 2 concepts
-* [code](code/) - 10 concepts
+* [code](code/) - 11 concepts
 * [delivery](delivery/) - 5 concepts
 * [frontend](frontend/) - 2 concepts
 * [harness](harness/) - 2 concepts

@@ -30,3 +30,15 @@ Every value lives in exactly one place, chosen by whether it can differ between 
 - The same name repeated per stage or per environment file, differing only in `dev`/`prd`.
 - A version, region or tag copied into every `variables.<env>.yml`.
 - An environment literal (`-prd-`, a subscription ID) inside a module or a shared template.
+
+# Central configuration convention
+
+When the repository adopts the owner's central YAML configuration convention, use one configuration directory for shared values, environment values and resource names. E-044 records this newer convention; E-006 remains precedent for repositories with the earlier pipeline-owned naming layout. Do not silently migrate an established repository while fixing an unrelated issue.
+
+- Top-level parameters represent choices for this run, such as forcing all services to deploy. Subscriptions, service connections, resource names, regions, SKUs and schedules are stable configuration, not an operator-facing environment object.
+- Give operator-facing parameters concise `displayName` labels in the existing vocabulary and capitalization, for example `forceFullDeployment` with `Deploy All Services`. Missing labels alone are a minor usability finding. Internal template parameters need no UI label.
+- Azure Pipelines loads a shared variable file, expands one stage definition using `split(variables.environments, ',')` and `each`, and loads environment and naming variable templates at stage or job scope. A naming template can take the environment identifier as a structural input. Configuration lives in the files even though the variables are scoped to stages.
+- Repo-local job and step templates consume inherited runtime variables with `$(name)` rather than forwarding configuration through long parameter lists. Do not assume stage variables are visible through `${{ variables.name }}` during nested job-template expansion. Run choices and independent reusable template interfaces may still use explicit parameters.
+- Bicep consumes names and values; it does not define a second naming policy or environment catalog. Generated parameter files may adapt the central YAML without becoming another manually maintained source.
+- The ownership and reuse requirements also apply to GitHub Actions, but Azure's include and loop syntax does not. Explicit dependent jobs calling reusable deployment logic are valid. Do not force a matrix where promotion dependencies and environment approvals are clearer as jobs.
+- Build IDs, artifact versions and deployment outputs are execution data, not static configuration. Secrets stay in the established secret store.

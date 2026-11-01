@@ -89,6 +89,23 @@ class EvaluationTests(unittest.TestCase):
             self.assertTrue((repo / "src/WorkProcessor/Models/WorkItem.cs").is_file())
         self.assertNotIn("file", spec["expect"]["must_find"][0])
 
+    def test_multifile_markers_preserve_pipeline_and_document_paths(self):
+        files = evaluation.marked_source_files(
+            "# File: azure-pipelines.yml\ntrigger: none\n"
+            "# File: deploy/variables/variables.dev.yml\nvariables:\n  region: west\n"
+            "// File: docs/operations/error-codes.md\n| ERR-1 | retry |\n"
+        )
+        self.assertEqual(set(files), {"azure-pipelines.yml", "deploy/variables/variables.dev.yml",
+                                      "docs/operations/error-codes.md"})
+        self.assertIn("region: west", files["deploy/variables/variables.dev.yml"])
+        self.assertNotIn("trigger", files["deploy/variables/variables.dev.yml"])
+
+    def test_multifile_markers_refuse_escape_and_duplicate_paths(self):
+        for source in ("# File: ../escape.yml\nx: 1", "# File: .git/config\nx: 1",
+                       "# File: a.yml\nx: 1\n# File: a.yml\nx: 2"):
+            with self.subTest(source=source), self.assertRaises(ValueError):
+                evaluation.marked_source_files(source)
+
     def test_snippet_findings_are_matched_by_rule_and_file_not_short_line_range(self):
         finding = {"rule_id": "T.2", "file": "src/Example.cs", "line": 8, "severity": "major"}
         result = evaluation.score(

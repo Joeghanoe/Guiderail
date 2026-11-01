@@ -131,15 +131,21 @@ def case_examples(body, kind):
 
 
 def marked_source_files(code):
-    """Split a snippet whose `// File.ext` lines represent separate source files."""
-    marker = re.compile(r"^//\s+([A-Za-z0-9_.-]+\.(?:cs|ts|tsx))\s*$", re.I)
+    """Split explicit source markers, retaining legacy // Type.cs paths under src/."""
+    marker = re.compile(r"^(?://|#)\s+(File:\s*)?([A-Za-z0-9_./-]+)\s*$", re.I)
     files, target, lines = {}, None, []
     for line in code.splitlines():
         match = marker.fullmatch(line)
+        if match and not match.group(1) and not re.search(r"\.(cs|ts|tsx)$", match.group(2), re.I):
+            match = None
         if match:
             if target is not None:
                 files[target] = "\n".join(lines).strip() + "\n"
-            target, lines = safe_repo_path(f"src/{match.group(1)}"), []
+            name = match.group(2)
+            target = safe_repo_path(name if match.group(1) or "/" in name else f"src/{name}")
+            if target in files:
+                raise ValueError(f"duplicate evaluation file marker: {target}")
+            lines = []
         elif target is not None:
             lines.append(line)
     if target is not None:

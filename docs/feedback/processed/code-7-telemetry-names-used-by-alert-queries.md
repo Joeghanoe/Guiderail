@@ -5,7 +5,7 @@ description: Event and property names are a contract between the code that sends
 example_id: C-NNN
 rule: /rules/code/code-7-linked-changes.md
 verdict: violation
-status: draft
+status: processed
 tags: [code, telemetry, alerts, contracts, observability]
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:00:00Z }
 ---
@@ -68,3 +68,7 @@ public sealed class RunTelemetry(TelemetryClient client)
 # Not verified
 
 The regex only covers `name == '...'`; queries that use `in (...)` or `has` need their own pattern. Property names in `customDimensions` need the same check and are left out to keep the example short.
+
+# Disposition
+
+Owner declined the proposed E-039/E-040 examples on 2026-11-01 as too specific. Excluded from the new evaluation cases.

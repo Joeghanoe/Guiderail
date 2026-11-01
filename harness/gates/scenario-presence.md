@@ -1,7 +1,7 @@
 ---
 type: Gate
 title: "Scenario presence check (T.5)"
-description: check-scenarios.py fails a PR that changes a component without changing its scenarios or stating why not.
+description: Optional gate for repos that adopt it; check-scenarios.py checks changed components against their mapped scenarios.
 tool: harness/tools/testing/check-scenarios.py, configured by the repo's .harness-scenarios.json
 owner: team:teamvalue-aicoe
 status: stable
@@ -9,6 +9,8 @@ tags: [testing, e2e]
 ---
 
 # Coverage
+
+Opt-in only. The harness may use its own mapping, but scaffolding and review do not require consumer repos to add `.harness-scenarios.json`, intent attributes or this CI step. T.5 still requires behavior coverage through the repo's existing tests.
 
 Components listed in `.harness-scenarios.json`, matched by path globs against the PR's changed files.
 

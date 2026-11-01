@@ -1,5 +1,6 @@
 import importlib.util
 import pathlib
+import subprocess
 import tempfile
 import unittest
 
@@ -30,6 +31,20 @@ class DesignCheckTests(unittest.TestCase):
 
     def tearDown(self):
         self.tmp.cleanup()
+
+    def test_new_repos_do_not_receive_optional_harness_gate_files(self):
+        initializer = HERE.parent / "harness/tools/greenfield/greenfield-init.sh"
+        for profile in ("--service", "--web-app", None):
+            with self.subTest(profile=profile), tempfile.TemporaryDirectory() as directory:
+                command = ["bash", str(initializer)]
+                if profile:
+                    command.append(profile)
+                subprocess.run(command + [directory], check=True, capture_output=True, text=True)
+                root = pathlib.Path(directory)
+                for optional in ("BannedSymbols.txt", "Directory.Build.props", ".harness-scenarios.json"):
+                    self.assertFalse((root / optional).exists(), optional)
+                files = [path for path in root.rglob("*") if path.is_file()]
+                self.assertFalse(any("BannedApiAnalyzers" in path.read_text() for path in files))
 
     def statuses(self):
         return {c["id"]: c["status"] for c in dc.run(self.root)["checks"]}
@@ -68,8 +83,6 @@ class DesignCheckTests(unittest.TestCase):
         write(self.root, "docs/adr/0002-run.md", ADR)
         write(self.root, "AGENTS.md", AGENTS)
         write(self.root, "scripts/verify.sh", "dotnet format; dotnet build -warnaserror; dotnet test")
-        write(self.root, "Directory.Build.props", "<TreatWarningsAsErrors>true</TreatWarningsAsErrors>")
-        write(self.root, "BannedSymbols.txt", "x")
         write(self.root, "src/Program.cs", PROGRAM + 'app.MapGet("/api/health", () => 1);')
         write(self.root, "src/Ports.cs", "interface IClientDirectory {} interface IMenuGateway {} interface IPdfRenderer {} interface IMailer {}")
         write(self.root, "src/Adapters.cs", "class DirectusClients : IClientDirectory {} class DirectusMenus : IMenuGateway {} "

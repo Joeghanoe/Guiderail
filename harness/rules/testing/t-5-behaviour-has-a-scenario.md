@@ -19,10 +19,12 @@ Scenarios carry a stable intent ID or tag (`DS-4`, `@b2b-external`) so a test, a
 
 # Two checks
 
-1. Presence, deterministic: `tools/testing/check-scenarios.py` maps changed components to their scenario folders (`.harness-scenarios.json` in the repo). A changed component needs a changed scenario, or a PR description line `e2e: n/a - <reason>`.
+1. Presence, deterministic and opt-in: where the repo has adopted `tools/testing/check-scenarios.py`, it maps changed components to scenario folders using `.harness-scenarios.json`. That gate requires a changed scenario or a PR description line `e2e: n/a - <reason>`. Consumer repos are not required to adopt its mapping file, intent attributes or CI step.
 2. Fit, review: does the scenario cover the intent of the change, not just something in the same folder?
 
 # Boundary
+
+- A working behavior suite with descriptive scenario names does not need `.harness-scenarios.json`, intent attributes or another harness-only CI step just to feed a gate. Review the behavior and its scenario, not adoption of optional mapping machinery.
 
 - A refactor without a change in behaviour: `e2e: n/a - refactor`, and the existing scenarios stay green.
 - Behaviour the suite cannot reach (a partner's system without a test environment): a unit or contract test, and the PR says why.

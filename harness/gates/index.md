@@ -7,4 +7,4 @@
 * [IaC settings check (IAC.2, IAC.3, IAC.4)](iac-settings.md) - check-iac.py fails a PR that sets a network default action to Allow, a TLS minimum below 1.2, or Key Vault soft delete, purge protection or RBAC authorization to false.
 * [OpenAPI drift check (DEL.5)](openapi-drift.md) - openapi-drift.py fails a PR whose committed OpenAPI snapshot differs from the document the build generates.
 * [Private artifact check](private-artifacts.md) - The harness checkout contains no mined private review comments or raw evaluation outputs.
-* [Scenario presence check (T.5)](scenario-presence.md) - check-scenarios.py fails a PR that changes a component without changing its scenarios or stating why not.
+* [Scenario presence check (T.5)](scenario-presence.md) - Optional gate for repos that adopt it; check-scenarios.py checks changed components against their mapped scenarios.

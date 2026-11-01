@@ -5,7 +5,7 @@ description: An error-code catalog in code and its operations page are two sides
 example_id: C-NNN
 rule: /rules/code/code-7-linked-changes.md
 verdict: compliant
-status: draft
+status: processed
 tags: [code, docs, runbook, error-codes, tests]
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:00:00Z }
 ---
@@ -75,3 +75,7 @@ public static class ErrorCatalog
 # Not verified
 
 Whether the eval reviewer flags a comment-only "keep in sync" as CODE.7 without seeing the docs page in the same diff.
+
+# Disposition
+
+Owner declined the proposed E-039/E-040 examples on 2026-11-01 as too specific. Excluded from the new evaluation cases.
