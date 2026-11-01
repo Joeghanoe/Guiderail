@@ -8,6 +8,8 @@ This repo is the single source of truth. Nothing is copied into project repos: d
 
 The knowledge is an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) bundle: Markdown with frontmatter and an `index.md` per folder. Agents start at the index and open only what a change touches, rather than loading every instruction file up front.
 
+Material changes and approval outcomes are summarized in [harness/log.md](harness/log.md). Current conventions live in [docs/decisions/feedback-conventions.md](docs/decisions/feedback-conventions.md); architectural decisions remain in `docs/adr/`.
+
 ## Layers
 
 | Layer | What | Hard or soft |
@@ -26,7 +28,8 @@ Local agent processes should not inherit shell variables containing credentials.
 ```text
 AGENTS.base.md        the base instructions every agent loads
 harness/              the bundle (~/.golden-path-harness/harness after install.sh)
-  index.md            the entry point; git history is the change log
+  index.md            the entry point
+  log.md              dated summaries of material changes; Git holds the authoritative history
   principles/         P1-P13: pointers to Vegviser, which is the authority
   rules/              security, cloud, iac, delivery, testing, harness: each says what enforces it
   examples/           worked examples with good and bad code; human-reviewed ones are precedent and the reviewer eval instrument
