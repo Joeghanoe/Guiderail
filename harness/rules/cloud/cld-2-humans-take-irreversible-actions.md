@@ -21,19 +21,14 @@ sources:
 An agent proposes these and stops; a human performs them:
 
 - `terraform apply`, `terraform plan` against a real backend, a Bicep or ARM deployment
-- a push to the default branch (`main`, `master`, or what `origin/HEAD` points to) or a release branch
-  (`release/*`); a force push; deleting or rewriting a shared branch; pushing tags
+- a push to the default branch (`main`, `master`, or what `origin/HEAD` points to) or a release branch (`release/*`); a force push; deleting or rewriting a shared branch; pushing tags
 - merging a PR, approving a PR
 - running or approving a pipeline, changing a pipeline variable or service connection
 - granting or widening access, in any tenant
 - enabling WORM, setting or extending retention, changing lifecycle rules
 - sending anything outside the session: mail, chat, tickets, PR comments in someone else's name
 
-An agent may push a feature branch, named on the command line: `git push -u origin <feature-branch>`.
-That makes the change available for the pipeline and review; branch protection on the default and release
-branches is the real boundary, the hook is a guardrail on top of it. A push counts as a deployment, and
-stays with a human, when the branch's pipeline does more than build, test and review (for example it
-deploys feature branches to a shared environment).
+An agent may push a feature branch, named on the command line: `git push -u origin <feature-branch>`. That makes the change available for the pipeline and review; branch protection on the default and release branches is the real boundary, the hook is a guardrail on top of it. A push counts as a deployment, and stays with a human, when the branch's pipeline does more than build, test and review (for example it deploys feature branches to a shared environment).
 
 Approval in one context does not extend to the next.
 
@@ -50,7 +45,4 @@ When proposing deployments or reviews, respect the Way-of-Work role separation:
 
 # Enforcement
 
-`hooks/guard-bash.sh` lets a push through only when it names a feature branch; it blocks a push to the
-default or a release branch, a push without a named target, force pushes, deletions, tags and `--all`. It
-also blocks `gh pr merge`, `gh workflow run`, `az pipelines run` and the cloud CLIs. The rest relies on the
-identity (CLD.1), branch protection and this rule.
+`hooks/guard-bash.sh` lets a push through only when it names a feature branch; it blocks a push to the default or a release branch, a push without a named target, force pushes, deletions, tags and `--all`. It also blocks `gh pr merge`, `gh workflow run`, `az pipelines run` and the cloud CLIs. The rest relies on the identity (CLD.1), branch protection and this rule.

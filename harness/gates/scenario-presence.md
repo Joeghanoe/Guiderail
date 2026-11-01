@@ -14,8 +14,7 @@ Components listed in `.harness-scenarios.json`, matched by path globs against th
 
 # Blind spots
 
-Whether the changed scenario covers the changed behaviour (that is review), components missing from the
-config, and behaviour changed through configuration outside the component's path.
+Whether the changed scenario covers the changed behaviour (that is review), components missing from the config, and behaviour changed through configuration outside the component's path.
 
 # Complementary checks
 

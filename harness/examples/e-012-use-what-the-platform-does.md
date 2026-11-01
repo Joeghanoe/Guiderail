@@ -17,16 +17,11 @@ sources:
 
 # Situation
 
-An API behind a gateway is secured with a subscription key. Each operation has its own policy that checks
-that a key is present and that the body has the right fields, written by hand.
+An API behind a gateway is secured with a subscription key. Each operation has its own policy that checks that a key is present and that the body has the right fields, written by hand.
 
 # Why (verdict)
 
-With `subscriptionRequired: true` the gateway rejects a call without a valid key before any policy runs;
-the same check in each operation is code that can only drift. Request bodies are validated once, at the front,
-with a schema on the operation and a `validate-content` policy, so that bad requests are stopped before
-processing and the contract is documented in the same place. If a hand-written check is needed (the platform
-returns 500 where a client needs a 4xx), a comment says so (CODE.6).
+With `subscriptionRequired: true` the gateway rejects a call without a valid key before any policy runs; the same check in each operation is code that can only drift. Request bodies are validated once, at the front, with a schema on the operation and a `validate-content` policy, so that bad requests are stopped before processing and the contract is documented in the same place. If a hand-written check is needed (the platform returns 500 where a client needs a 4xx), a comment says so (CODE.6).
 
 # Compliant pattern
 
@@ -99,6 +94,4 @@ resource publishPolicy 'Microsoft.ApiManagement/service/apis/operations/policies
 
 # Not verified
 
-Written for this example in neutral names. A schema attached to an operation documents the contract but does
-not validate by itself; validation needs the `validate-content` policy. Check the gateway's behaviour for
-your SKU before you delete a hand-written check.
+Written for this example in neutral names. A schema attached to an operation documents the contract but does not validate by itself; validation needs the `validate-content` policy. Check the gateway's behaviour for your SKU before you delete a hand-written check.

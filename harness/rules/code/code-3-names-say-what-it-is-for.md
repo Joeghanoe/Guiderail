@@ -17,18 +17,11 @@ sources:
 
 # Rule
 
-- A class, method or parameter is named for what it does or is for, in the words of the domain: a health
-  check for the service is `Health`, not named after one of its dependencies; a method that is called from
-  a trigger is not named `HandleMessage` when it creates a user.
-- A name that says nothing about the domain (a single letter, `Foo`, `Temp`) breaks this rule even when nothing
-  else is wrong with the type.
-- A boolean parameter that makes a method behave in two ways hides logic. Name it for the behaviour it
-  causes (`deadLetterOnError`), or make two methods. A behavior-named flag such as `deadLetterOnError` is
-  already the compliant pattern; do not flag it just because it selects behavior.
-- A parameter that makes the method do nothing when it is `false` is removed; the caller decides whether to
-  call.
-- State a method needs (a delivery count, a mode) is passed in explicitly, not inferred from where the
-  method is called.
+- A class, method or parameter is named for what it does or is for, in the words of the domain: a health check for the service is `Health`, not named after one of its dependencies; a method that is called from a trigger is not named `HandleMessage` when it creates a user.
+- A name that says nothing about the domain (a single letter, `Foo`, `Temp`) breaks this rule even when nothing else is wrong with the type.
+- A boolean parameter that makes a method behave in two ways hides logic. Name it for the behaviour it causes (`deadLetterOnError`), or make two methods. A behavior-named flag such as `deadLetterOnError` is already the compliant pattern; do not flag it just because it selects behavior.
+- A parameter that makes the method do nothing when it is `false` is removed; the caller decides whether to call.
+- State a method needs (a delivery count, a mode) is passed in explicitly, not inferred from where the method is called.
 - A name in code follows the vocabulary the product uses outside the code.
 
 # Boundary

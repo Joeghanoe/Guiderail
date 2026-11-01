@@ -15,30 +15,19 @@ sources:
 
 # Situation
 
-No rule in `/rules/code/` covers the shape of control flow. Generated and hand-written code alike drifts into
-three habits that the repo owner asks to avoid in every TeamValue repo: a normal path buried inside nested
-`if`/`else` blocks, `else` branches after a `return` or `throw`, and ternaries that choose between two
-non-trivial expressions or that are nested or chained.[^origin]
+No rule in `/rules/code/` covers the shape of control flow. Generated and hand-written code alike drifts into three habits that the repo owner asks to avoid in every TeamValue repo: a normal path buried inside nested `if`/`else` blocks, `else` branches after a `return` or `throw`, and ternaries that choose between two non-trivial expressions or that are nested or chained.[^origin]
 
-This case proposes a new rule next to CODE.3 (readability of what the code says), for example "CODE.8
-Control flow returns early; ternaries stay trivial". `rule:` points at CODE.3 only because the case file needs an
-existing rule to hang on.
+This case proposes a new rule next to CODE.3 (readability of what the code says), for example "CODE.8 Control flow returns early; ternaries stay trivial". `rule:` points at CODE.3 only because the case file needs an existing rule to hang on.
 
 # Why (open)
 
-Early returns put the failure and edge cases first and leave the normal path at the left margin, so a reader
-meets the happy path once, unindented. A ternary is fine when it picks a value that is obvious at a glance;
-once it carries a call, a new object, a second condition or a message, an `if` with a `return` says the same
-thing in a form that can be stepped through and put a breakpoint on.
+Early returns put the failure and edge cases first and leave the normal path at the left margin, so a reader meets the happy path once, unindented. A ternary is fine when it picks a value that is obvious at a glance; once it carries a call, a new object, a second condition or a message, an `if` with a `return` says the same thing in a form that can be stepped through and put a breakpoint on.
 
 Proposed rule text:
 
-- Check the failing or special case first and return (or throw, or `continue`). Do not write `else` after a
-  branch that returns, throws or continues.
+- Check the failing or special case first and return (or throw, or `continue`). Do not write `else` after a branch that returns, throws or continues.
 - More than two levels of `if`/`else` nesting is a reason to extract a method or to invert conditions.
-- A ternary is allowed for a short, side-effect-free choice between two simple values (for example a label).
-  Do not nest or chain ternaries, and do not use one to choose between calls or to build results. Use `if`
-  with an early return, a `switch` expression, or a small named method.
+- A ternary is allowed for a short, side-effect-free choice between two simple values (for example a label). Do not nest or chain ternaries, and do not use one to choose between calls or to build results. Use `if` with an early return, a `switch` expression, or a small named method.
 
 Reviewer note: this is a readability rule, so it is a `minor` finding unless the nesting hides a defect.
 
@@ -91,8 +80,6 @@ return outcome.File is null ? BadRequest(outcome.Errors) : Ok(await service.Prev
 
 # Not verified
 
-No analyzer or lint rule was identified that enforces this in C# or TypeScript. A reviewer rule is possible; a
-gate is not obviously available (CA1822-style analyzers do not cover it). The "two levels" threshold is a
-suggestion for the owner to confirm.
+No analyzer or lint rule was identified that enforces this in C# or TypeScript. A reviewer rule is possible; a gate is not obviously available (CA1822-style analyzers do not cover it). The "two levels" threshold is a suggestion for the owner to confirm.
 
 [^origin]: repo owner feedback, 2026-10-25

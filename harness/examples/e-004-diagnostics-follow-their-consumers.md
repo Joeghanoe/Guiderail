@@ -18,11 +18,7 @@ A template sends a storage account's blob logs to Log Analytics.
 
 # Why (verdict)
 
-`allLogs` on blob storage includes every read. On a busy account that is the largest line on the monitoring
-bill, and no alert or workbook reads it. Exporting `AllMetrics` duplicates metrics the platform already keeps.
-The audit category group keeps who wrote and deleted what, which is what an investigation needs; retention
-comes from the environment (IAC.1, IAC.7). The default of a setting that costs money every day (retention,
-daily cap) is the cheap value; an environment that needs more says so in its own variables file.
+`allLogs` on blob storage includes every read. On a busy account that is the largest line on the monitoring bill, and no alert or workbook reads it. Exporting `AllMetrics` duplicates metrics the platform already keeps. The audit category group keeps who wrote and deleted what, which is what an investigation needs; retention comes from the environment (IAC.1, IAC.7). The default of a setting that costs money every day (retention, daily cap) is the cheap value; an environment that needs more says so in its own variables file.
 
 # Compliant pattern
 
@@ -73,6 +69,4 @@ resource blobDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
 
 # Not verified
 
-Written for this example in neutral names. Which categories the audit group contains differs per resource
-type; check the resource's diagnostic categories before relying on it.
-The 'cheap default' sentence comes from review feedback on one retention parameter; the cost figures were not checked.
+Written for this example in neutral names. Which categories the audit group contains differs per resource type; check the resource's diagnostic categories before relying on it. The 'cheap default' sentence comes from review feedback on one retention parameter; the cost figures were not checked.

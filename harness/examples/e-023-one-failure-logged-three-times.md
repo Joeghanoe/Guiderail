@@ -13,18 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
 
 # Situation
 
-A per-item loop catches `Exception` so that one bad item does not stop the batch. The catch block logs the
-exception as a string with `LogCritical`, calls `TrackException`, and then writes `exception.ToString()` into the
-`ErrorMessage` property of a custom event. The manual endpoint does the same and returns 500; the timer
-entry point catches and only calls `TrackException`.
+A per-item loop catches `Exception` so that one bad item does not stop the batch. The catch block logs the exception as a string with `LogCritical`, calls `TrackException`, and then writes `exception.ToString()` into the `ErrorMessage` property of a custom event. The manual endpoint does the same and returns 500; the timer entry point catches and only calls `TrackException`.
 
 # Why (verdict)
 
-One failure becomes three records that say the same thing, and the stack trace lands in an event property that an
-alert or a report reads (CODE.2, OBS.3). The exception is interpolated into a message string, so the structured
-exception is lost. A failure is logged once, with context, in one statement; the event carries a reason code and
-the item id. Catching per item to keep the batch going is fine, but the batch result must then say how many items
-failed, so the caller can tell a partial run from a clean one.
+One failure becomes three records that say the same thing, and the stack trace lands in an event property that an alert or a report reads (CODE.2, OBS.3). The exception is interpolated into a message string, so the structured exception is lost. A failure is logged once, with context, in one statement; the event carries a reason code and the item id. Catching per item to keep the batch going is fine, but the batch result must then say how many items failed, so the caller can tell a partial run from a clean one.
 
 # Compliant pattern
 

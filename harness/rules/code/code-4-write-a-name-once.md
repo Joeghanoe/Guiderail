@@ -18,12 +18,11 @@ sources:
 # Rule
 
 - A configuration key that two places read is a constant in one place, or a typed options class.
-- The name of a method, class or parameter that is needed as a string (a trigger name, a log field) comes from
-  `nameof(...)`, so a rename carries it along.
+- The name of a method, class or parameter that is needed as a string (a trigger name, a log field) comes from `nameof(...)`, so a rename carries it along.
 - A block of code that appears three times is a method. The second time is the moment to look for it.
+- Repeated error handling, catch ladders or response mapping across endpoints belong in shared middleware or a helper method, not pasted in every endpoint.
 - The same setting registered twice in one startup is registered once.
 
 # Boundary
 
-A string that is a public contract (a route, a queue name a partner uses) is deliberately literal and is
-changed on purpose, with its consumers.
+A string that is a public contract (a route, a queue name a partner uses) is deliberately literal and is changed on purpose, with its consumers.

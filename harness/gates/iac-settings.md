@@ -10,13 +10,11 @@ tags: [iac, security]
 
 # Coverage
 
-Changed `.bicep` and `.tf` files, one explicit wrong value per line. Only a setting that is written down is
-found.
+Changed `.bicep` and `.tf` files, one explicit wrong value per line. Only a setting that is written down is found.
 
 # Blind spots
 
-A setting that is missing (the platform default applies), values that come from a variable or parameter,
-other file types such as ARM JSON, and whether a public entry point is justified (that is review).
+A setting that is missing (the platform default applies), values that come from a variable or parameter, other file types such as ARM JSON, and whether a public entry point is justified (that is review).
 
 # Complementary checks
 

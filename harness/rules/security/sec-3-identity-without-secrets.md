@@ -16,15 +16,11 @@ sources:
 
 # Rule
 
-- Inside a tenant: managed identity (`DefaultAzureCredential`) with RBAC. No connection strings, account
-  keys, SAS tokens or access policies.
-- Grant RBAC at the narrowest scope (the resource, not the subscription or resource group) and the narrowest
-  built-in role that does the job.
+- Inside a tenant: managed identity (`DefaultAzureCredential`) with RBAC. No connection strings, account keys, SAS tokens or access policies.
+- Grant RBAC at the narrowest scope (the resource, not the subscription or resource group) and the narrowest built-in role that does the job.
 - `disableLocalAuth: true` on every resource that supports it.
-- Across tenants or clouds: a federated credential (workload identity, signed client assertion).
-  A certificate is the fallback. A client secret is a last resort and needs a rotation date.
+- Across tenants or clouds: a federated credential (workload identity, signed client assertion). A certificate is the fallback. A client secret is a last resort and needs a rotation date.
 
 # Boundary
 
-A third party that only offers a key (an external API, APIM subscriptions for customers) is allowed. The key
-lives in Key Vault, is read through the service's identity, and is named in the PR.
+A third party that only offers a key (an external API, APIM subscriptions for customers) is allowed. The key lives in Key Vault, is read through the service's identity, and is named in the PR.

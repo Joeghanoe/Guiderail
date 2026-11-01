@@ -16,24 +16,18 @@ sources:
 
 # Rule
 
-An alert states a cause and an effect: *if the service works, this signal is present and good; if it
-breaks, this signal changes or disappears*. Both directions are covered:
+An alert states a cause and an effect: _if the service works, this signal is present and good; if it breaks, this signal changes or disappears_. Both directions are covered:
 
 - **Works and breaks:** the signal is present and turns bad. The alert fires on the bad value.
-- **Does not work and does not break:** the signal is absent or the check cannot run (no rows, a stopped
-  agent, an expired credential, an empty time series). The alert fires on the absence. Silence is never
-  taken as healthy.
+- **Does not work and does not break:** the signal is absent or the check cannot run (no rows, a stopped agent, an expired credential, an empty time series). The alert fires on the absence. Silence is never taken as healthy.
 
 In practice:
 
-- Every alert has a *positive* signal that proves the thing works (a request count, a heartbeat, a
-  successful probe), not only a negative one (an error count). No positive signal means no proof.
-- Empty intervals are filled with zero, or the platform's "no data" option is set to alert. A query that
-  returns no rows is a result, not a pass.
+- Every alert has a _positive_ signal that proves the thing works (a request count, a heartbeat, a successful probe), not only a negative one (an error count). No positive signal means no proof.
+- Empty intervals are filled with zero, or the platform's "no data" option is set to alert. A query that returns no rows is a result, not a pass.
 - The alert is tested with both inputs: a bad value and no data at all.
 - The person reading the alert can tell from it which of the two happened.
 
 # Boundary
 
-A signal that is legitimately absent (a nightly job outside its window, a service scaled to zero on purpose)
-gets a schedule or condition that says so, written next to the alert. It is not left to silence.
+A signal that is legitimately absent (a nightly job outside its window, a service scaled to zero on purpose) gets a schedule or condition that says so, written next to the alert. It is not left to silence.

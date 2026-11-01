@@ -10,13 +10,11 @@ tags: [api, openapi, contracts]
 
 # Coverage
 
-Any repo that commits an OpenAPI snapshot: the pipeline builds, takes the generated document from the build output and compares it
-with the snapshot. Reports operations added and removed, and whether anything else changed.
+Any repo that commits an OpenAPI snapshot: the pipeline builds, takes the generated document from the build output and compares it with the snapshot. Reports operations added and removed, and whether anything else changed.
 
 # Blind spots
 
-It does not prove the document is generated rather than hand-written, that operations are complete (operation ids, response types,
-examples), or that callers still work. A repo without a committed snapshot is covered by review of the build step only.
+It does not prove the document is generated rather than hand-written, that operations are complete (operation ids, response types, examples), or that callers still work. A repo without a committed snapshot is covered by review of the build step only.
 
 # Complementary checks
 

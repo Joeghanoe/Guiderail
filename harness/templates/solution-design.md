@@ -14,29 +14,21 @@ One paragraph: who uses it and why it exists. Then the question that drives ever
 
 ## Scope
 
-| In | Out |
-|---|---|
+| In             | Out                                                 |
+| -------------- | --------------------------------------------------- |
 | <what it does> | <what someone will read into it and it does not do> |
 
 ## Components
 
-A diagram (Mermaid) and a table: component, responsibility, depends on (interfaces only, CODE.8). Say which
-parts are real here and which are stand-ins (a local folder for a bucket) and why the stand-in is safe. For each
-adapter, name the test that runs it against the real dependency or a recorded real response (T.6).
+A diagram (Mermaid) and a table: component, responsibility, depends on (interfaces only, CODE.8). Say which parts are real here and which are stand-ins (a local folder for a bucket) and why the stand-in is safe. For each adapter, name the test that runs it against the real dependency or a recorded real response (T.6).
 
 ## Data flow and stored layout
 
-How data gets in, where it is stored and the exact key or path layout. State what is fixed before the first
-write and why. Say what one stored unit contains, so that it can be restored alone. Link the ADR.
-For each derived value (a total, a status, a macro): the one place it is calculated, whether a reader sees it
-immediately or eventually after a write, and which readers calculate it themselves instead of trusting the stored
-copy (CODE.10).
+How data gets in, where it is stored and the exact key or path layout. State what is fixed before the first write and why. Say what one stored unit contains, so that it can be restored alone. Link the ADR. For each derived value (a total, a status, a macro): the one place it is calculated, whether a reader sees it immediately or eventually after a write, and which readers calculate it themselves instead of trusting the stored copy (CODE.10).
 
 ## Expected size and cost
 
-For each collection a component loops over: the expected size, the largest size the spec or data allows, the algorithm
-shape chosen for that largest size (CODE.9), what a search does when it hits a limit (inconclusive, never a negative
-answer), and the scale test that runs at ten times the expected size with its time budget.
+For each collection a component loops over: the expected size, the largest size the spec or data allows, the algorithm shape chosen for that largest size (CODE.9), what a search does when it hits a limit (inconclusive, never a negative answer), and the scale test that runs at ten times the expected size with its time budget.
 
 ## Identity of a run, and repeating it
 
@@ -44,8 +36,7 @@ How a run is named, what a second call with the same name does, and how two runs
 
 ## Failure model
 
-What a partial failure looks like, what stays healthy, what is reported, which reason codes exist (OBS.3),
-what is never silent (corrupt or missing data on read), and what is never overwritten.
+What a partial failure looks like, what stays healthy, what is reported, which reason codes exist (OBS.3), what is never silent (corrupt or missing data on read), and what is never overwritten.
 
 ## Observability contract
 
@@ -62,7 +53,7 @@ What input is never trusted (paths, locations, identities), what the service may
 ## Decisions
 
 | ADR | Decision | Why it is hard to reverse |
-|---|---|---|
+| --- | -------- | ------------------------- |
 
 ## Known limits
 

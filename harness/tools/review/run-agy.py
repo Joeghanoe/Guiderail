@@ -15,18 +15,23 @@ import sys
 import time
 
 
-MAX_TIMEOUT_SECONDS = 180
+DEFAULT_TIMEOUT_SECONDS = 240
+MAX_TIMEOUT_SECONDS = max(DEFAULT_TIMEOUT_SECONDS, int(os.environ.get("HARNESS_REVIEW_MAX_TIMEOUT_SECONDS", "300")))
 TIMEOUT_SECONDS = min(MAX_TIMEOUT_SECONDS,
-                      max(1, int(os.environ.get("HARNESS_REVIEW_TIMEOUT_SECONDS", MAX_TIMEOUT_SECONDS))))
+                      max(1, int(os.environ.get("HARNESS_REVIEW_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS))))
 CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
                    "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                    "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
-                   "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
+                   "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS",
+                   "HARNESS_REVIEW_TIMEOUT_SECONDS", "HARNESS_REVIEW_MAX_TIMEOUT_SECONDS")
 
 
 # Headless agy auto-denies shell commands and then prints nothing, so say up front which tools to use.
 TOOL_NOTICE = ("Use only your file read, search and list tools. Never run shell commands; they are denied "
-               "and the review is lost.\n\n")
+               "and the review is lost.\n"
+               "Complete your review within 5 tool turns: read only selected.json, changed.txt, diff.patch, "
+               "and the selected rule and example files. Do not explore test harness, git or eval internals. "
+               "Output only the JSON array.\n\n")
 NO_USAGE = "agy reports no usage; only the time is measured"
 
 

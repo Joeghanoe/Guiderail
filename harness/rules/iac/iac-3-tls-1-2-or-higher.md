@@ -16,5 +16,4 @@ sources:
 
 # Rule
 
-Set the minimum TLS version explicitly to 1.2 or higher wherever the resource offers the setting. Do not rely
-on the platform default; defaults change and differ per resource type.
+Set the minimum TLS version explicitly to 1.2 or higher wherever the resource offers the setting. Do not rely on the platform default; defaults change and differ per resource type.

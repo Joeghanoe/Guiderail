@@ -18,8 +18,7 @@ A service logs that it sent a notification to a customer.
 
 # Why (verdict)
 
-A name or e-mail address in a log line is personal data in every log store, export and support ticket that
-copies it. The customer's identifier gives support the same lookup without spreading personal data (SEC.2).
+A name or e-mail address in a log line is personal data in every log store, export and support ticket that copies it. The customer's identifier gives support the same lookup without spreading personal data (SEC.2).
 
 # Compliant pattern
 
@@ -51,8 +50,7 @@ public sealed class NotificationService(IMailSender mail, ILogger<NotificationSe
 
 # Variant: request and response bodies
 
-The same rule covers whole payloads. A body is personal data and sometimes a secret in one piece, and the
-fields in it change without anyone touching the logging line. Log the identifier, the status and the size.
+The same rule covers whole payloads. A body is personal data and sometimes a secret in one piece, and the fields in it change without anyone touching the logging line. Log the identifier, the status and the size.
 
 ```csharp
 // Bad: the complete response body, which may contain personal data or secrets, ends up in the log store.
@@ -63,10 +61,8 @@ logger.LogInformation("Partner call {Operation} returned {StatusCode} ({Length} 
     operation, (int)response.StatusCode, response.Content.Headers.ContentLength);
 ```
 
-When a failure needs the body to be understood, log the part the partner documents as safe (an error code or
-a correlation id), not the whole body.
+When a failure needs the body to be understood, log the part the partner documents as safe (an error code or a correlation id), not the whole body.
 
 # Not verified
 
-Written for this example in neutral names; not taken from one project.
-Variant added from recurring review feedback on logged request and response bodies; needs a human pass.
+Written for this example in neutral names; not taken from one project. Variant added from recurring review feedback on logged request and response bodies; needs a human pass.

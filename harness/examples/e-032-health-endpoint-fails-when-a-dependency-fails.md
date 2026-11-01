@@ -13,14 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-A service depends on a document database. Its health check must establish that the dependency is reachable,
-report a failed probe and respect cancellation by the caller.
+A service depends on a document database. Its health check must establish that the dependency is reachable, report a failed probe and respect cancellation by the caller.
 
 # Why (verdict)
 
-A probe performs bounded, non-destructive I/O instead of assuming the dependency is healthy. A dependency
-failure becomes `Unhealthy`; caller cancellation propagates rather than becoming an outage report (OBS.1).
-[E-014](/examples/e-014-health-reports-unhealthy.md) owns dependency coverage and HTTP status mapping.
+A probe performs bounded, non-destructive I/O instead of assuming the dependency is healthy. A dependency failure becomes `Unhealthy`; caller cancellation propagates rather than becoming an outage report (OBS.1). [E-014](/examples/e-014-health-reports-unhealthy.md) owns dependency coverage and HTTP status mapping.
 
 # Compliant pattern
 
@@ -71,5 +68,4 @@ public sealed class StoreHealthCheck(StoreClient store) : IHealthCheck
 
 # Not verified
 
-The SDK's probe timeout and required permissions must be checked in the implementing service. Endpoint
-status mapping is evaluated separately by E-014.
+The SDK's probe timeout and required permissions must be checked in the implementing service. Endpoint status mapping is evaluated separately by E-014.

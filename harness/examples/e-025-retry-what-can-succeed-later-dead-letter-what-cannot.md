@@ -13,18 +13,14 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
 
 # Situation
 
-A queue-triggered handler calls a downstream service. Some failures are temporary (timeout, throttling, a
-dependency that is down). Others will fail the same way every time (a malformed message, a rejected value, a
-duplicate that already exists).
+A queue-triggered handler calls a downstream service. Some failures are temporary (timeout, throttling, a dependency that is down). Others will fail the same way every time (a malformed message, a rejected value, a duplicate that already exists).
 
 # Why (verdict)
 
 Each kind needs a different ending, and both are loud (CODE.2):
 
-- A failure that can succeed later is rethrown, so the broker redelivers the message and the delivery count
-  bounds the retries. Completing the message instead loses the work silently.
-- A failure that cannot succeed is dead-lettered at once with a reason code. Retrying it only delays the
-  dead letter, repeats side effects and holds up the queue.
+- A failure that can succeed later is rethrown, so the broker redelivers the message and the delivery count bounds the retries. Completing the message instead loses the work silently.
+- A failure that cannot succeed is dead-lettered at once with a reason code. Retrying it only delays the dead letter, repeats side effects and holds up the queue.
 - The reason is a code from a fixed catalogue, not the exception text or the payload (SEC.2, OBS.3).
 
 # Compliant pattern

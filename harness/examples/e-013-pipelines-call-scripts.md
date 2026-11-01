@@ -18,15 +18,11 @@ sources:
 
 # Situation
 
-A deployment pipeline waits for a deployment to become healthy and then registers it. The logic is written
-directly in the YAML step.
+A deployment pipeline waits for a deployment to become healthy and then registers it. The logic is written directly in the YAML step.
 
 # Why (verdict)
 
-Inline script cannot be run on a laptop without copying it out of the YAML, has no tests, and each edit means a
-pipeline run to find out whether it parses. Moved to a script file with parameters, the same logic runs
-locally, can be tested, and the YAML shows only the intent. A Windows agent for a cross-platform script is
-slower than an `ubuntu-latest` one, and a deployment pipeline should trigger on the main branch only (IAC.8).
+Inline script cannot be run on a laptop without copying it out of the YAML, has no tests, and each edit means a pipeline run to find out whether it parses. Moved to a script file with parameters, the same logic runs locally, can be tested, and the YAML shows only the intent. A Windows agent for a cross-platform script is slower than an `ubuntu-latest` one, and a deployment pipeline should trigger on the main branch only (IAC.8).
 
 # Compliant pattern
 

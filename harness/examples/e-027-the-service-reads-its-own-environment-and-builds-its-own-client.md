@@ -13,17 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 
 # Situation
 
-An external API client already receives `IHttpClientFactory` and uses it to fetch an OAuth token. For the actual calls, a helper
-creates `new HttpClient()` and sets the bearer header on it. A sibling service reads `Environment.GetEnvironmentVariable`
-three times inside a method to find the names of its settings.
+An external API client already receives `IHttpClientFactory` and uses it to fetch an OAuth token. For the actual calls, a helper creates `new HttpClient()` and sets the bearer header on it. A sibling service reads `Environment.GetEnvironmentVariable` three times inside a method to find the names of its settings.
 
 # Why (verdict)
 
-The token call can be stubbed with a handler, the business call cannot: it goes to the real endpoint, so the method that
-matters is untestable without the external endpoint. A bare `new HttpClient()` per call also exhausts sockets under load, and the
-commented-out lines above it show someone already tried to add a client certificate there and gave up because the
-handler cannot be configured by hand and tested (T.2). Environment access moves to the composition root, where an
-options class is bound and validated once. The service takes `HttpClient` or `IOptions<T>` and nothing else.
+The token call can be stubbed with a handler, the business call cannot: it goes to the real endpoint, so the method that matters is untestable without the external endpoint. A bare `new HttpClient()` per call also exhausts sockets under load, and the commented-out lines above it show someone already tried to add a client certificate there and gave up because the handler cannot be configured by hand and tested (T.2). Environment access moves to the composition root, where an options class is bound and validated once. The service takes `HttpClient` or `IOptions<T>` and nothing else.
 
 # Compliant pattern
 

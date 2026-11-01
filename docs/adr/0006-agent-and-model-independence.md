@@ -42,7 +42,7 @@ flowchart LR
 ## Alternatives considered
 
 | Option | Assessment |
-|---|---|
+| --- | --- |
 | Standardize exclusively on one agent | Simple initial setup; vendor dependence and limited ability to optimize cost |
 | Force identical execution internals across all providers | Unnecessarily brittle where provider tools differ |
 | Provider-neutral contracts with thin adapters (**proposed**) | Portable standards; adapters still require testing and careful comparability disclosures |

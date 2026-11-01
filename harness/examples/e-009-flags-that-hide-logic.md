@@ -17,16 +17,11 @@ sources:
 
 # Situation
 
-One method serves two callers: a queue trigger and a manual HTTP call. A flag tells the method which one
-called it, and the method skips or changes steps based on the flag.
+One method serves two callers: a queue trigger and a manual HTTP call. A flag tells the method which one called it, and the method skips or changes steps based on the flag.
 
 # Why (verdict)
 
-`isManual` describes who called, not what should happen, so the logic is implicit: the reader has to find
-every `if (!isManual)` to learn what the manual path does differently. A parameter that makes the method do
-nothing when it is `false` is not a parameter at all; the caller should decide whether to call. The delivery
-count is state of the caller, so it is passed in explicitly. Name the behaviour (`deadLetterOnError`) and the
-reader sees what is different without reading the body (CODE.3).
+`isManual` describes who called, not what should happen, so the logic is implicit: the reader has to find every `if (!isManual)` to learn what the manual path does differently. A parameter that makes the method do nothing when it is `false` is not a parameter at all; the caller should decide whether to call. The delivery count is state of the caller, so it is passed in explicitly. Name the behaviour (`deadLetterOnError`) and the reader sees what is different without reading the body (CODE.3).
 
 # Compliant pattern
 
@@ -50,8 +45,7 @@ public sealed class OrderHandler(IOrderStore store, IMessageActions messages)
 }
 ```
 
-The queue trigger calls it with `deadLetterOnError: true` and the delivery count from the message; the manual
-endpoint calls it with `deadLetterOnError: false` and `deliveryCount: 1`.
+The queue trigger calls it with `deadLetterOnError: true` and the delivery count from the message; the manual endpoint calls it with `deadLetterOnError: false` and `deliveryCount: 1`.
 
 ## Bad example
 

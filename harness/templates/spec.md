@@ -18,8 +18,7 @@ What is wrong or missing now, in the words of the person who asked.[^requirement
 
 # Done means
 
-One sentence. When the work item does not say it, this line is the user's answer to your question, quoted.
-Never your own invention.
+One sentence. When the work item does not say it, this line is the user's answer to your question, quoted. Never your own invention.
 
 # Scope
 
@@ -29,19 +28,17 @@ Never your own invention.
 # Acceptance criteria
 
 | # | Criterion | Checked by | Evidence |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | A1 | <observable behaviour, in business terms> | <scenario tag `@{{slug}}-a1` (T.5), or the command that runs> | <what the change will show (DEL.3)> |
 
-A criterion nobody can run is an open question, not a criterion. Behaviour the integration suite can reach
-needs a scenario, not a promise (T.5); behaviour it cannot reach names the unit or contract test and why.
+A criterion nobody can run is an open question, not a criterion. Behaviour the integration suite can reach needs a scenario, not a promise (T.5); behaviour it cannot reach names the unit or contract test and why.
 
 # Work packages
 
-Only when this spec feeds `~/.golden-path-harness/harness/playbooks/orchestrate-workload.md`: one row per work package, each
-with its file paths, the criteria it must satisfy, and the verification command that must pass.
+Only when this spec feeds `~/.golden-path-harness/harness/playbooks/orchestrate-workload.md`: one row per work package, each with its file paths, the criteria it must satisfy, and the verification command that must pass.
 
 | Package | Files | Criteria | Verification |
-|---|---|---|---|
+| ------- | ----- | -------- | ------------ |
 
 # Open questions
 
@@ -49,7 +46,6 @@ with its file paths, the criteria it must satisfy, and the verification command 
 
 # Decisions not made here
 
-Design choices this spec leaves open. Each is a candidate ADR, decided with Vegviser's `vegviser-adr` skill
-and recorded in Vegviser, not here.
+Design choices this spec leaves open. Each is a candidate ADR, decided with Vegviser's `vegviser-adr` skill and recorded in Vegviser, not here.
 
 [^requirement]: <where the requirement came from: work item, [[note]], or the user's answer on {{date}}>

@@ -26,9 +26,6 @@ Inventory of this checkout, 2026-10-29. This is an assessment, not approval of n
 
 ## Approval status
 
-The user approved the guidance decisions, CODE.5 structural scope and evaluation criteria on 2026-10-29.
-See [Engineering standards and accepted decisions](engineering-standards-decisions.md) for current status
-and remaining implementation work. Future changes to principles, exceptions, criteria or policy still
-follow the human-review requirement in the implementation brief.
+The user approved the guidance decisions, CODE.5 structural scope and evaluation criteria on 2026-10-29. See [Engineering standards and accepted decisions](engineering-standards-decisions.md) for current status and remaining implementation work. Future changes to principles, exceptions, criteria or policy still follow the human-review requirement in the implementation brief.
 
 Update 2026-10-29: Six principle Loop pages were supplied as exports, along with the two project paths. See engineering-standards-decisions.md for preliminary classification, project observations and unresolved conflicts. Both top-level project paths lack Git metadata; immutable revisions remain to be identified.

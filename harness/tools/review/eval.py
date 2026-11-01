@@ -46,7 +46,8 @@ CODEX_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA
 AGY_CLI_ENVIRONMENT = ("PATH", "HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "TMP", "TMPDIR", "TEMP",
                        "SYSTEMROOT", "WINDIR", "COMSPEC", "PATHEXT",
                        "LANG", "LC_ALL", "LC_CTYPE", "TERM", "CI", "HTTPS_PROXY", "HTTP_PROXY", "NO_PROXY",
-                       "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS")
+                       "SSL_CERT_FILE", "NODE_EXTRA_CA_CERTS",
+                       "HARNESS_REVIEW_TIMEOUT_SECONDS", "HARNESS_REVIEW_MAX_TIMEOUT_SECONDS")
 LANG_EXT = {"csharp": "cs", "cs": "cs", "bicep": "bicep", "hcl": "tf", "terraform": "tf", "typescript": "ts",
             "ts": "ts", "javascript": "js", "python": "py", "bash": "sh", "shell": "sh", "yaml": "yml", "json": "json"}
 LINE_TOLERANCE = 3

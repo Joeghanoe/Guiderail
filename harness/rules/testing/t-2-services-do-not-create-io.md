@@ -20,16 +20,12 @@ Outside the composition root (`Program.cs`, `Startup.cs`), code does not:
 - read `DateTime.Now`, `DateTime.UtcNow` or `DateTimeOffset.UtcNow` (use `TimeProvider`);
 - touch the file system directly when the data could come from a stream or an interface.
 
-[CODE.8](/rules/code/code-8-dependencies-point-inward.md) owns capability interfaces and composition-root
-structure. This rule owns the prohibited I/O and ambient-state access that prevent isolated tests.
+[CODE.8](/rules/code/code-8-dependencies-point-inward.md) owns capability interfaces and composition-root structure. This rule owns the prohibited I/O and ambient-state access that prevent isolated tests.
 
 # Enforcement
 
-Review and the tests. A repo may also opt in to `harness/templates/repo/BannedSymbols.txt` with
-`Microsoft.CodeAnalysis.BannedApiAnalyzers`, which turns most of this into a build error (the composition root opts
-out with one scoped suppression); no repo is required to.
+Review and the tests. A repo may also opt in to `harness/templates/repo/BannedSymbols.txt` with `Microsoft.CodeAnalysis.BannedApiAnalyzers`, which turns most of this into a build error (the composition root opts out with one scoped suppression); no repo is required to.
 
 # Boundary
 
-Entity defaults such as `CreatedAt = DateTime.UtcNow` in a persistence model are allowed when the model is
-not business logic; move them when a test needs to control the time.
+Entity defaults such as `CreatedAt = DateTime.UtcNow` in a persistence model are allowed when the model is not business logic; move them when a test needs to control the time.

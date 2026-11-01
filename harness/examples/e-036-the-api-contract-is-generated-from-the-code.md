@@ -12,20 +12,15 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-31T12:00:00Z }
 
 # Situation
 
-A service exposes several HTTP endpoints. Its callers (a frontend, another team's integration, an AI agent) need the contract. The repo has
-an `openapi.yaml` written by hand once, and the endpoints have changed since.
+A service exposes several HTTP endpoints. Its callers (a frontend, another team's integration, an AI agent) need the contract. The repo has an `openapi.yaml` written by hand once, and the endpoints have changed since.
 
 # Why (verdict)
 
-A document someone keeps in step by hand is wrong the first time someone forgets, and nothing tells them. DEL.5 asks for the opposite
-direction: the code is the source and the document is its output, produced by the build, offline, so every build has a current one and a
-pipeline can publish it. Where a copy is committed so a frontend can generate its client, a check regenerates and compares, so a change to
-the contract shows up in the pull request diff instead of in a caller's incident.
+A document someone keeps in step by hand is wrong the first time someone forgets, and nothing tells them. DEL.5 asks for the opposite direction: the code is the source and the document is its output, produced by the build, offline, so every build has a current one and a pipeline can publish it. Where a copy is committed so a frontend can generate its client, a check regenerates and compares, so a change to the contract shows up in the pull request diff instead of in a caller's incident.
 
 # Compliant pattern
 
-The generator runs as part of the build, needs no running host or secrets, writes the file into the build output, and a CI step compares it
-with the committed snapshot.
+The generator runs as part of the build, needs no running host or secrets, writes the file into the build output, and a CI step compares it with the committed snapshot.
 
 ## Good example
 
@@ -58,5 +53,4 @@ paths:
 
 # Boundary
 
-A worker or batch job with no HTTP callers has no contract to generate. A spec-first API may keep the hand-written spec if its code is
-verified against it by contract tests.
+A worker or batch job with no HTTP callers has no contract to generate. A spec-first API may keep the hand-written spec if its code is verified against it by contract tests.

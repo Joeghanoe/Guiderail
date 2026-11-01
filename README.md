@@ -1,21 +1,17 @@
 # CodingHarness
 
-One set of rules, examples and guardrails for every Coding repo, used the same way by Claude Code,
-GitHub Copilot and the PR pipeline. It answers one question:
+One set of rules, examples and guardrails for every Coding repo, used the same way by Claude Code, GitHub Copilot and the PR pipeline. It answers one question:
 
 > Was this change checked against our standards, and can we show which standards and what they found?
 
-This repo is the single source of truth. Nothing is copied into project repos: developers install it once
-(`install.sh`), and the PR pipeline checks it out at a pinned commit and removes it again after the run.
+This repo is the single source of truth. Nothing is copied into project repos: developers install it once (`install.sh`), and the PR pipeline checks it out at a pinned commit and removes it again after the run.
 
-The knowledge is an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
-bundle: Markdown with frontmatter and an `index.md` per folder. Agents start at the index and open only what a
-change touches, rather than loading every instruction file up front.
+The knowledge is an [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) bundle: Markdown with frontmatter and an `index.md` per folder. Agents start at the index and open only what a change touches, rather than loading every instruction file up front.
 
 ## Layers
 
 | Layer | What | Hard or soft |
-|---|---|---|
+| --- | --- | --- |
 | 1. Identity | Agents use a read-only cloud login; the review job has no service connection | **Hard**: the real boundary |
 | 2. Tools | `scripts/verify.sh`, `cloud-read.sh`, `check-scenarios.py`, analyzers (optional `BannedSymbols.txt`) | Hard for what goes through them |
 | 3. Hooks and settings | Claude Code `PreToolUse` guards, the `Stop` verify, permission deny rules | Guardrail |
@@ -23,9 +19,7 @@ change touches, rather than loading every instruction file up front.
 
 If layer 1 is wrong, the rest only looks safe.
 
-Local agent processes should not inherit shell variables containing credentials. The Bash hook blocks common
-environment-dump commands, including Python, Node.js and PowerShell forms, but it is a guardrail rather than
-a security boundary. Prefer starting the editor/agent from a shell without sensitive variables.
+Local agent processes should not inherit shell variables containing credentials. The Bash hook blocks common environment-dump commands, including Python, Node.js and PowerShell forms, but it is a guardrail rather than a security boundary. Prefer starting the editor/agent from a shell without sensitive variables.
 
 ## Layout
 
@@ -76,12 +70,9 @@ export HARNESS_AZURE_CONFIG_DIR="$HOME/.azure-reader"     # in your shell profil
 AZURE_CONFIG_DIR="$HOME/.azure-reader" az login             # with an account that only has Reader
 ```
 
-No separate reader account? Skip the export: after your own `az login`, `cloud-read.sh` reads with that login
-and only its read-verb and secret checks limit it (E-015). Each fallback invocation warns on stderr, and `az rest`
-is blocked unless an explicit `HARNESS_AZURE_CONFIG_DIR` is configured. Not logged in means the read fails; you log in.
+No separate reader account? Skip the export: after your own `az login`, `cloud-read.sh` reads with that login and only its read-verb and secret checks limit it (E-015). Each fallback invocation warns on stderr, and `az rest` is blocked unless an explicit `HARNESS_AZURE_CONFIG_DIR` is configured. Not logged in means the read fails; you log in.
 
-Tool secrets (the Sonar token for `sonar-read.sh`, the ServiceNow account for `sn-get.sh`) go in `~/.config/harness/.env`, outside every repo; start from
-`harness/.env.example`. Agents read the example, never the file; the wrappers read the file themselves.
+Tool secrets (the Sonar token for `sonar-read.sh`, the ServiceNow account for `sn-get.sh`) go in `~/.config/harness/.env`, outside every repo; start from `harness/.env.example`. Agents read the example, never the file; the wrappers read the file themselves.
 
 Requirements: bash, jq, python3 and git. On Windows, Claude Code runs hooks through Git Bash.
 
@@ -89,50 +80,47 @@ Requirements: bash, jq, python3 and git. On Windows, Claude Code runs hooks thro
 
 Only what is specific to the repo:
 
-- `AGENTS.md`: the repo's own instructions, including its naming convention (IAC.6). Claude Code, Copilot and
-  Codex read it natively. Start from `harness/templates/repo/AGENTS.md`.
+- `AGENTS.md`: the repo's own instructions, including its naming convention (IAC.6). Claude Code, Copilot and Codex read it natively. Start from `harness/templates/repo/AGENTS.md`.
 - `scripts/verify.sh`: the repo's format, analyzer, build and test steps; `--fast` for the Stop hook.
-- Optional: `.harness-scenarios.json` (components and their scenario folders, T.5), and for .NET
-  `Directory.Build.props` with `BannedSymbols.txt` (the T.2 build gate; copy them from `harness/templates/repo/`).
-- The PR pipeline: add `infra/pipelines/ai-review.yml` as a template; see its header. Pin a tag and pass its commit
-  SHA as `harnessCommit`; a tag can move, the SHA cannot. The run links the checkout as `.harness/` and
-  removes it at the end, also after a failure.
+- Optional: `.harness-scenarios.json` (components and their scenario folders, T.5), and for .NET `Directory.Build.props` with `BannedSymbols.txt` (the T.2 build gate; copy them from `harness/templates/repo/`).
+- The PR pipeline: add `infra/pipelines/ai-review.yml` as a template; see its header. Pin a tag and pass its commit SHA as `harnessCommit`; a tag can move, the SHA cannot. The run links the checkout as `.harness/` and removes it at the end, also after a failure.
 
-Copilot code review on GitHub runs on GitHub's servers and cannot see `~/.golden-path-harness/harness`; for a GitHub repo, the
-review runs through the pipeline instead.
+Copilot code review on GitHub runs on GitHub's servers and cannot see `~/.golden-path-harness/harness`; for a GitHub repo, the review runs through the pipeline instead.
 
 ## Is it loaded? (adapter check)
 
-An `@import` that is present is not proof that it was expanded. `tools/harness/check-adapter.sh [dir]` asks the
-agent, without tools, whether the marker `tvh-loaded` is in its instructions. That costs one short prompt.
+An `@import` that is present is not proof that it was expanded. `tools/harness/check-adapter.sh [dir]` asks the agent, without tools, whether the marker `tvh-loaded` is in its instructions. That costs one short prompt.
 
 | Tool | Where | Result | Date |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Claude Code 2.1.302 | a folder without repo config (global install) | loaded | 2026-10-18 |
-| Copilot (VS Code) | a folder without repo config (global install) | not verified yet | |
+| Copilot (VS Code) | a folder without repo config (global install) | not verified yet |  |
 
 Re-run after a Claude Code or Copilot update, or a change to how the adapter imports.
 
 ## Evaluate the reviewer
 
-The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Every human-verified
-example is also an eval: its bad example must be flagged by its rule, its good example must not. Run
-`python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does
-the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md).
+The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Every human-verified example is also an eval: its bad example must be flagged by its rule, its good example must not. Run `python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md).
 
 ## How the harness learns
 
-- **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft example in
-  `~/.golden-path-harness/feedback/` (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into
-  `harness/examples/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13
-  (rule H.1).
-- **Trust.** An example with `verified: { by: human:<id>, ... }` is precedent for the reviewer and an eval; an
-  unverified example is a hint.
-- **PR threads.** The reviewer posts each finding as a thread. Its resolution (Fixed, Won't fix, By design) is
-  the feedback signal.
+- **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft example in `~/.golden-path-harness/feedback/` (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into `harness/examples/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13 (rule H.1).
+- **Trust.** An example with `verified: { by: human:<id>, ... }` is precedent for the reviewer and an eval; an unverified example is a hint.
+- **PR threads.** The reviewer posts each finding as a thread. Its resolution (Fixed, Won't fix, By design) is the feedback signal.
 - **Automation ladder.** A repeated task becomes a playbook, then a script, then a hook or CI check (rule H.2).
 
 ## Change the harness
+
+Install the Markdown commit hook once per clone:
+
+```bash
+pipx install pre-commit==4.7.0    # or: uv tool install pre-commit==4.7.0
+pre-commit install
+```
+
+The hook runs a pinned Prettier version on staged Markdown files. It removes extra blank lines, keeps each prose paragraph on one source line, and leaves code fences unchanged. If it reformats a file, review the changes, stage them again and retry the commit. Pre-commit keeps unstaged edits out of the hook run.
+
+Run `pre-commit run --all-files` to format existing Markdown. CI runs the same check and fails if formatting changes are needed. Generated concept indexes are excluded because `bundle.py` owns their exact contents.
 
 ```bash
 python3 harness/tools/harness/bundle.py index    # after adding or renaming a concept
@@ -143,16 +131,11 @@ tests/run.sh                             # tools, hooks and install
 python3 -I harness/tools/review/eval.py  # the reviewer, when rules, examples or the review changed
 ```
 
-Git history is the change log; write the why in the commit message. CI (`azure-pipelines.yml`) runs the same
-checks plus shellcheck, and the evals when the review changed.
+Git history is the change log; write the why in the commit message. CI (`azure-pipelines.yml`) runs the same checks plus shellcheck, and the evals when the review changed.
 
 ## Model-agnostic
 
-The harness does not assume a vendor. Rules, playbooks and tools speak in tiers (`economy`, `builder`, `reasoner`);
-a model name is a lookup that differs per platform and goes stale. `tools/orchestration/models.json` holds the names
-the harness can vouch for, `~/.config/harness/models.json` adds yours, and no provider is the default
-([details](harness/tools/orchestration/index.md)). The review runs on Claude Code, Copilot or Agy
-(`HARNESS_REVIEW_ENGINE`); Claude is today's default engine, not a requirement.
+The harness does not assume a vendor. Rules, playbooks and tools speak in tiers (`economy`, `builder`, `reasoner`); a model name is a lookup that differs per platform and goes stale. `tools/orchestration/models.json` holds the names the harness can vouch for, `~/.config/harness/models.json` adds yours, and no provider is the default ([details](harness/tools/orchestration/index.md)). The review runs on Claude Code, Copilot or Agy (`HARNESS_REVIEW_ENGINE`); Claude is today's default engine, not a requirement.
 
 ## Not built yet
 

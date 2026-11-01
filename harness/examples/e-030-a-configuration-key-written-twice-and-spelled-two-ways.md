@@ -13,16 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 
 # Situation
 
-A method obtains an OAuth token. It first checks that `Gateway:OAuthUri` and `Gateway:OAuthScope` are configured and throws if not.
-It then reads `Gateway:OAuthUri` again for the endpoint and reads `OAuthScope` (without the section) for the `resource` form field.
+A method obtains an OAuth token. It first checks that `Gateway:OAuthUri` and `Gateway:OAuthScope` are configured and throws if not. It then reads `Gateway:OAuthUri` again for the endpoint and reads `OAuthScope` (without the section) for the `resource` form field.
 
 # Why (verdict)
 
-The key `Gateway:OAuthScope` is written three times in different places and one of them lost its section. The guard checks the
-right key, the request uses a different one, and the result is a token request with a null scope that fails or returns a
-token for the wrong audience, while the code looks defensive. A name used in more than one place is written once (CODE.4):
-a constant, or better an options class bound to the section and validated at start, so the key exists in one place and the
-method receives a typed value.
+The key `Gateway:OAuthScope` is written three times in different places and one of them lost its section. The guard checks the right key, the request uses a different one, and the result is a token request with a null scope that fails or returns a token for the wrong audience, while the code looks defensive. A name used in more than one place is written once (CODE.4): a constant, or better an options class bound to the section and validated at start, so the key exists in one place and the method receives a typed value.
 
 # Compliant pattern
 

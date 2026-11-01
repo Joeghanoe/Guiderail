@@ -13,16 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
 
 # Situation
 
-A singleton token provider calls an OAuth token endpoint with a refresh token. On a failed response it must tell
-a consumed refresh token (`invalid_grant`) from bad client credentials (`invalid_client`) in the logs.
+A singleton token provider calls an OAuth token endpoint with a refresh token. On a failed response it must tell a consumed refresh token (`invalid_grant`) from bad client credentials (`invalid_client`) in the logs.
 
 # Why (verdict)
 
-The error body can carry `error_description` text. The provider parses the body, keeps only the `error` field when
-it is a string of at most 64 characters, falls back to `unknown` or `unparseable` (a proxy can answer with HTML),
-logs the status and that code, and then calls `EnsureSuccessStatusCode()` so the failure still surfaces (CODE.2).
-No token, secret or body text is logged (SEC.2). A comment says why the body is not logged, which is the
-constraint the code cannot express.
+The error body can carry `error_description` text. The provider parses the body, keeps only the `error` field when it is a string of at most 64 characters, falls back to `unknown` or `unparseable` (a proxy can answer with HTML), logs the status and that code, and then calls `EnsureSuccessStatusCode()` so the failure still surfaces (CODE.2). No token, secret or body text is logged (SEC.2). A comment says why the body is not logged, which is the constraint the code cannot express.
 
 # Compliant pattern
 

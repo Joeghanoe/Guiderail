@@ -10,18 +10,15 @@ tags: [testing, dotnet]
 
 # Scope
 
-Optional. A repo opts in by copying `harness/templates/repo/Directory.Build.props` and `BannedSymbols.txt`; the
-harness does not scaffold or require them, and `design-check` does not look for them.
+Optional. A repo opts in by copying `harness/templates/repo/Directory.Build.props` and `BannedSymbols.txt`; the harness does not scaffold or require them, and `design-check` does not look for them.
 
 # Coverage
 
-Direct use of `HttpClient` constructors, `Environment.GetEnvironmentVariable`, and `DateTime`/`DateTimeOffset`
-`Now`/`UtcNow` in .NET projects that import `Directory.Build.props`.
+Direct use of `HttpClient` constructors, `Environment.GetEnvironmentVariable`, and `DateTime`/`DateTimeOffset` `Now`/`UtcNow` in .NET projects that import `Directory.Build.props`.
 
 # Blind spots
 
-Clients created through other SDK constructors (`new BlobServiceClient(...)`), reflection, configuration read
-through `IConfiguration` inside business logic, and projects that do not import the props file.
+Clients created through other SDK constructors (`new BlobServiceClient(...)`), reflection, configuration read through `IConfiguration` inside business logic, and projects that do not import the props file.
 
 # Complementary checks
 
@@ -33,8 +30,7 @@ Build error RS0030; `scripts/verify.sh` and the PR fail.
 
 # Exception route
 
-One scoped `#pragma warning disable RS0030` with a reason, in the composition root only. Anything wider is a
-boundary example with a requirement, an owner and `stale_after`.
+One scoped `#pragma warning disable RS0030` with a reason, in the composition root only. Anything wider is a boundary example with a requirement, an owner and `stale_after`.
 
 # Refresh trigger
 

@@ -16,26 +16,17 @@ sources:
 
 # Situation
 
-A service starts with a few models and services. It later gains handlers, API clients and several external-system
-implementations. Every new class still goes directly into `Models/` or `Services/`, while interfaces
-move into a global `Interface/` folder and reusable-looking code moves into `Shared/`.
+A service starts with a few models and services. It later gains handlers, API clients and several external-system implementations. Every new class still goes directly into `Models/` or `Services/`, while interfaces move into a global `Interface/` folder and reusable-looking code moves into `Shared/`.
 
 # Why (verdict)
 
-The flat folders identify C# type categories, not ownership or dependency direction. A maintainer cannot tell
-which files change together, which models form the external contract, or whether adapter code may call an
-application handler directly. `Interface/` and `Shared/` make the problem worse because their names place no
-limit on what they may contain.
+The flat folders identify C# type categories, not ownership or dependency direction. A maintainer cannot tell which files change together, which models form the external contract, or whether adapter code may call an application handler directly. `Interface/` and `Shared/` make the problem worse because their names place no limit on what they may contain.
 
-Keep the amount of structure proportional to the code. A small service does not need a folder per file. Once
-separate responsibilities exist, name them and group implementations under the capability they implement.
-The repo's `AGENTS.md` records the exact layout and allowed dependencies.
+Keep the amount of structure proportional to the code. A small service does not need a folder per file. Once separate responsibilities exist, name them and group implementations under the capability they implement. The repo's `AGENTS.md` records the exact layout and allowed dependencies.
 
 # Compliant pattern
 
-This is one valid layout, not a mandatory set of folder names. `Processing` owns the use case. `Adapters`
-owns the external boundary and groups implementations by external system. Contracts and domain values no longer share
-one undifferentiated `Models` folder.
+This is one valid layout, not a mandatory set of folder names. `Processing` owns the use case. `Adapters` owns the external boundary and groups implementations by external system. Contracts and domain values no longer share one undifferentiated `Models` folder.
 
 ## Good example
 
@@ -69,9 +60,7 @@ src/WorkProcessor/
   Program.cs
 ```
 
-`EntryPoints` depends on `Processing`. `Processing` owns the external-system abstraction. Implementations under
-`Adapters` depend inward on that abstraction, and `Program.cs` is the only place that selects them. `Contracts`
-and `Domain` do not depend on entry points, application services or adapters.
+`EntryPoints` depends on `Processing`. `Processing` owns the external-system abstraction. Implementations under `Adapters` depend inward on that abstraction, and `Program.cs` is the only place that selects them. `Contracts` and `Domain` do not depend on entry points, application services or adapters.
 
 ## Bad example
 

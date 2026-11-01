@@ -87,7 +87,7 @@ flowchart TD
 ## Considered alternatives
 
 | Alternative | Reason not selected |
-|---|---|
+| --- | --- |
 | Retain the current manual process unchanged | Does not sufficiently address throughput, consistency, and reusable knowledge. |
 | Let agents implement from unapproved prompts | Weakens requirement traceability and makes scope changes hard to audit. |
 | Fully autonomous PR merge and production release | Conflicts with the current ownership, independent review, and PRD approval principles. |
@@ -118,12 +118,9 @@ flowchart TD
 - Make the harness produce a structured PR evidence report: requirement mapping, test results, architecture checks, exceptions, and known uncertainties.
 - Retain existing PR policies, build gates, static analysis, and deployment approval enforcement.
 - Introduce TEST/ACC automatic promotion only after the Way-of-Work and relevant pipeline approvals are explicitly amended.
-- Require appropriate credential and execution isolation for agent runs. For local work the read-only identity is
-  the boundary, and sandboxing is an accepted risk (ADR 0007 decision 8).
-- There is no prototype mode. Agent-written code in a project repository is production code. Useful
-  exploration done elsewhere starts again at the approved-spec step (ADR 0007 decision 7).
-- The independent-review requirement (item 5) applies to product repositories. The harness repository has a
-  documented exception while it has a single maintainer (ADR 0007 decision 2).
+- Require appropriate credential and execution isolation for agent runs. For local work the read-only identity is the boundary, and sandboxing is an accepted risk (ADR 0007 decision 8).
+- There is no prototype mode. Agent-written code in a project repository is production code. Useful exploration done elsewhere starts again at the approved-spec step (ADR 0007 decision 7).
+- The independent-review requirement (item 5) applies to product repositories. The harness repository has a documented exception while it has a single maintainer (ADR 0007 decision 2).
 - Define measurable indicators: cycle time, escaped defects, regression detection, review effort, compliance drift, and traceability coverage.
 
 ## Open decisions / ratification gates

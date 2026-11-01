@@ -17,15 +17,11 @@ sources:
 
 # Situation
 
-A function app reads its queue settings in a startup extension and in a health check, and names its trigger
-function with a string.
+A function app reads its queue settings in a startup extension and in a health check, and names its trigger function with a string.
 
 # Why (verdict)
 
-`"ServiceBus:QueueName"` typed in two files is two chances to be different, and a typo only shows at runtime.
-The trigger name typed as `"HandleMessage"` stops matching the method the moment someone renames it, and
-nothing fails until the function is not found. `nameof(HandleMessage)` and a shared constant make the compiler
-do the check (CODE.4).
+`"ServiceBus:QueueName"` typed in two files is two chances to be different, and a typo only shows at runtime. The trigger name typed as `"HandleMessage"` stops matching the method the moment someone renames it, and nothing fails until the function is not found. `nameof(HandleMessage)` and a shared constant make the compiler do the check (CODE.4).
 
 # Compliant pattern
 
@@ -76,5 +72,4 @@ public sealed class OrderHealthCheck(IConfiguration config)
 
 # Not verified
 
-Written for this example in neutral names. Attribute arguments that must be compile-time constants cannot use
-`nameof` on an instance member of another type; a `const` string fits there.
+Written for this example in neutral names. Attribute arguments that must be compile-time constants cannot use `nameof` on an instance member of another type; a `const` string fits there.

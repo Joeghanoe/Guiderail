@@ -24,8 +24,7 @@ What the code or config does, in neutral names that fit any repo.[^evidence]
 
 # Why (verdict)
 
-How the rule and its principle apply. For `boundary`: when the rule does not apply. For `rejected`: which
-principle or hard rule the feedback contradicts.
+How the rule and its principle apply. For `boundary`: when the rule does not apply. For `rejected`: which principle or hard rule the feedback contradicts.
 
 # Compliant pattern
 
@@ -45,11 +44,7 @@ Optional: what good looks like, with a source.
 
 # Optional reviewer behavior evaluation
 
-Use only when the example defines a reviewer behavior scenario in addition to its code examples.
-`eval_behavior: adversarial` feeds `## PR description` to the reviewer as untrusted data.
-`eval_behavior: rename` uses `eval_before_file` and `eval_after_file` to evaluate a pure file rename.
-`eval_critical: true` requires every configured repeat to pass. Evaluation examples are held out from
-the reviewer's context while testing; `boundary` examples remain visible.
+Use only when the example defines a reviewer behavior scenario in addition to its code examples. `eval_behavior: adversarial` feeds `## PR description` to the reviewer as untrusted data. `eval_behavior: rename` uses `eval_before_file` and `eval_after_file` to evaluate a pure file rename. `eval_critical: true` requires every configured repeat to pass. Evaluation examples are held out from the reviewer's context while testing; `boundary` examples remain visible.
 
 ## PR description
 
@@ -61,8 +56,7 @@ the reviewer's context while testing; `boundary` examples remain visible.
 <same source content used by the after example>
 ```
 
-`eval_before_file` and `eval_after_file` are required for rename evaluations. The runner also needs the
-`## Good example` block as the identical source content on both sides of the rename.
+`eval_before_file` and `eval_after_file` are required for rename evaluations. The runner also needs the `## Good example` block as the identical source content on both sides of the rename.
 
 # Not verified
 

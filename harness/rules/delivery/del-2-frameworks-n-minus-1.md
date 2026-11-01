@@ -16,5 +16,4 @@ sources:
 
 # Rule
 
-Runtime and framework versions are the current stable release or the one before it. An older version needs an
-upgrade item on the backlog, linked in the PR.
+Runtime and framework versions are the current stable release or the one before it. An older version needs an upgrade item on the backlog, linked in the PR.

@@ -18,15 +18,11 @@ sources:
 
 # Situation
 
-A change migrates a service to a new hosting model. The startup file still has the old registration in a
-comment, a `using` nobody references and a registration for a type no code resolves.
+A change migrates a service to a new hosting model. The startup file still has the old registration in a comment, a `using` nobody references and a registration for a type no code resolves.
 
 # Why (verdict)
 
-Commented-out code answers no question the reader has: they cannot tell whether it is a TODO, a fallback or
-forgotten. It is also the first thing a reviewer must ask about ("is this still needed? if so, remove it").
-Git already keeps the old version. The same holds for unused packages, settings and generated scaffolding:
-each is something the next person has to understand before they can safely change anything (CODE.1).
+Commented-out code answers no question the reader has: they cannot tell whether it is a TODO, a fallback or forgotten. It is also the first thing a reviewer must ask about ("is this still needed? if so, remove it"). Git already keeps the old version. The same holds for unused packages, settings and generated scaffolding: each is something the next person has to understand before they can safely change anything (CODE.1).
 
 # Compliant pattern
 
@@ -70,5 +66,4 @@ host.Run();
 
 # Not verified
 
-Written for this example in neutral names. The same finding applies to a `.csproj` package reference, a
-setting in a config file and generated files such as `Function1.cs`; the snippet shows one of them.
+Written for this example in neutral names. The same finding applies to a `.csproj` package reference, a setting in a config file and generated files such as `Function1.cs`; the snippet shows one of them.

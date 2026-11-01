@@ -13,6 +13,4 @@ status: stable
 
 # Rule
 
-Every resource is declared in Bicep or Terraform and deployed by the pipeline. A resource created by hand, or
-referenced without being declared or imported as `existing`, is a finding. Names follow IAC.6; where values
-live follows IAC.7.
+Every resource is declared in Bicep or Terraform and deployed by the pipeline. A resource created by hand, or referenced without being declared or imported as `existing`, is a finding. Names follow IAC.6; where values live follows IAC.7.

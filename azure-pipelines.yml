@@ -12,6 +12,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+  - bash: |
+      python3 -m pip install pre-commit==4.7.0
+      pre-commit run --all-files --show-diff-on-failure
+    displayName: "Markdown formatting"
+
   - bash: python3 -I harness/tools/harness/bundle.py check
     displayName: "Bundle check (OKF + harness conventions)"
 

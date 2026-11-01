@@ -17,12 +17,8 @@ status: stable
 one-off command  ->  playbook (concept)  ->  script in tools/  ->  hook or CI check
 ```
 
-- The second time an agent does the same task, it proposes a playbook as an example with
-  `verdict: automation-candidate`.
-- A playbook that is mostly commands becomes a script: parameters as arguments, sorted output, a header with
-  purpose, input, output and an example.
-- A review finding that keeps being accepted (`fixed` on the PR thread) is a candidate to become an analyzer,
-  an architecture test or a check script. The rule's `enforced_by` then names the tool.
+- The second time an agent does the same task, it proposes a playbook as an example with `verdict: automation-candidate`.
+- A playbook that is mostly commands becomes a script: parameters as arguments, sorted output, a header with purpose, input, output and an example.
+- A review finding that keeps being accepted (`fixed` on the PR thread) is a candidate to become an analyzer, an architecture test or a check script. The rule's `enforced_by` then names the tool.
 
-Each step up costs fewer tokens and gives the same answer every run. Look in `tools/` and `playbooks/`
-before writing a second variant of something that exists.
+Each step up costs fewer tokens and gives the same answer every run. Look in `tools/` and `playbooks/` before writing a second variant of something that exists.

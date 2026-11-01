@@ -17,15 +17,11 @@ sources:
 
 # Situation
 
-A connector reads from one queue, writes to another and calls a partner API. It gets a health endpoint that
-pings the partner and always answers 200 with a status in the body.
+A connector reads from one queue, writes to another and calls a partner API. It gets a health endpoint that pings the partner and always answers 200 with a status in the body.
 
 # Why (verdict)
 
-An availability test, a load balancer and an alert rule read the status code. A 200 with `"unhealthy"` in the
-body means they all see a healthy service while the credentials used for the partner have expired. The
-check also ignores the queues the service cannot work without, so a broken queue is invisible. The health
-call may not need more permissions than the real work (OBS.1).
+An availability test, a load balancer and an alert rule read the status code. A 200 with `"unhealthy"` in the body means they all see a healthy service while the credentials used for the partner have expired. The check also ignores the queues the service cannot work without, so a broken queue is invisible. The health call may not need more permissions than the real work (OBS.1).
 
 # Compliant pattern
 
@@ -66,5 +62,4 @@ public sealed class HealthFunctions(IPartnerService partner)
 
 # Not verified
 
-Written for this example in neutral names. Whether degraded (one dependency down) should return 200 is a
-decision per service (see the rule's boundary).
+Written for this example in neutral names. Whether degraded (one dependency down) should return 200 is a decision per service (see the rule's boundary).

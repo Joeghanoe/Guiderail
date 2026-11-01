@@ -14,17 +14,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-An API has a dozen endpoints. Every endpoint wraps its body in the same two catch blocks: one for the
-database exception and one for `Exception`, both logging an error and returning 503. Only the log text differs
-("Store error ...", "Unhandled error ..."), so the second block adds nothing the first did not already do.
+An API has a dozen endpoints. Every endpoint wraps its body in the same two catch blocks: one for the database exception and one for `Exception`, both logging an error and returning 503. Only the log text differs ("Store error ...", "Unhandled error ..."), so the second block adds nothing the first did not already do.
 
 # Why (verdict)
 
-Repeated code becomes a method (CODE.4). Twelve copies drift: one endpoint forgets the not-found case, another
-logs the request body, a third returns 500. One error-mapping step (middleware around the HTTP functions, or
-one helper that takes the operation) decides what each exception means, logs it once with the route and the
-request identifier, and the endpoints keep only the cases that are specific to them, such as a conflict on
-create. The two identical catch blocks collapse into one even before that.
+Repeated code becomes a method (CODE.4). Twelve copies drift: one endpoint forgets the not-found case, another logs the request body, a third returns 500. One error-mapping step (middleware around the HTTP functions, or one helper that takes the operation) decides what each exception means, logs it once with the route and the request identifier, and the endpoints keep only the cases that are specific to them, such as a conflict on create. The two identical catch blocks collapse into one even before that.
 
 # Compliant pattern
 

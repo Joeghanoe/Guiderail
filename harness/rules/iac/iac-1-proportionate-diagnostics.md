@@ -13,12 +13,10 @@ status: stable
 
 # Rule
 
-Observability has a price: Log Analytics charges per GB ingested and per day retained, and the verbose
-categories of busy resources (storage reads, gateway requests, firewall flows) can cost more than the resource.
-So diagnostics follow what they are used for:
+Observability has a price: Log Analytics charges per GB ingested and per day retained, and the verbose categories of busy resources (storage reads, gateway requests, firewall flows) can cost more than the resource. So diagnostics follow what they are used for:
 
 | What | When | Where |
-|---|---|---|
+| --- | --- | --- |
 | Audit logs (the `audit` category group: who changed or read what) | Always, on every resource that has them | The environment's Log Analytics workspace, or an archive storage account when only retention is needed |
 | Verbose logs (`allLogs`, request and read logs) | Only when a named consumer needs them: an alert rule, a workbook, an incident runbook | Log Analytics; a low-cost table plan (Basic, Auxiliary) for high volume that is only searched during incidents |
 | Metrics | Platform metrics are available without a diagnostic setting; export them (`AllMetrics`) only for alerts or retention beyond the platform's | Log Analytics only when a query needs them |
@@ -30,5 +28,4 @@ So diagnostics follow what they are used for:
 
 # Boundary
 
-A compliance or customer requirement that demands full logging wins; it is then a boundary example with the
-requirement, an owner and `stale_after`, and the cost is part of the decision.
+A compliance or customer requirement that demands full logging wins; it is then a boundary example with the requirement, an owner and `stale_after`, and the cost is part of the decision.

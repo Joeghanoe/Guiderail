@@ -18,9 +18,7 @@ A service calls a partner API over HTTP.
 
 # Why (verdict)
 
-A service that creates its own `HttpClient` cannot be tested without the real endpoint, and each instance
-holds its own connection pool. Injected, the client is registered once in the composition root and replaced
-by a stub handler in tests (T.2).
+A service that creates its own `HttpClient` cannot be tested without the real endpoint, and each instance holds its own connection pool. Injected, the client is registered once in the composition root and replaced by a stub handler in tests (T.2).
 
 # Compliant pattern
 

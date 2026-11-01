@@ -32,7 +32,7 @@ golden-path-harness/
 └── tests/                        # tests of the harness/tooling itself
 ```
 
-Treat this as a **target taxonomy**, not a mandate to force every file into a directory. Preserve established language/package conventions and avoid redundant nesting. `evaluations/` contains test cases *for agents*, whereas `tests/` verifies *the harness*. Keep private/held-out graders inaccessible to candidate agents.
+Treat this as a **target taxonomy**, not a mandate to force every file into a directory. Preserve established language/package conventions and avoid redundant nesting. `evaluations/` contains test cases _for agents_, whereas `tests/` verifies _the harness_. Keep private/held-out graders inaccessible to candidate agents.
 
 ## Desired local installation
 

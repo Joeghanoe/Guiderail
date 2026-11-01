@@ -16,19 +16,13 @@ sources:
 
 # Situation
 
-Generated code drifts into files that hold a service plus the records, DTOs, interfaces or enums it uses, and
-React files that hold a component plus its types and helpers. The repo owner's convention, shared by the
-company, is one file per class, interface, record, enum, service or validator, named after it.[^origin]
+Generated code drifts into files that hold a service plus the records, DTOs, interfaces or enums it uses, and React files that hold a component plus its types and helpers. The repo owner's convention, shared by the company, is one file per class, interface, record, enum, service or validator, named after it.[^origin]
 
 # Expected verdict
 
-The bad example violates the approved CODE.5 convention: Menu and IMenuRepository are sibling
-top-level types in MenuService.cs. The good example complies. Report the violation as minor.
+The bad example violates the approved CODE.5 convention: Menu and IMenuRepository are sibling top-level types in MenuService.cs. The good example complies. Report the violation as minor.
 
-The approved rule covers C#, TypeScript and TSX. Private helpers nested inside their only user may
-remain in that user's file; small sibling types may not. On a touched mixed file, split out only types
-added or changed. Generated C# files are excluded; partial declarations may use Type.cs or Type.Part.cs.
-These scope decisions were accepted on 2026-10-29 in benchmarks/engineering-standards-decisions.md.
+The approved rule covers C#, TypeScript and TSX. Private helpers nested inside their only user may remain in that user's file; small sibling types may not. On a touched mixed file, split out only types added or changed. Generated C# files are excluded; partial declarations may use Type.cs or Type.Part.cs. These scope decisions were accepted on 2026-10-29 in benchmarks/engineering-standards-decisions.md.
 
 # Compliant pattern
 
@@ -70,9 +64,6 @@ public sealed class MenuService(IMenuRepository menus)
 
 # Enforcement evidence
 
-The Roslyn checker in tools/code implements the approved C# structural subset. Its disposable fixtures
-in tests/test_code_types.py cover pass, fail, inherited and error outcomes. Conditional sources require
-an explicit symbol configuration; evidence applies only to that configuration. TypeScript/TSX and
-contextual design expectations remain review responsibilities. This example does not alter reviewer thresholds.
+The Roslyn checker in tools/code implements the approved C# structural subset. Its disposable fixtures in tests/test_code_types.py cover pass, fail, inherited and error outcomes. Conditional sources require an explicit symbol configuration; evidence applies only to that configuration. TypeScript/TSX and contextual design expectations remain review responsibilities. This example does not alter reviewer thresholds.
 
 [^origin]: repo owner feedback, 2026-10-26

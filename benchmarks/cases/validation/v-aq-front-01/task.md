@@ -1,7 +1,6 @@
 # The customer list stops at 50
 
-An admin reports that the customer list in the sidebar and on the admin screens has exactly 50 entries, and the
-customers they added last week are missing. The customer exists when they look it up by direct link.
+An admin reports that the customer list in the sidebar and on the admin screens has exactly 50 entries, and the customers they added last week are missing. The customer exists when they look it up by direct link.
 
 API contract for the list call, as published by the service:
 

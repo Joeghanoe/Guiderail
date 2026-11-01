@@ -18,9 +18,7 @@ The application registers a client for Azure Blob Storage.
 
 # Why (verdict)
 
-We authenticate with managed identity: the endpoint is configuration, the identity comes from the platform,
-and access is granted with RBAC. A connection string carries the account key, works from anywhere it leaks
-to, and needs shared-key access left on (SEC.3).
+We authenticate with managed identity: the endpoint is configuration, the identity comes from the platform, and access is granted with RBAC. A connection string carries the account key, works from anywhere it leaks to, and needs shared-key access left on (SEC.3).
 
 # Compliant pattern
 
@@ -43,8 +41,7 @@ builder.Services.AddSingleton(
 
 # Variant: grant only the roles the identity uses
 
-Access is also what you grant. An identity that only publishes to one topic gets one role on that topic, not a
-role on the whole namespace, and not a second role that an existing one already includes.
+Access is also what you grant. An identity that only publishes to one topic gets one role on that topic, not a role on the whole namespace, and not a second role that an existing one already includes.
 
 ```bicep
 param topicName string

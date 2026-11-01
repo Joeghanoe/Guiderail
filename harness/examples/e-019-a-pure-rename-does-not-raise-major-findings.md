@@ -22,8 +22,7 @@ A source file is renamed to match the type it already contains; the code itself 
 
 # Why (verdict)
 
-The reviewer should distinguish a rename from a behavioral change and abstain from major findings when the
-renamed file and its type are clearly named.
+The reviewer should distinguish a rename from a behavioral change and abstain from major findings when the renamed file and its type are clearly named.
 
 ## Good example
 

@@ -17,11 +17,9 @@ sources:
 
 # Rule
 
-- An inline `script:`, `powershell:` or `bash:` block is a call or at most a few lines. Longer logic is a
-  script file next to the pipeline, which takes its inputs as parameters.
+- An inline `script:`, `powershell:` or `bash:` block is a call or at most a few lines. Longer logic is a script file next to the pipeline, which takes its inputs as parameters.
 - The script runs on a developer machine with the same arguments, so it can be tested without a pipeline run.
-- Build and deploy steps run on the cheapest agent that does the job (`ubuntu-latest` unless a step needs
-  Windows, and then a comment says which).
+- Build and deploy steps run on the cheapest agent that does the job (`ubuntu-latest` unless a step needs Windows, and then a comment says which).
 - Triggers say what they trigger on: CI on pull requests, deployment on the main branch only.
 
 # Boundary

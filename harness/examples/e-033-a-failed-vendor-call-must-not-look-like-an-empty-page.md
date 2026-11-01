@@ -13,19 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-An incremental ingest reads an external API page by page, writes the rows to storage, then saves "last successful
-load" so the next run starts from there. The low-level GET method logs a warning for a non-success status and
-returns `null`. The paging method passes that `null` to a helper that maps `null` to an empty list, so a page
-that failed looks like the last page.
+An incremental ingest reads an external API page by page, writes the rows to storage, then saves "last successful load" so the next run starts from there. The low-level GET method logs a warning for a non-success status and returns `null`. The paging method passes that `null` to a helper that maps `null` to an empty list, so a page that failed looks like the last page.
 
 # Why (verdict)
 
-A 401 after a key rotation, a 500 or a 403 on one endpoint all end the loop as "no more rows". The run reports
-success, writes fewer rows than exist, and saves the checkpoint, so the next run starts after the gap and the
-missing rows are never loaded. The only trace is a warning line. Throwing for every status the caller did not
-expect (or calling `EnsureSuccessStatusCode()`) stops the run before the checkpoint moves. A status that is
-known to be normal, such as a 404 for an optional sub-resource, is handled by name where it is expected and
-returns an explicit "not present" result (CODE.2).
+A 401 after a key rotation, a 500 or a 403 on one endpoint all end the loop as "no more rows". The run reports success, writes fewer rows than exist, and saves the checkpoint, so the next run starts after the gap and the missing rows are never loaded. The only trace is a warning line. Throwing for every status the caller did not expect (or calling `EnsureSuccessStatusCode()`) stops the run before the checkpoint moves. A status that is known to be normal, such as a 404 for an optional sub-resource, is handled by name where it is expected and returns an explicit "not present" result (CODE.2).
 
 # Compliant pattern
 
@@ -67,5 +59,4 @@ private static JsonArray ExtractRows(JsonNode? payload) => payload is null ? [] 
 
 # Not verified
 
-The retry of a throttled response (429) is a different, correct pattern. Whether the caller should retry a transient 5xx
-before failing is a design choice this example does not make.
+The retry of a throttled response (429) is a different, correct pattern. Whether the caller should retry a transient 5xx before failing is a design choice this example does not make.

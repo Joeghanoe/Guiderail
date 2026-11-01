@@ -18,16 +18,11 @@ sources:
 
 # Situation
 
-A connector has business functions and now gets a health endpoint. The change puts the health function in the
-same class as the business functions and has the service return the partner's raw ping response for the
-function to interpret.
+A connector has business functions and now gets a health endpoint. The change puts the health function in the same class as the business functions and has the service return the partner's raw ping response for the function to interpret.
 
 # Why (verdict)
 
-The health function has nothing to do with the partner functionality, so the class now has two reasons to
-change. The service class is the one that knows the partner; when it hands out the raw response, the decision
-"is the partner healthy" moves to the caller, which will not agree with the next caller. One class per job,
-and the class that talks to a dependency decides what its answer means (CODE.5).
+The health function has nothing to do with the partner functionality, so the class now has two reasons to change. The service class is the one that knows the partner; when it hands out the raw response, the decision "is the partner healthy" moves to the caller, which will not agree with the next caller. One class per job, and the class that talks to a dependency decides what its answer means (CODE.5).
 
 # Compliant pattern
 

@@ -19,9 +19,7 @@ A pipeline deploys the same workload to two environments.
 
 # Why (verdict)
 
-Writing every value per stage repeats the fixed ones (the tool version, the name pattern) and hides which
-values really differ. The next environment copies the block and drifts. With one stage template per
-environment, the configurables come from `variables.<env>.yml` and everything else is written once (IAC.7).
+Writing every value per stage repeats the fixed ones (the tool version, the name pattern) and hides which values really differ. The next environment copies the block and drifts. With one stage template per environment, the configurables come from `variables.<env>.yml` and everything else is written once (IAC.7).
 
 # Compliant pattern
 
@@ -66,10 +64,7 @@ stages:
 
 # Variant: a module derives nothing and carries no environment
 
-A template takes its values as parameters. It does not work them out of another name (that only works while
-the naming convention is followed, "which usually it is, until it is not"), and it does not carry a literal
-that belongs to one environment. A value that was hardcoded becomes a parameter with a default that suits
-every environment.
+A template takes its values as parameters. It does not work them out of another name (that only works while the naming convention is followed, "which usually it is, until it is not"), and it does not carry a literal that belongs to one environment. A value that was hardcoded becomes a parameter with a default that suits every environment.
 
 ```bicep
 // Good
@@ -86,10 +81,8 @@ var pingUrl = 'https://orders-dev-we-func.azurewebsites.net/health'       // one
 var frequencyInSeconds = 300                                              // cannot be changed by the caller
 ```
 
-The same applies in the pipeline: an environment identifier typed in a job (`dev`) is the environment's name,
-and the job may need to be optional per environment through a variable.
+The same applies in the pipeline: an environment identifier typed in a job (`dev`) is the environment's name, and the job may need to be optional per environment through a variable.
 
 # Not verified
 
-Written for this example in neutral names.
-The variant comes from review feedback on a set of templates and pipelines; it follows IAC.7's bullet that modules derive no value and carry no environment default.
+Written for this example in neutral names. The variant comes from review feedback on a set of templates and pipelines; it follows IAC.7's bullet that modules derive no value and carry no environment default.

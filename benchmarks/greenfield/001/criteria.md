@@ -1,11 +1,9 @@
 # Acceptance criteria F01-F10
 
-All criteria must pass to call local functionality complete. The evaluator is separate from your code,
-computes expected content independently and uses a fresh directory per check. See `CONTRACT.md` for the
-invocation. These are observable requirements; the evaluator's checks are not published.
+All criteria must pass to call local functionality complete. The evaluator is separate from your code, computes expected content independently and uses a fresh directory per check. See `CONTRACT.md` for the invocation. These are observable requirements; the evaluator's checks are not published.
 
 | ID | Observable requirement |
-|---|---|
+| --- | --- |
 | F01 | Back up every enabled synthetic source (files including empty and binary, a SQL export, a Git repository with history, branch and tag, and JSON metadata) and identify each source outcome. Restored bytes and Git refs/history match. |
 | F02 | Restore remains possible when the original sources are unavailable, using a new process and only the stored backup. |
 | F03 | Restore never overwrites an occupied destination, and sources are never modified. |
@@ -17,5 +15,4 @@ invocation. These are observable requirements; the evaluator's checks are not pu
 | F09 | An incomplete backup produces a local alert and degraded or unhealthy evidence naming the affected sources and run ID. A healthy run is healthy. |
 | F10 | Logs, alerts and reports contain no payload or credential content. |
 
-F03 and F10 are security hard gates: a failure there fails the run regardless of other results.
-CODE.5 (one responsibility per file) is checked separately as an architecture dimension.
+F03 and F10 are security hard gates: a failure there fails the run regardless of other results. CODE.5 (one responsibility per file) is checked separately as an architecture dimension.

@@ -18,9 +18,7 @@ A pipeline defines the names of a workload's resources.
 
 # Why (verdict)
 
-Hand-picked names mix prefixes and suffixes, casing and numbering, so nobody can tell from a name which
-workload, environment or region a resource belongs to, and the next resource gets yet another style. A pattern
-with `${{ environment.name }}` gives every environment the same names by construction (IAC.6).
+Hand-picked names mix prefixes and suffixes, casing and numbering, so nobody can tell from a name which workload, environment or region a resource belongs to, and the next resource gets yet another style. A pattern with `${{ environment.name }}` gives every environment the same names by construction (IAC.6).
 
 # Compliant pattern
 
@@ -38,7 +36,7 @@ variables:
     value: ordersapi${{ environment.name }}west
 ```
 
-or 
+or
 
 ```yaml
 variables:
@@ -64,9 +62,7 @@ variables:
 
 # Variant: the type part is the real type, and a file is named for what it deploys
 
-A name says what the resource is. The `type` part is the abbreviation of the actual resource type, and the
-name does not carry a second, wrong description of it. A file is named for what it deploys, without words that
-only repeat the folder or the parent.
+A name says what the resource is. The `type` part is the abbreviation of the actual resource type, and the name does not carry a second, wrong description of it. A file is named for what it deploys, without words that only repeat the folder or the parent.
 
 ```bicep
 // Good: the workload, the environment, the region, the type.
@@ -82,11 +78,8 @@ resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' 
 }
 ```
 
-Likewise `orders.bicep` is enough for the template of the orders workload; `orders.catchall.bicep` repeats the
-name of a component that already has its own module.
+Likewise `orders.bicep` is enough for the template of the orders workload; `orders.catchall.bicep` repeats the name of a component that already has its own module.
 
 # Not verified
 
-Written for this example in neutral names. A repo with its own established convention follows that one
-instead (IAC.6).
-The variant comes from review feedback on one set of templates; the type abbreviation `id` follows IAC.6's table, which a repo may replace with its own.
+Written for this example in neutral names. A repo with its own established convention follows that one instead (IAC.6). The variant comes from review feedback on one set of templates; the type abbreviation `id` follows IAC.6's table, which a repo may replace with its own.

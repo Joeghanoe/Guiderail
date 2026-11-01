@@ -18,15 +18,11 @@ sources:
 # Rule
 
 - Code in comments is deleted. If it is needed later, it is in git history.
-- An unused `using`, package reference, setting, file, template parameter or pipeline task is removed in the
-  same change that stops using it.
-- A thing added "for later" or "for the future" is not added. A thing that is kept on purpose carries a
-  comment that says why.
-- Scaffolding the tool generated (`Function1.cs`, an extra `.gitignore`, sample files) is removed or renamed
-  before the PR.
+- An unused `using`, package reference, setting, file, template parameter or pipeline task is removed in the same change that stops using it.
+- A thing added "for later" or "for the future" is not added. A thing that is kept on purpose carries a comment that says why.
+- Scaffolding the tool generated (`Function1.cs`, an extra `.gitignore`, sample files) is removed or renamed before the PR.
 - Before you ask a reviewer "is this used?", search for it yourself.
 
 # Boundary
 
-A framework or platform may require a reference that no code mentions (a analyzer package, a runtime setting
-the host reads). Keep it and say why in a comment.
+A framework or platform may require a reference that no code mentions (a analyzer package, a runtime setting the host reads). Keep it and say why in a comment.

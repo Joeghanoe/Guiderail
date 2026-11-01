@@ -63,13 +63,13 @@ status: draft
 
 6. **Classify** the incident:
 
-   | Class         | Signal                                                                                              | Next step                                                                                                                    |
-   | ------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-   | deploy        | Errors started after a recent deploy, new exception types                                           | Roll-forward fix or tell the user to revert (CLD.2); run `diagnose-pipeline-failure.md` for the deploy pipeline if it failed |
-   | configuration | App setting, connection string, certificate or feature flag change                                  | Identify the setting; write the fix command for a human (CLD.2)                                                              |
-   | dependency    | Health check shows a downstream dependency is unhealthy, or exceptions point at an external service | Identify the dependency and its status; no code change                                                                       |
-   | capacity      | Throttling (429), out of memory, CPU at 100 %, quota exhaustion                                     | Read the metrics; write the scaling command for a human (CLD.2)                                                              |
-   | data          | Bad or missing data causes processing failures                                                      | Identify the pattern in exceptions; no data fix by the agent                                                                 |
+   | Class | Signal | Next step |
+   | --- | --- | --- |
+   | deploy | Errors started after a recent deploy, new exception types | Roll-forward fix or tell the user to revert (CLD.2); run `diagnose-pipeline-failure.md` for the deploy pipeline if it failed |
+   | configuration | App setting, connection string, certificate or feature flag change | Identify the setting; write the fix command for a human (CLD.2) |
+   | dependency | Health check shows a downstream dependency is unhealthy, or exceptions point at an external service | Identify the dependency and its status; no code change |
+   | capacity | Throttling (429), out of memory, CPU at 100 %, quota exhaustion | Read the metrics; write the scaling command for a human (CLD.2) |
+   | data | Bad or missing data causes processing failures | Identify the pattern in exceptions; no data fix by the agent |
 
 7. **Report**: conclusion first (class and root cause), then evidence (timestamps, exception types, deploy correlation), then proposed next steps. Every action that changes state is written for the human (CLD.2).
 

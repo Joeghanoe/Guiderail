@@ -13,16 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-Two services in the same solution treat time differently. The snapshot builder takes the snapshot time as a
-parameter, and its tests pass fixed instants. The rate limiter reads `DateTimeOffset.UtcNow` in three places to
-find the current minute window, decide whether it is blocked, and compute how long to wait.
+Two services in the same solution treat time differently. The snapshot builder takes the snapshot time as a parameter, and its tests pass fixed instants. The rate limiter reads `DateTimeOffset.UtcNow` in three places to find the current minute window, decide whether it is blocked, and compute how long to wait.
 
 # Why (verdict)
 
-The limiter's behaviour is entirely about time: the window rolls over at minute boundaries, a block expires,
-a wait is computed. With the clock read inside, a test can only run in real time or skip those paths. Taking a
-`TimeProvider` (built in since .NET 8) through the constructor lets a test set the minute and assert the wait
-without sleeping (T.2). The composition root registers `TimeProvider.System`.
+The limiter's behaviour is entirely about time: the window rolls over at minute boundaries, a block expires, a wait is computed. With the clock read inside, a test can only run in real time or skip those paths. Taking a `TimeProvider` (built in since .NET 8) through the constructor lets a test set the minute and assert the wait without sleeping (T.2). The composition root registers `TimeProvider.System`.
 
 # Compliant pattern
 
@@ -72,6 +67,4 @@ public sealed class RateLimiter(IOptions<RateLimitOptions> options)
 
 # Not verified
 
-Extracting the clock alone does not make a method unit-testable when it also does storage I/O in the same body; the
-pure window logic is the part worth moving out. Durable orchestrators must keep using the orchestration context's time,
-not a TimeProvider.
+Extracting the clock alone does not make a method unit-testable when it also does storage I/O in the same body; the pure window logic is the part worth moving out. Durable orchestrators must keep using the orchestration context's time, not a TimeProvider.

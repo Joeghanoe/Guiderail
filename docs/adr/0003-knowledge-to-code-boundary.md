@@ -28,7 +28,7 @@ flowchart LR
 ### Proposed information contract
 
 | Artifact | Owner / authority | Minimum contents |
-|---|---|---|
+| --- | --- | --- |
 | Story / backlog item | Team / designated story owner | Why, business outcome, constraints, linked discussion |
 | Proposed specification | Vegviser-assisted human workflow | Scope, behaviors, relevant company principles, assumptions |
 | Approved specification | Human approver, stored/versioned in or linked from story | Acceptance criteria, nonfunctional constraints, approval/version |

@@ -13,15 +13,12 @@ status: stable
 
 # Rule
 
-When a user corrects output that came from a rule (a wrong finding, a missed issue, a rule that does not fit),
-the agent captures a draft and goes on with the task. It does not edit rules or principles.
-[Process feedback](/playbooks/process-feedback.md) defines capture, classification and submission.
+When a user corrects output that came from a rule (a wrong finding, a missed issue, a rule that does not fit), the agent captures a draft and goes on with the task. It does not edit rules or principles. [Process feedback](/playbooks/process-feedback.md) defines capture, classification and submission.
 
 | Level | Who changes it | How |
-|---|---|---|
+| --- | --- | --- |
 | Principles | Vegviser's owner | Vegviser's own process; the harness only points to P1-P13 |
 | Rules | A human | A PR on the harness repo that cites the examples behind it |
 | Examples | An agent proposes, a human accepts | The human adds `verified: { by: human:<id>, at: ... }` |
 
-Feedback cannot override a principle, hard rule or human-reviewed precedent. The playbook defines how to
-record contradictions and legitimate boundaries without silently changing that authority.
+Feedback cannot override a principle, hard rule or human-reviewed precedent. The playbook defines how to record contradictions and legitimate boundaries without silently changing that authority.

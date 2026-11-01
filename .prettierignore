@@ -1,0 +1,3 @@
+# bundle.py owns the exact contents of generated concept indexes.
+harness/**/index.md
+!harness/index.md

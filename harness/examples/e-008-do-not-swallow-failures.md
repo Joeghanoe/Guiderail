@@ -21,11 +21,7 @@ A service uploads a file to a partner API and returns the file's identifier.
 
 # Why (verdict)
 
-Catching the exception and returning `null` tells the caller nothing: the action is still reported as
-successful and nobody uploaded anything. A reviewer asks "when does this happen? is that on purpose?" because
-the answer decides whether data is lost silently. Throwing a specific exception, or letting
-`EnsureSuccessStatusCode()` throw for a failed response, keeps the failure visible where it can be handled or
-reported. The logging belongs in one place, with context, once (CODE.2).
+Catching the exception and returning `null` tells the caller nothing: the action is still reported as successful and nobody uploaded anything. A reviewer asks "when does this happen? is that on purpose?" because the answer decides whether data is lost silently. Throwing a specific exception, or letting `EnsureSuccessStatusCode()` throw for a failed response, keeps the failure visible where it can be handled or reported. The logging belongs in one place, with context, once (CODE.2).
 
 # Compliant pattern
 
@@ -80,5 +76,4 @@ public sealed class DocumentService(HttpClient http, ILogger<DocumentService> lo
 
 # Not verified
 
-Written for this example in neutral names. A `Try...` method that returns a result type is a different pattern
-and is allowed (see the rule's boundary).
+Written for this example in neutral names. A `Try...` method that returns a result type is a different pattern and is allowed (see the rule's boundary).

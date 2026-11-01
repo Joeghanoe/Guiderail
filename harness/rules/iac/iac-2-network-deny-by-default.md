@@ -16,6 +16,4 @@ sources:
 
 # Rule
 
-`defaultAction: Deny` and `bypass: AzureServices` on every resource with network ACLs. Public network access
-is off unless the resource is the public entry point, and then the PR says so. Allowlists name fixed
-addresses that we own; a shared platform egress address is never allowlisted.
+`defaultAction: Deny` and `bypass: AzureServices` on every resource with network ACLs. Public network access is off unless the resource is the public entry point, and then the PR says so. Allowlists name fixed addresses that we own; a shared platform egress address is never allowlisted.

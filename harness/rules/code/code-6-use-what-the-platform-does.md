@@ -17,15 +17,11 @@ sources:
 
 # Rule
 
-- Before you add a check, ask what the platform already enforces. An API gateway validates subscription keys
-  and request schemas; a message broker enforces its own authorization; a framework validates its options.
-- Validate at the front door, with the platform's own mechanism, and only once. Do not repeat the check in
-  every operation's policy or handler.
+- Before you add a check, ask what the platform already enforces. An API gateway validates subscription keys and request schemas; a message broker enforces its own authorization; a framework validates its options.
+- Validate at the front door, with the platform's own mechanism, and only once. Do not repeat the check in every operation's policy or handler.
 - Dead configuration (a product nobody subscribes to, a role the identity never uses) is removed (CODE.1).
-- When you do add your own, a comment says what the platform does not cover. "The platform returns 500 and
-  we need a 4xx" is a reason; "to be sure" is not.
+- When you do add your own, a comment says what the platform does not cover. "The platform returns 500 and we need a 4xx" is a reason; "to be sure" is not.
 
 # Boundary
 
-Defence in depth is allowed where the cost of a missed check is high and the second check is cheap. The
-comment says so.
+Defence in depth is allowed where the cost of a missed check is high and the second check is cheap. The comment says so.

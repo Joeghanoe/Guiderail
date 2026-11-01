@@ -12,16 +12,11 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-10-24T12:00:00Z }
 
 # Situation
 
-A worker classifies every failure into a numbered code with an owner and one action. Support reads the
-codes on an operations page, `docs/operations/error-codes.md`, and customers quote them in tickets. The
-catalog lives in code; the page is Markdown. A new code added to the catalog without a row leaves support
-with a number nobody can look up.
+A worker classifies every failure into a numbered code with an owner and one action. Support reads the codes on an operations page, `docs/operations/error-codes.md`, and customers quote them in tickets. The catalog lives in code; the page is Markdown. A new code added to the catalog without a row leaves support with a number nobody can look up.
 
 # Why (compliant)
 
-The catalog and the page share one list across two file kinds, so CODE.4 cannot make it one name. CODE.7
-asks for the next best thing: a test that reads both sides at build time. A missing row fails the build
-with the code in the message, not the first alert mail that quotes it.
+The catalog and the page share one list across two file kinds, so CODE.4 cannot make it one name. CODE.7 asks for the next best thing: a test that reads both sides at build time. A missing row fails the build with the code in the message, not the first alert mail that quotes it.
 
 # Compliant pattern
 
@@ -79,5 +74,4 @@ public static class ErrorCatalog
 
 # Not verified
 
-Whether the eval reviewer flags a comment-only "keep in sync" as CODE.7 without seeing the docs page in the
-same diff.
+Whether the eval reviewer flags a comment-only "keep in sync" as CODE.7 without seeing the docs page in the same diff.
