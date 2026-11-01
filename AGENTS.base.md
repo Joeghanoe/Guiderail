@@ -29,7 +29,7 @@ it, and must pass before you say done. Other work: open `~/.golden-path-harness/
 
 A task that spans several layers or services is split into bounded workloads, each with its own file paths,
 acceptance criteria and a verification command, and each given the cheapest model tier that can do it
-(economy for rote work, builder for features, reasoner for security and architecture). One lead agent reviews
+(economy for rote work, builder for features, reasoner for security and architecture). Check edges before fanning out, return only the failed unit, run reviewers in their own context. One lead agent reviews
 and signs off; subagent work stays local until verified. Slices, tiers and the tooling:
 `~/.golden-path-harness/harness/playbooks/orchestrate-workload.md`.
 

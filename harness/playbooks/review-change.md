@@ -37,6 +37,8 @@ status: stable
    independent problem in the same change, or a change of behaviour with no named approver. Raise one finding per
    problem, `minor`, with the claim and the missing evidence as `evidence`; never for a missing write-up on a
    very small, obvious fix.
+   - A claim of verification must name a command that can fail. "Looks fine", "tested manually" or "no errors"
+     with no failing-capable check is a DEL.3 / T.1 finding, `minor`.
 6. An example with `verified` by a `human:` actor is precedent: follow its verdict for the same situation, or say
    why this situation differs. Unverified examples are hints only.
 7. Name what is done well in one line.

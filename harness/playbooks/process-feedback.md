@@ -31,6 +31,11 @@ status: stable
 3. Write the example from `/templates/example.md` into `~/.golden-path-harness/feedback/`: `status: draft`,
    `generated` with your actor, no `verified`. Principles and hard rules remain authoritative (H.1).
    A legitimate boundary proposes where a rule does not apply; it does not remove the rule.
+   Write the lesson as a general rule, not the story of the incident. Test: would it make sense to someone who
+   was not there? "Check that no interactive element is covered after a layout change" passes; "check the z-index
+   of the checkout banner from March 4" does not. Prefer, in order: fix the setup, encode it in a check, write the
+   rule, and only last rely on memory. A fact that can change an action (plan, price, status) is fetched, never
+   remembered.
 4. Check it does not contradict a human-reviewed example. If it does, say which one and why this differs; never
    overwrite it.
 5. Tell the user what you proposed; a human verifies or rejects it. Git history records the change.
