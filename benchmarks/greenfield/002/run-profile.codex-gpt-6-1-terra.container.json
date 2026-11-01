@@ -1,0 +1,53 @@
+{
+  "scenario_id": "greenfield-002",
+  "provider": "openai",
+  "model": "gpt-6.1-terra",
+  "options": {
+    "cli": "codex exec",
+    "sandbox": "danger-full-access (container is the boundary)"
+  },
+  "adapter_version": "codex.py@<harness commit>; image harness-eval:local",
+  "adapter": {
+    "argv": [
+      "python3",
+      "/adapters/codex.py",
+      "--workspace",
+      "{workspace}",
+      "--prompt-file",
+      "{prompt}",
+      "--trace-dir",
+      "{trace_dir}",
+      "--model",
+      "gpt-6.1-terra",
+      "--sandbox",
+      "danger-full-access"
+    ]
+  },
+  "isolation": {
+    "mode": "container",
+    "evidence": null
+  },
+  "container": {
+    "image": "harness-eval:local",
+    "home_volume": "harness-eval-home",
+    "memory": "5g",
+    "cpus": 2,
+    "network": "bridge"
+  },
+  "protected_paths": [],
+  "human_interventions": 0,
+  "review_minutes": null,
+  "grader": {
+    "argv": [
+      "claude",
+      "-p",
+      "--model",
+      "claude-opus-5-5",
+      "--setting-sources",
+      "project",
+      "--strict-mcp-config",
+      "--disable-slash-commands",
+      "--no-session-persistence"
+    ]
+  }
+}
