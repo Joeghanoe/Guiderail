@@ -5,7 +5,8 @@ description: A paginated API reader returns null on non-success statuses, tricki
 example_id: E-033
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [errors, http, ingestion]
 example_file: src/ExternalApiReader.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }

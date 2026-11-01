@@ -5,7 +5,8 @@ description: A single error is logged, sent to exception telemetry, and copied i
 example_id: E-023
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [errors, logging, telemetry]
 example_file: src/ProcessFunctions.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }

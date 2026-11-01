@@ -5,7 +5,8 @@ description: A token provider logs the HTTP status and short OAuth error code fr
 example_id: E-024
 rule: /rules/security/sec-2-no-secrets-or-personal-data.md
 verdict: compliant
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [logging, http, oauth]
 example_file: src/TokenProvider.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }

@@ -5,7 +5,8 @@ description: An API generates its OpenAPI specification directly from code durin
 example_id: E-036
 rule: /rules/delivery/del-5-the-api-contract-is-generated.md
 verdict: violation
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [api, openapi, build, ai-readiness]
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-31T12:00:00Z }
 ---

@@ -6,7 +6,8 @@ example_id: E-028
 rule: /rules/code/code-2-fail-loudly.md
 eval_bad_rule_id: CODE.6
 verdict: compliant
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [configuration, validation, errors]
 example_file: src/Configuration/IntegrationConfigurationProvider.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }

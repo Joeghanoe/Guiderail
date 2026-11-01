@@ -16,6 +16,7 @@ This is an editable record of current decisions, not an ADR. Revise a decision w
 | API gateway access | Use API products and product-scoped subscriptions for subscription admission. Keep policy logic for controls the product boundary does not provide. | E-037 |
 | Cloud reads | Authorized read-only wrapper requests can use the user's existing login. Do not require a second CLI configuration directory or allow writes, identity switching or credential reads. | E-038 and existing E-015 |
 | Consumer-repo tooling | BannedSymbols/analyzer files and harness scenario mapping are opt-in. Do not scaffold or require them in other projects. Their use inside this harness can remain. | Scaffold regression test; existing optional gate guidance |
+| Existing automation | E-016's Sonar read wrapper is implemented and has deterministic tests. Its historical automation-candidate verdict is not an unfinished reviewer eval. | `harness/tools/sonar/sonar-read.sh`; wrapper and guard checks in `tests/run.sh` |
 | Specific incident regressions | Do not promote the error-code/runbook, telemetry-query, optional-gate or symlink cases into reviewer examples just to preserve a past incident. The owner declined E-039, E-040, E-042, E-043 and E-046. | Source feedback preserved as processed records where available |
 
 The broader incident-triage automation idea remains undecided and stays in the feedback queue. This processing session does not approve that product work.
@@ -30,3 +31,11 @@ The broader incident-triage automation idea remains undecided and stays in the f
 | 2026-11-01 | Kept BannedSymbols and scenario-mapping machinery opt-in; declined five narrow reviewer cases. | Fix the setup rather than adding a reviewer expectation for every local incident. |
 
 E-006 remains historical precedent for the earlier pipeline-owned naming convention. E-044 records the newly adopted central-directory convention; this session does not rewrite the older verified example.
+
+## Historical evidence and example promotion
+
+On 2026-11-01 the owner accepted promotion of examples that already had passing evaluation evidence. Promoted E-021, E-023, E-024, E-025, E-027, E-028, E-029, E-030, E-031, E-032, E-033, E-035 and E-036. Each has a complete passing scenario set in `harness/tools/review/eval-results.jsonl` under one recorded engine/model/bundle combination. The October 31 history summary also records a passing gating suite and 32 of 33 advisory scenarios passing.
+
+Most snippets are unchanged since history commit `d7709e1`. E-032 and E-036 match the later committed snippets preceding their recorded passing Gemini Medium scenarios. This is historical evidence, not a fresh evaluation of the current full bundle. Promotion does not change the historical advisory/gating split or manufacture a current-bundle result.
+
+E-034 remains draft because its bad scenario has a recorded failure and no complete passing set was found. E-021 is accepted with mixed model evidence: Gemini Low passed both scenarios, while Gemini Medium missed the bad case. Both results stay recorded. Stable examples define accepted expectations; a model-specific failure remains a reviewer regression, not a reason to change the expectation to make the gate pass.

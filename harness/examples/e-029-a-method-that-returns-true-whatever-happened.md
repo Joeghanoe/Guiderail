@@ -5,7 +5,8 @@ description: A helper swallows exceptions and returns a default value, causing p
 example_id: E-029
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [errors, http, queue]
 example_file: src/Services/InternalApiClient.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }

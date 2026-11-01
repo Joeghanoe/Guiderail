@@ -5,7 +5,8 @@ description: A service keeps an unused validation method, static list, and injec
 example_id: E-031
 rule: /rules/code/code-1-remove-what-is-not-used.md
 verdict: violation
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [dead-code, cleanup]
 example_file: src/Services/EventTypeMapper.cs
 eval_context_files: [src/Functions/WebhookFunction.cs]

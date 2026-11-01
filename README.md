@@ -100,7 +100,7 @@ Re-run after a Claude Code or Copilot update, or a change to how the adapter imp
 
 ## Evaluate the reviewer
 
-The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Every human-verified example is also an eval: its bad example must be flagged by its rule, its good example must not. Run `python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md).
+The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Human-verified violation, compliant and boundary examples generate reviewer evals; undecided feedback and automation proposals do not. Their bad examples must be flagged by the linked rule and their good examples must not; boundary cases test only the good side. Run `python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md). The [verdict and status reference](docs/example-verdicts.md) explains classification, human acceptance, advisory cases and pass/fail/error results.
 
 ## How the harness learns
 

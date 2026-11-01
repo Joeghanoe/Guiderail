@@ -5,7 +5,8 @@ description: A service uses an injected factory for token requests but manually 
 example_id: E-027
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
-status: draft
+status: stable
+verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
 tags: [testability, http, dependency-injection]
 example_file: src/Services/ExternalApiClient.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
