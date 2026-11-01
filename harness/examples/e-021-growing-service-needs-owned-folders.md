@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-021 A growing service groups files by responsibility, then by external system"
-description: Split catch-all Models and Services folders into named responsibilities, with external-system adapters kept behind one capability boundary.
+description: Organize growing services by business capability and external adapters rather than dumping everything into flat Models and Services folders.
 example_id: E-021
 rule: /rules/code/code-8-dependencies-point-inward.md
 verdict: violation
@@ -16,13 +16,11 @@ sources:
 
 # Situation
 
-A service starts with a few models and services. It later gains handlers, API clients and several external-system implementations. Every new class still goes directly into `Models/` or `Services/`, while interfaces move into a global `Interface/` folder and reusable-looking code moves into `Shared/`.
+As a service grows, handlers, contracts, and third-party integrations are dumped into generic `Models/` and `Services/` folders, with global `Interface/` and `Shared/` dumping grounds.
 
 # Why (verdict)
 
-The flat folders identify C# type categories, not ownership or dependency direction. A maintainer cannot tell which files change together, which models form the external contract, or whether adapter code may call an application handler directly. `Interface/` and `Shared/` make the problem worse because their names place no limit on what they may contain.
-
-Keep the amount of structure proportional to the code. A small service does not need a folder per file. Once separate responsibilities exist, name them and group implementations under the capability they implement. The repo's `AGENTS.md` records the exact layout and allowed dependencies.
+Flat, technical folders (`Models/`, `Services/`) obscure domain ownership and dependency direction (CODE.8). Maintainers cannot tell which components change together or where external boundaries lie. Group code by business capability (e.g., `Processing`) and encapsulate third-party integrations behind dedicated adapter boundaries (`Adapters/<System>`).
 
 # Compliant pattern
 

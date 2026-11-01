@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-024 When the token endpoint fails, log the status and the error code, never the body"
-description: A token provider reads only the short OAuth error code from a failed response, logs it with the status code, and then lets EnsureSuccessStatusCode throw.
+description: A token provider logs the HTTP status and short OAuth error code from a failed response, never the full response body.
 example_id: E-024
 rule: /rules/security/sec-2-no-secrets-or-personal-data.md
 verdict: compliant
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
 
 # Situation
 
-A singleton token provider calls an OAuth token endpoint with a refresh token. On a failed response it must tell a consumed refresh token (`invalid_grant`) from bad client credentials (`invalid_client`) in the logs.
+An OAuth token provider needs to distinguish between an expired refresh token (`invalid_grant`) and bad client credentials (`invalid_client`) in operational logs.
 
 # Why (verdict)
 
-The error body can carry `error_description` text. The provider parses the body, keeps only the `error` field when it is a string of at most 64 characters, falls back to `unknown` or `unparseable` (a proxy can answer with HTML), logs the status and that code, and then calls `EnsureSuccessStatusCode()` so the failure still surfaces (CODE.2). No token, secret or body text is logged (SEC.2). A comment says why the body is not logged, which is the constraint the code cannot express.
+Error response bodies can leak sensitive tokens, descriptions, or proxy HTML into log stores (SEC.2). Extract only the standard error code (e.g., `invalid_grant`), log it alongside the status code, and throw via `EnsureSuccessStatusCode()` so the failure surfaces cleanly without exposing payloads (CODE.2).
 
 # Compliant pattern
 

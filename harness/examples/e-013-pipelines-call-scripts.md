@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-013 A pipeline step calls a script; it does not contain one"
-description: A long inline PowerShell block is untestable and unmaintainable; the logic lives in a script file the step calls with parameters.
+description: Call standalone parameterized script files from pipeline steps instead of embedding large inline shell or PowerShell blocks.
 example_id: E-013
 rule: /rules/iac/iac-8-pipelines-call-scripts.md
 verdict: violation
@@ -18,11 +18,11 @@ sources:
 
 # Situation
 
-A deployment pipeline waits for a deployment to become healthy and then registers it. The logic is written directly in the YAML step.
+A deployment pipeline runs complex health-checking and registration logic inside an inline YAML script step.
 
 # Why (verdict)
 
-Inline script cannot be run on a laptop without copying it out of the YAML, has no tests, and each edit means a pipeline run to find out whether it parses. Moved to a script file with parameters, the same logic runs locally, can be tested, and the YAML shows only the intent. A Windows agent for a cross-platform script is slower than an `ubuntu-latest` one, and a deployment pipeline should trigger on the main branch only (IAC.8).
+Large inline scripts cannot be linted, tested, or run locally without copy-pasting code out of CI pipelines. Moving logic into a parameterized script file enables local testing, code reuse, and clean pipeline definitions (IAC.8). Prefer cross-platform Ubuntu agents over Windows agents for routine scripting steps.
 
 # Compliant pattern
 

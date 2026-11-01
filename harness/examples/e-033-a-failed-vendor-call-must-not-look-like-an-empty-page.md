@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-033 A failed external API response is thrown, not turned into an empty result that advances the checkpoint"
-description: A paged reader returns null on a non-success status, the caller treats null as no rows, and an incremental load saves its checkpoint over a gap.
+description: A paginated API reader returns null on non-success statuses, tricking callers into treating errors as the end of data and advancing checkpoints past missing rows.
 example_id: E-033
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-An incremental ingest reads an external API page by page, writes the rows to storage, then saves "last successful load" so the next run starts from there. The low-level GET method logs a warning for a non-success status and returns `null`. The paging method passes that `null` to a helper that maps `null` to an empty list, so a page that failed looks like the last page.
+An incremental ingest job fetches paginated data and saves a checkpoint timestamp on completion. When a page request returns an error (401, 403, 500), the reader logs a warning and returns `null`, which the pagination helper interprets as an empty list (end of pages).
 
 # Why (verdict)
 
-A 401 after a key rotation, a 500 or a 403 on one endpoint all end the loop as "no more rows". The run reports success, writes fewer rows than exist, and saves the checkpoint, so the next run starts after the gap and the missing rows are never loaded. The only trace is a warning line. Throwing for every status the caller did not expect (or calling `EnsureSuccessStatusCode()`) stops the run before the checkpoint moves. A status that is known to be normal, such as a 404 for an optional sub-resource, is handled by name where it is expected and returns an explicit "not present" result (CODE.2).
+Treating HTTP errors as empty pages causes ingestion jobs to report success and advance checkpoints over missing data (CODE.2). Unexpected status codes must throw or call `EnsureSuccessStatusCode()` to abort the checkpoint. Only explicitly expected responses (like 404 on an optional sub-resource) should be handled as empty results.
 
 # Compliant pattern
 

@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-030 A configuration key is checked under one name and read under another"
-description: The method validates that Gateway:OAuthScope is set and then reads OAuthScope, so the guard passes and the token request goes out with an empty scope; write each key once as a constant or bind an options class.
+description: A method validates a configuration key with its section prefix but reads it without it, causing silent authentication failures; define config keys once or bind an options class.
 example_id: E-030
 rule: /rules/code/code-4-write-a-name-once.md
 verdict: violation
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 
 # Situation
 
-A method obtains an OAuth token. It first checks that `Gateway:OAuthUri` and `Gateway:OAuthScope` are configured and throws if not. It then reads `Gateway:OAuthUri` again for the endpoint and reads `OAuthScope` (without the section) for the `resource` form field.
+A method fetches an OAuth token by checking that `Gateway:OAuthUri` and `Gateway:OAuthScope` exist. When constructing the request payload, it accidentally reads `OAuthScope` without the `Gateway:` prefix, passing a null or empty value.
 
 # Why (verdict)
 
-The key `Gateway:OAuthScope` is written three times in different places and one of them lost its section. The guard checks the right key, the request uses a different one, and the result is a token request with a null scope that fails or returns a token for the wrong audience, while the code looks defensive. A name used in more than one place is written once (CODE.4): a constant, or better an options class bound to the section and validated at start, so the key exists in one place and the method receives a typed value.
+String-based configuration keys drift easily when repeated across guards and callers. Here, the guard checks the prefixed key while the payload reads the un-prefixed key, silently sending an invalid token request (CODE.4). Bind settings to a strongly-typed options class at startup or define the key as a shared constant.
 
 # Compliant pattern
 

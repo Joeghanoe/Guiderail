@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-029 A wrapper returns true or default after a failed call, so the handler reports success"
-description: A private call helper swallows every exception and returns default; public methods then return true or dereference the null, so a failed API call looks like a processed message.
+description: A helper swallows exceptions and returns a default value, causing public methods to report success even when downstream API calls fail.
 example_id: E-029
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 
 # Situation
 
-A queue-triggered function receives an external event and forwards it to an internal API. The API client has one private `Call<T>` helper. A `try/catch (Exception)` around it logs and returns `default`. Public methods build on that: `SubmitUpdate` awaits the call and then returns `true`; `ChangeStatus` returns whatever `default(bool)` gives, which is `false` for a failure and also for a legitimate "no change".
+A queue-triggered function forwards events to an internal API using a private helper that catches all exceptions, logs them, and returns `default`. Callers assume the call worked—for example, `SubmitUpdate` always returns `true`—masking failed requests as successful runs.
 
 # Why (verdict)
 
-The queue message is completed when the function returns without throwing. With the failure swallowed in the helper, a update that the internal API rejected is acknowledged, never retried and never reaches the dead-letter queue, and the operator sees a successful run (CODE.2). A method called `SubmitUpdate` returning `true` unconditionally tells the caller nothing. Let the helper throw (or call `EnsureSuccessStatusCode`), and keep a return value only where the answer is information (found or not found).
+Queue messages complete whenever a handler exits without throwing. Swallowing failures acknowledges the message, losing the update without retries or dead-lettering (CODE.2). Let errors throw or call `EnsureSuccessStatusCode()`, and only return a value when it provides meaningful status to the caller.
 
 # Compliant pattern
 

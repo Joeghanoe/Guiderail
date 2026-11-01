@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-014 Unhealthy is not a 200, and health covers the queues and credentials the service uses"
-description: A health endpoint returns a failing status code when a dependency or credential is bad, and checks every dependency instead of only the API.
+description: Health endpoints return non-200 status codes when dependencies fail, covering critical queues and credentials rather than just pinging an API.
 example_id: E-014
 rule: /rules/observability/obs-1-health-reflects-reality.md
 verdict: violation
@@ -17,11 +17,11 @@ sources:
 
 # Situation
 
-A connector reads from one queue, writes to another and calls a partner API. It gets a health endpoint that pings the partner and always answers 200 with a status in the body.
+A service that relies on queues and an external partner API exposes a health check endpoint that always returns HTTP 200 with an `{"status": "unhealthy"}` payload.
 
 # Why (verdict)
 
-An availability test, a load balancer and an alert rule read the status code. A 200 with `"unhealthy"` in the body means they all see a healthy service while the credentials used for the partner have expired. The check also ignores the queues the service cannot work without, so a broken queue is invisible. The health call may not need more permissions than the real work (OBS.1).
+Load balancers, orchestrators, and monitoring probes evaluate the HTTP status code, not JSON response bodies. Returning 200 OK for unhealthy components fools infrastructure into routing traffic to broken instances (OBS.1). Health checks must return failure status codes (e.g., 503) and verify essential dependencies like queues and auth tokens without requesting excessive permissions.
 
 # Compliant pattern
 

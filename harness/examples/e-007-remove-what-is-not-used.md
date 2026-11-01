@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-007 Commented-out code and unused registrations are deleted"
-description: A startup file keeps only what runs; old code lives in git history, not in comments.
+description: Clean up startup files by removing commented-out code, orphaned dependencies, and dead DI registrations.
 example_id: E-007
 rule: /rules/code/code-1-remove-what-is-not-used.md
 verdict: violation
@@ -18,11 +18,11 @@ sources:
 
 # Situation
 
-A change migrates a service to a new hosting model. The startup file still has the old registration in a comment, a `using` nobody references and a registration for a type no code resolves.
+After migrating hosting models, a startup file retains commented-out service registrations, unused namespaces, and resolved types that are no longer used.
 
 # Why (verdict)
 
-Commented-out code answers no question the reader has: they cannot tell whether it is a TODO, a fallback or forgotten. It is also the first thing a reviewer must ask about ("is this still needed? if so, remove it"). Git already keeps the old version. The same holds for unused packages, settings and generated scaffolding: each is something the next person has to understand before they can safely change anything (CODE.1).
+Commented-out code creates confusion about whether logic was abandoned, disabled, or temporarily parked. Version control preserves history—dead code, orphaned registrations, and unused packages should simply be deleted so maintainers do not have to decipher them (CODE.1).
 
 # Compliant pattern
 

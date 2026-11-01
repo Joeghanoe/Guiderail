@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-023 One failure is logged, tracked and recorded as a custom event, each with the full exception"
-description: A catch block writes the exception to the log, to exception telemetry and into a custom event property, and the timer entry point swallows it silently.
+description: A single error is logged, sent to exception telemetry, and copied into a custom event, creating duplicate records and string-interpolating stack traces.
 example_id: E-023
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
 
 # Situation
 
-A per-item loop catches `Exception` so that one bad item does not stop the batch. The catch block logs the exception as a string with `LogCritical`, calls `TrackException`, and then writes `exception.ToString()` into the `ErrorMessage` property of a custom event. The manual endpoint does the same and returns 500; the timer entry point catches and only calls `TrackException`.
+A batch loop catches `Exception` so one failure does not halt processing. The catch block logs the error with `LogCritical`, reports it to `TrackException`, and dumps `exception.ToString()` into custom event properties. Downstream entry points duplicate the logging or swallow the error.
 
 # Why (verdict)
 
-One failure becomes three records that say the same thing, and the stack trace lands in an event property that an alert or a report reads (CODE.2, OBS.3). The exception is interpolated into a message string, so the structured exception is lost. A failure is logged once, with context, in one statement; the event carries a reason code and the item id. Catching per item to keep the batch going is fine, but the batch result must then say how many items failed, so the caller can tell a partial run from a clean one.
+A single failure spawns three redundant telemetry records, and interpolating stack traces into custom event properties clutters alert queries and loses structured error data (CODE.2, OBS.3). Log the failure once with context, and let analytics events carry only clean item IDs and reason codes. If catching per-item to continue batch processing, report failure counts explicitly so callers know a run was only partially successful.
 
 # Compliant pattern
 

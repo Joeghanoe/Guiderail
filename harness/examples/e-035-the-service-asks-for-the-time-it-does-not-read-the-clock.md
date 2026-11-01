@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-035 Time comes in as a parameter or a TimeProvider, not from DateTimeOffset.UtcNow inside the service"
-description: A rate limiter that reads the clock itself cannot be tested for its window logic; a builder that receives the snapshot time as an argument can.
+description: Inject TimeProvider or pass timestamps as parameters rather than reading system clocks directly, enabling deterministic time-based testing.
 example_id: E-035
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-Two services in the same solution treat time differently. The snapshot builder takes the snapshot time as a parameter, and its tests pass fixed instants. The rate limiter reads `DateTimeOffset.UtcNow` in three places to find the current minute window, decide whether it is blocked, and compute how long to wait.
+A rate limiter reads `DateTimeOffset.UtcNow` directly inside its methods to evaluate sliding windows, making window expiration and delay logic untestable.
 
 # Why (verdict)
 
-The limiter's behaviour is entirely about time: the window rolls over at minute boundaries, a block expires, a wait is computed. With the clock read inside, a test can only run in real time or skip those paths. Taking a `TimeProvider` (built in since .NET 8) through the constructor lets a test set the minute and assert the wait without sleeping (T.2). The composition root registers `TimeProvider.System`.
+Calling the system clock directly inside business logic makes time-dependent code (rate limits, timeouts, expirations) untestable without fragile thread sleeps (T.2). Inject .NET's `TimeProvider` or accept timestamps as parameters so unit tests can control time deterministically.
 
 # Compliant pattern
 

@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-001 Services get their HttpClient injected"
-description: A service receives its HttpClient through the constructor instead of creating one.
+description: A service receives HttpClient via dependency injection instead of instantiating its own.
 example_id: E-001
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
@@ -14,11 +14,11 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-10-18T23:00:00Z }
 
 # Situation
 
-A service calls a partner API over HTTP.
+A service sends requests to an external partner API.
 
 # Why (verdict)
 
-A service that creates its own `HttpClient` cannot be tested without the real endpoint, and each instance holds its own connection pool. Injected, the client is registered once in the composition root and replaced by a stub handler in tests (T.2).
+Instantiating `HttpClient` directly leads to socket exhaustion under load and prevents unit tests from mocking network calls. Injecting `HttpClient` centralizes connection pool management and lets tests inject a mock handler (T.2).
 
 # Compliant pattern
 

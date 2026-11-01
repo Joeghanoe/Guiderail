@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-016 An agent cannot read static-analysis findings, so the user pastes or exports them by hand"
-description: Propose a read-only Sonar wrapper next to cloud-read.sh so agents can list issues and hotspots for a project without the user relaying a token or JSON.
+description: A read-only Sonar wrapper that lets agents fetch project issues and hotspots without exposing tokens or requiring manual exports.
 example_id: E-016
 rule: /rules/security/sec-2-no-secrets-or-personal-data.md
 verdict: automation-candidate
@@ -16,11 +16,11 @@ sources:
 
 # Situation
 
-Fixing code-quality findings needs the issue list (rule key, file, line, message) from the analysis service. The agent has no tool for it. The user had to generate a token, export it, run a curl loop in their own shell, and restart the agent so it inherited the variable. Writing the token into the chat or a file the agent reads would break SEC.2.[^evidence]
+Fixing code-quality findings requires the issue list from Sonar. Without a dedicated tool, developers have to manually generate tokens and run curl loops in their shell. Sharing raw tokens directly with the agent violates SEC.2.[^evidence]
 
 # Why (verdict)
 
-This is the same task as `cloud-read.sh`: read-only access to an external system through a wrapper that refuses writes (H.2). A wrapper makes the contract explicit instead of leaving it to a one-off curl.
+Just like `cloud-read.sh`, external reads belong in a read-only wrapper that strictly rejects state-changing calls (H.2). This keeps credentials safe and standardizes how agents fetch findings.
 
 # Compliant pattern
 

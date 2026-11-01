@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-008 A failure is thrown or checked, not swallowed into a null"
-description: A method that catches an exception and returns null makes the caller treat a failed upload as success; throw the right exception, or check the response.
+description: Surface HTTP and upload errors with explicit exceptions or EnsureSuccessStatusCode rather than swallowing them into nulls.
 example_id: E-008
 rule: /rules/code/code-2-fail-loudly.md
 verdict: violation
@@ -17,11 +17,11 @@ sources:
 
 # Situation
 
-A service uploads a file to a partner API and returns the file's identifier.
+A service uploads documents to a partner API, catching all exceptions and returning null on failure.
 
 # Why (verdict)
 
-Catching the exception and returning `null` tells the caller nothing: the action is still reported as successful and nobody uploaded anything. A reviewer asks "when does this happen? is that on purpose?" because the answer decides whether data is lost silently. Throwing a specific exception, or letting `EnsureSuccessStatusCode()` throw for a failed response, keeps the failure visible where it can be handled or reported. The logging belongs in one place, with context, once (CODE.2).
+Catching exceptions and returning `null` masks catastrophic failures—callers mistakenly treat nulls as successful operations, silently dropping files (CODE.2). Allow `EnsureSuccessStatusCode()` or custom exceptions to bubble up so errors are logged with context and handled appropriately.
 
 # Compliant pattern
 

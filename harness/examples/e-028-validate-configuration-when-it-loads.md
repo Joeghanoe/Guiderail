@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-028 Integration configuration is deserialised and validated once, and a bad entry fails by name"
-description: A base provider reads one JSON configuration per integration, rejects an empty or unparsable entry, and asks the subclass to validate the mandatory fields; the error names the field, never the value.
+description: A base provider loads and validates integration settings upfront, failing loudly on missing fields while keeping sensitive values out of error messages.
 example_id: E-028
 rule: /rules/code/code-2-fail-loudly.md
 eval_bad_rule_id: CODE.6
@@ -14,13 +14,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 
 # Situation
 
-Each external integration has its own settings stored as one JSON document per integration in a vault. An abstract base class loads the document by integration id, deserialises it and calls an abstract `ValidateConfig()` that each implementation provides.
+An abstract base class loads external integration settings stored as JSON documents in a vault, deserializes them, and calls a type-specific `ValidateConfig()` hook.
 
 # Why (verdict)
 
-A missing document, an unparsable document and a missing mandatory field each throw `InvalidOperationException` or `ArgumentException` with the integration id or the field name. The service never starts a call with a half-filled configuration, so the failure shows up on the first message for that integration and names what is missing (CODE.2). The log lines carry the integration id and the field name only, not the document, which is the right amount of detail with credentials inside the document (SEC.2). Adding an integration is one subclass with its own validation.
-
-Two things to improve if copying: the rethrown `InvalidOperationException` for a missing field repeats the "failed to deserialize" message and drops the field name, and the original exception is not passed as the inner exception.
+Missing or malformed configuration documents should fail immediately with an explicit error naming the missing property, preventing partially configured services from running (CODE.2). Error messages and logs should name only the integration ID and key name, keeping secret values out of logs (SEC.2).
 
 # Compliant pattern
 

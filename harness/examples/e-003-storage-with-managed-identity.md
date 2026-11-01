@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-003 Storage clients authenticate with managed identity"
-description: Blob storage is reached with DefaultAzureCredential and the account endpoint, never with a connection string.
+description: Authenticate storage clients using DefaultAzureCredential and service endpoints rather than connection strings with account keys.
 example_id: E-003
 rule: /rules/security/sec-3-identity-without-secrets.md
 verdict: violation
@@ -14,11 +14,11 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-10-18T23:00:00Z }
 
 # Situation
 
-The application registers a client for Azure Blob Storage.
+An application registers Azure Blob Storage clients using connection strings containing raw account keys.
 
 # Why (verdict)
 
-We authenticate with managed identity: the endpoint is configuration, the identity comes from the platform, and access is granted with RBAC. A connection string carries the account key, works from anywhere it leaks to, and needs shared-key access left on (SEC.3).
+Connection strings contain long-lived access keys that grant full access from any location if leaked (SEC.3). Authenticate using `DefaultAzureCredential` with managed identities, granting least-privilege access via Azure RBAC.
 
 # Compliant pattern
 

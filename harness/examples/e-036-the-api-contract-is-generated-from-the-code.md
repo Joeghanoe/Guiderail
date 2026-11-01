@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-036 The API contract is generated from the code, not kept by hand"
-description: A service publishes its OpenAPI document from its own code on every build, offline, instead of a hand-maintained file that drifts.
+description: An API generates its OpenAPI specification directly from code during the build, eliminating manually maintained files that drift.
 example_id: E-036
 rule: /rules/delivery/del-5-the-api-contract-is-generated.md
 verdict: violation
@@ -12,11 +12,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-31T12:00:00Z }
 
 # Situation
 
-A service exposes several HTTP endpoints. Its callers (a frontend, another team's integration, an AI agent) need the contract. The repo has an `openapi.yaml` written by hand once, and the endpoints have changed since.
+A backend service exposes HTTP endpoints consumed by frontends, client integrations, and AI tools. The repository relies on a hand-written `openapi.yaml` that has drifted out of sync with recent route changes.
 
 # Why (verdict)
 
-A document someone keeps in step by hand is wrong the first time someone forgets, and nothing tells them. DEL.5 asks for the opposite direction: the code is the source and the document is its output, produced by the build, offline, so every build has a current one and a pipeline can publish it. Where a copy is committed so a frontend can generate its client, a check regenerates and compares, so a change to the contract shows up in the pull request diff instead of in a caller's incident.
+Manually updated API specifications inevitably drift the moment an endpoint changes. Code must be the single source of truth: OpenAPI documents should be generated offline during build time (DEL.5). If committed for client code generation, CI should verify that the generated spec matches the committed snapshot.
 
 # Compliant pattern
 

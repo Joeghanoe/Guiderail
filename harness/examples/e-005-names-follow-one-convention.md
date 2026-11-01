@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-005 Resource names follow one convention, built from the environment name"
-description: Names are patterns with the environment in them, in one order and one style, instead of hand-picked names per resource.
+description: Standardize cloud resource naming conventions across environments using consistent variable patterns rather than ad-hoc names.
 example_id: E-005
 rule: /rules/iac/iac-6-naming-convention.md
 verdict: violation
@@ -14,11 +14,11 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-10-19T00:00:00Z }
 
 # Situation
 
-A pipeline defines the names of a workload's resources.
+A pipeline defines Azure resource names individually with mixed casing, inconsistent prefixes, and irregular abbreviations.
 
 # Why (verdict)
 
-Hand-picked names mix prefixes and suffixes, casing and numbering, so nobody can tell from a name which workload, environment or region a resource belongs to, and the next resource gets yet another style. A pattern with `${{ environment.name }}` gives every environment the same names by construction (IAC.6).
+Ad-hoc resource names make it hard to identify ownership, workload, and environment at a glance. Standardize on a predictable naming pattern parameterized by environment name to ensure consistency by design (IAC.6).
 
 # Compliant pattern
 
