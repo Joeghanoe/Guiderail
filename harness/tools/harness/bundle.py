@@ -506,8 +506,18 @@ def cmd_select(root, args):
     precedent = [rel for rel, m in relevant if human_verified(m) and rel not in stale]
     hints = [rel for rel, m in relevant if not human_verified(m) and rel not in stale]
     if args.brief:
+        by_rule = {}
+        for rel, m in sorted(relevant, key=lambda r: (not human_verified(r[1]), r[0])):
+            if rel in stale:
+                continue
+            for rid in as_list(m.get("rule", "")):
+                if rid in rules:
+                    by_rule.setdefault(rules[rid], []).append((rel, unquote(m.get("title", ""))))
         for rule_id, text in sorted(summary.items()):
             print(f"{rule_id}: {text}")
+            if args.examples:
+                for rel, title in by_rule.get(rule_id, []):
+                    print(f"  example: {rel} - {title}")
         return 0
     print(json.dumps({"rules": rules, "summary": dict(sorted(summary.items())), "precedent": precedent, "hints": hints, "stale": stale}, indent=2))
     return 0
@@ -587,6 +597,7 @@ def main():
     budget.add_argument("--baseline", help="budget file from the base branch; fail if this one raises a value")
     select = sub.add_parser("select")
     select.add_argument("--brief", action="store_true", help="print only 'ID: summary' per rule (for an agent about to edit)")
+    select.add_argument("--examples", action="store_true", help="with --brief, list the linked examples under each rule (human-verified first)")
     select.add_argument("paths", nargs="*", help="changed paths; read from stdin when none are given")
     findings = sub.add_parser("findings")
     findings.add_argument("file")

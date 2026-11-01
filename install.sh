@@ -142,7 +142,8 @@ for event in ("PreToolUse", "Stop"):
 if install:
     hook = lambda name: {"type": "command", "command": f'"{gp_home}/harness/hooks/{name}"'}
     hooks["PreToolUse"] += [{"matcher": "Bash", "hooks": [hook("guard-bash.sh")]},
-                            {"matcher": "Read|Grep|Glob", "hooks": [hook("guard-read.sh")]}]
+                            {"matcher": "Read|Grep|Glob", "hooks": [hook("guard-read.sh")]},
+                            {"matcher": "Edit|Write|NotebookEdit", "hooks": [hook("edit-gate.sh")]}]
     hooks["Stop"] += [{"hooks": [hook("stop-verify.sh")]}]
 for event in [e for e, groups in hooks.items() if not groups]:
     del hooks[event]

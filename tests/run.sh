@@ -193,6 +193,16 @@ expect 0 ".env.example" read_hook "tests/.env.example"
 expect 2 ".env" read_hook "tests/IntegrationPlatform.E2E/.env"
 expect 2 ".env.production" read_hook ".env.production"
 
+echo "== edit-gate (H.2)"
+gate_state="$(mktemp -d)"
+gate() { jq -n --arg s "$1" --arg f "$2" '{session_id: $s, tool_input: {file_path: $f}}' | TMPDIR="$gate_state" "$h/hooks/edit-gate.sh"; }
+lookup() { jq -n --arg s "$1" '{session_id: $s, tool_input: {command: "python3 bundle.py select --brief a.yml"}}' | TMPDIR="$gate_state" "$h/hooks/guard-bash.sh"; }
+expect 2 "edit before the rule lookup is denied" gate gs1 "pipelines/deploy.yml"
+expect 0 "the lookup passes guard-bash" lookup gs1
+expect 0 "edit after the lookup is allowed" gate gs1 "pipelines/deploy.yml"
+expect 2 "another session still needs its own lookup" gate gs2 "pipelines/deploy.yml"
+expect 0 "no session id fails open" gate "" "pipelines/deploy.yml"
+
 echo "== cloud-read (stubs)"
 mkdir -p "$tmp/bin"
 for cli in az terraform tofu kubectl hcloud; do
@@ -625,7 +635,7 @@ expect 0 "~/.golden-path-harness links the bundle and feedback" test "$(readlink
 expect 0 "~/.golden-path-harness has the runtime dirs" bash -c "cd '$tmp/home/.golden-path-harness' && test -d config -a -d cache -a -d state -a -d workspaces -a -d logs"
 echo keep >"$tmp/home/.golden-path-harness/state/marker"
 expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -qF '@$native_here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
-expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 2) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
+expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 3) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
 expect 0 "/tv-review for Claude" test -f "$tmp/home/.claude/skills/tv-review/SKILL.md" 
 expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' | grep -vq updated"
 expect 0 "uninstall runs" inst --uninstall

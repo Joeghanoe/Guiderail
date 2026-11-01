@@ -54,4 +54,4 @@ agent: Edit Pipelines/deploy-connector.yml   # no lookup; instruction skipped
 
 # Not verified
 
-Drafted from one session by the agent that made the mistake. The hook behaviour is a proposal and has not been prototyped; whether a `PreToolUse` hook can carry per-session state through a marker file in all hosts (Claude Code, Copilot, CI) needs checking before it is built. It does not contradict a human-reviewed example.
+Drafted from one session by the agent that made the mistake. Steps 1 and 2 are now prototyped: `harness/hooks/edit-gate.sh` (PreToolUse on `Edit|Write|NotebookEdit`), a session marker written by `guard-bash.sh` when it sees `bundle.py select`, and `select --brief --examples`. Tested in `tests/run.sh` (edit-gate section) with Claude Code's hook input. The marker lives under `$TMPDIR/golden-path-harness-lookup/<session_id>`; it fails open when there is no `session_id` or no `bundle.py`. Not yet checked in Copilot or CI, and the `stop-verify.sh` backstop (step 3) is not built. It does not contradict a human-reviewed example.
