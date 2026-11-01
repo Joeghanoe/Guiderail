@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-015 The read-only cloud wrapper cannot read with the user's own login, even when the user says the agent may read"
-description: The wrapper refuses every az read unless a separate reader identity is configured, so an agent cannot read logs the user already allowed it to read.
+description: The cloud wrapper allows an agent to read logs using the developer's existing Azure login when explicitly granted, rather than blocking on a missing dedicated reader account.
 example_id: E-015
 rule: /rules/cloud/cld-1-agents-read-cloud-state.md
 verdict: boundary
@@ -20,11 +20,11 @@ sources:
 
 # Situation
 
-An agent had to read gateway logs on DEV to explain a failed load test. The user had logged in with `az login` (default config directory) and said the agent may read. `cloud-read.sh az ...` still exited with `HARNESS_AZURE_CONFIG_DIR is not set; az would use your personal login`. The only way forward was a one-time setup of a separate reader account, or the user running every query and pasting the result.[^evidence]
+An agent needs to inspect dev gateway logs to troubleshoot a failed load test. The developer already ran `az login` and authorized the read, but `cloud-read.sh` failed because a dedicated reader config directory was not configured, forcing manual copy-pasting.[^evidence]
 
 # Why (verdict)
 
-CLD.1 holds: agents never log in or switch accounts, and writes stay with humans. The wrapper's layer 1 (a read-only identity) is the real boundary, but the user has no separate reader account here and does not want to maintain one. Boundary: the login the user did themselves is the grant. Without a separate reader configured, `cloud-read.sh` uses the login the user did themselves, with no extra step; the user only intervenes to log in, and to run anything that creates, updates or deletes. Everything else in layer 2 stays: read verbs only (show, list, get, query, logs), no secrets, no `login`, `account set` or `config`, `az rest` only with GET. The agent never logs in, switches accounts or sets the config directory. Consequence to accept: with a personal login, layer 1 no longer guarantees read-only, so layer 2 alone carries that.
+CLD.1 requires that agents only read and never manage credentials or execute writes. When a developer does not have a dedicated read-only service principal set up, their active `az login` acts as the explicit grant. The wrapper falls back to this session for read verbs (show, list, query, logs) while strictly enforcing read-only protections in layer 2. Agents never run login commands, switch accounts, or execute mutations.
 
 ## Good example
 

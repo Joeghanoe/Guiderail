@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-032 A dependency probe reports failure and preserves cancellation"
-description: A dependency probe performs real I/O, reports failure as Unhealthy and propagates caller cancellation instead of assuming success.
+description: Dependency health probes execute bounded I/O, report reachability failures as Unhealthy, and propagate cancellation tokens cleanly.
 example_id: E-032
 rule: /rules/observability/obs-1-health-reflects-reality.md
 verdict: compliant
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-A service depends on a document database. Its health check must establish that the dependency is reachable, report a failed probe and respect cancellation by the caller.
+A service needs to verify document database connectivity in its health check while honoring cancellation tokens.
 
 # Why (verdict)
 
-A probe performs bounded, non-destructive I/O instead of assuming the dependency is healthy. A dependency failure becomes `Unhealthy`; caller cancellation propagates rather than becoming an outage report (OBS.1). [E-014](/examples/e-014-health-reports-unhealthy.md) owns dependency coverage and HTTP status mapping.
+Probing a dependency requires bounded, lightweight I/O rather than assuming health. When dependencies fail, report `Unhealthy`; when the caller cancels the check, propagate the cancellation rather than falsely alerting an outage (OBS.1). [E-014](/examples/e-014-health-reports-unhealthy.md) covers full HTTP status mapping.
 
 # Compliant pattern
 

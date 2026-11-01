@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-010 A name used in several places is written once, and function names come from nameof"
-description: Setting keys are constants shared by every reader, and a function's name is taken with nameof so a rename cannot break it.
+description: Share configuration keys as constants across readers, and use nameof for function trigger names so renames fail at compile time.
 example_id: E-010
 rule: /rules/code/code-4-write-a-name-once.md
 verdict: violation
@@ -17,11 +17,11 @@ sources:
 
 # Situation
 
-A function app reads its queue settings in a startup extension and in a health check, and names its trigger function with a string.
+A function app reads queue settings across multiple files using string literals and binds trigger names with hardcoded strings.
 
 # Why (verdict)
 
-`"ServiceBus:QueueName"` typed in two files is two chances to be different, and a typo only shows at runtime. The trigger name typed as `"HandleMessage"` stops matching the method the moment someone renames it, and nothing fails until the function is not found. `nameof(HandleMessage)` and a shared constant make the compiler do the check (CODE.4).
+Hardcoding string keys like `"ServiceBus:QueueName"` in multiple places invites typos that only surface at runtime. Hardcoding trigger names also breaks silently when methods are renamed. Use shared constants for configuration keys and `nameof()` for trigger names so the compiler enforces correctness (CODE.4).
 
 # Compliant pattern
 

@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-034 The same catch ladder is not pasted into every endpoint"
-description: Each HTTP function repeats a catch for the database exception and a catch for Exception with the same body; the mapping belongs in one place.
+description: Centralize endpoint exception handling in middleware or shared helpers rather than duplicating identical catch blocks across every route.
 example_id: E-034
 rule: /rules/code/code-4-write-a-name-once.md
 verdict: violation
@@ -14,11 +14,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }
 
 # Situation
 
-An API has a dozen endpoints. Every endpoint wraps its body in the same two catch blocks: one for the database exception and one for `Exception`, both logging an error and returning 503. Only the log text differs ("Store error ...", "Unhandled error ..."), so the second block adds nothing the first did not already do.
+Multiple API endpoints repeat the same catch blocks for database exceptions and general errors, logging nearly identical messages and returning HTTP 503.
 
 # Why (verdict)
 
-Repeated code becomes a method (CODE.4). Twelve copies drift: one endpoint forgets the not-found case, another logs the request body, a third returns 500. One error-mapping step (middleware around the HTTP functions, or one helper that takes the operation) decides what each exception means, logs it once with the route and the request identifier, and the endpoints keep only the cases that are specific to them, such as a conflict on create. The two identical catch blocks collapse into one even before that.
+Copy-pasting catch blocks across endpoints leads to inconsistency and drift (CODE.4). Centralize exception translation in middleware or a shared error handler to ensure uniform status codes, structured logging, and correlation tracking across all routes.
 
 # Compliant pattern
 

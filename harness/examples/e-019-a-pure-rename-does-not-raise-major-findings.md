@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-019 A pure rename does not raise major findings"
-description: "A reviewer abstains from major findings when a change only renames a well-named source file."
+description: "A reviewer abstains from raising major findings when a PR only renames an already well-named file without altering behavior."
 example_id: E-019
 rule: /rules/code/code-3-names-say-what-it-is-for.md
 eval_rule_id: CODE.3
@@ -18,11 +18,11 @@ generated: { by: copilot/agent, at: 2026-10-20T19:05:00Z }
 
 # Situation
 
-A source file is renamed to match the type it already contains; the code itself does not change.
+A file is renamed to match its contained type without any code modifications.
 
 # Why (verdict)
 
-The reviewer should distinguish a rename from a behavioral change and abstain from major findings when the renamed file and its type are clearly named.
+Reviewers should distinguish pure renames from logic changes. When the target file and type names are already clear, the reviewer should abstain from flagging major issues (CODE.3).
 
 ## Good example
 

@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-012 A gateway policy does not repeat what the gateway already enforces"
-description: An API that requires a subscription key does not also check the key in every operation policy; request shapes are validated once at the front with the platform's validation.
+description: Rely on platform gateway validation and subscription enforcement instead of re-implementing checks in individual operation policies.
 example_id: E-012
 rule: /rules/code/code-6-use-what-the-platform-does.md
 verdict: violation
@@ -17,11 +17,11 @@ sources:
 
 # Situation
 
-An API behind a gateway is secured with a subscription key. Each operation has its own policy that checks that a key is present and that the body has the right fields, written by hand.
+An API behind Azure API Management uses hand-written operation policies to check for subscription keys and validate request schemas.
 
 # Why (verdict)
 
-With `subscriptionRequired: true` the gateway rejects a call without a valid key before any policy runs; the same check in each operation is code that can only drift. Request bodies are validated once, at the front, with a schema on the operation and a `validate-content` policy, so that bad requests are stopped before processing and the contract is documented in the same place. If a hand-written check is needed (the platform returns 500 where a client needs a 4xx), a comment says so (CODE.6).
+When `subscriptionRequired` is true, the gateway automatically validates subscription keys before any operation policy runs (CODE.6). Re-checking keys and hand-coding JSON schema validation inside operation policies duplicates platform capabilities and invites drift. Use standard `validate-content` policies backed by OpenAPI definitions.
 
 # Compliant pattern
 

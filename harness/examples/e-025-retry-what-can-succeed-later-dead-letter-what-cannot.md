@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-025 Retry a failure that can succeed later, dead-letter one that never will"
-description: A queue handler lets the broker retry transient failures, and dead-letters permanent ones at once with a reason code, instead of retrying everything or completing the message.
+description: A queue handler lets the broker retry transient failures but immediately dead-letters permanent errors with a clear reason code.
 example_id: E-025
 rule: /rules/code/code-2-fail-loudly.md
 verdict: compliant
@@ -13,15 +13,14 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }
 
 # Situation
 
-A queue-triggered handler calls a downstream service. Some failures are temporary (timeout, throttling, a dependency that is down). Others will fail the same way every time (a malformed message, a rejected value, a duplicate that already exists).
+A message handler encounters both transient issues (timeouts, throttling) and permanent failures (malformed payloads, invalid data, duplicate entries).
 
 # Why (verdict)
 
-Each kind needs a different ending, and both are loud (CODE.2):
+Failures should fail loudly according to their type (CODE.2):
 
-- A failure that can succeed later is rethrown, so the broker redelivers the message and the delivery count bounds the retries. Completing the message instead loses the work silently.
-- A failure that cannot succeed is dead-lettered at once with a reason code. Retrying it only delays the dead letter, repeats side effects and holds up the queue.
-- The reason is a code from a fixed catalogue, not the exception text or the payload (SEC.2, OBS.3).
+- Rethrow transient failures so the message broker handles retries and delivery limits.
+- Immediately dead-letter permanent failures with a fixed error code to prevent wasteful retries and queue delays (SEC.2, OBS.3).
 
 # Compliant pattern
 

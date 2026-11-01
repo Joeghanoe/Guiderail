@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-009 A boolean flag that switches behaviour is named for the behaviour, or removed"
-description: A parameter called isManual changes what a method does in several places; name the behaviour, pass the state explicitly, and drop parameters that make the method a no-op.
+description: Name boolean parameters after the concrete behavior they enable, or eliminate them in favor of explicit method calls.
 example_id: E-009
 rule: /rules/code/code-3-names-say-what-it-is-for.md
 verdict: violation
@@ -17,11 +17,11 @@ sources:
 
 # Situation
 
-One method serves two callers: a queue trigger and a manual HTTP call. A flag tells the method which one called it, and the method skips or changes steps based on the flag.
+A single method handles both queue messages and manual HTTP calls, using a generic `isManual` flag to toggle multiple branches.
 
 # Why (verdict)
 
-`isManual` describes who called, not what should happen, so the logic is implicit: the reader has to find every `if (!isManual)` to learn what the manual path does differently. A parameter that makes the method do nothing when it is `false` is not a parameter at all; the caller should decide whether to call. The delivery count is state of the caller, so it is passed in explicitly. Name the behaviour (`deadLetterOnError`) and the reader sees what is different without reading the body (CODE.3).
+Flags like `isManual` describe callers rather than behaviors, forcing readers to trace nested `if (!isManual)` branches to understand what happens (CODE.3). Name flags after what they actually do (e.g., `deadLetterOnError`), or split them into distinct methods when callers want different behavior.
 
 # Compliant pattern
 

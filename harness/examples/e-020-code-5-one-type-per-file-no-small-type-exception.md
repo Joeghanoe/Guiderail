@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-020 One type per file: records, interfaces, enums and validators get their own file, in C# and TypeScript"
-description: Separate top-level types into their own files; only private nested helpers qualify for the approved exception.
+description: Top-level types (classes, interfaces, records, enums, validators) get their own file in C# and TypeScript; only private nested helpers belong in the same file.
 example_id: E-020
 rule: /rules/code/code-5-one-responsibility.md
 verdict: violation
@@ -16,13 +16,11 @@ sources:
 
 # Situation
 
-Generated code drifts into files that hold a service plus the records, DTOs, interfaces or enums it uses, and React files that hold a component plus its types and helpers. The repo owner's convention, shared by the company, is one file per class, interface, record, enum, service or validator, named after it.[^origin]
+Code generation frequently clumps services, DTOs, interfaces, and records into single bloated files. Our convention enforces one file per top-level type, named after that type.[^origin]
 
 # Expected verdict
 
-The bad example violates the approved CODE.5 convention: Menu and IMenuRepository are sibling top-level types in MenuService.cs. The good example complies. Report the violation as minor.
-
-The approved rule covers C#, TypeScript and TSX. Private helpers nested inside their only user may remain in that user's file; small sibling types may not. On a touched mixed file, split out only types added or changed. Generated C# files are excluded; partial declarations may use Type.cs or Type.Part.cs. These scope decisions were accepted on 2026-10-29 in benchmarks/engineering-standards-decisions.md.
+The bad example violates CODE.5 by declaring `Menu` and `IMenuRepository` as sibling top-level types in `MenuService.cs`. Keep one top-level type per file. Private helpers used exclusively by one class may remain nested inside that class.
 
 # Compliant pattern
 

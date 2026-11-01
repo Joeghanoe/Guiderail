@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-006 Environment values live in one place; fixed values are written once"
-description: Per-environment configurables come from variables.<env>.yml; names and versions are written once in the pipeline instead of per stage.
+description: Organize environment-specific settings in dedicated variable files, and define common pipeline constants in one shared location.
 example_id: E-006
 rule: /rules/iac/iac-7-configuration-placement.md
 verdict: violation
@@ -15,11 +15,11 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-10-19T00:00:00Z }
 
 # Situation
 
-A pipeline deploys the same workload to two environments.
+A multi-stage pipeline repeats tool versions, naming rules, and configuration values across stages instead of extracting environment differences.
 
 # Why (verdict)
 
-Writing every value per stage repeats the fixed ones (the tool version, the name pattern) and hides which values really differ. The next environment copies the block and drifts. With one stage template per environment, the configurables come from `variables.<env>.yml` and everything else is written once (IAC.7).
+Copying pipeline definitions across stages duplicates shared constants (tooling versions, naming schemas) and obscures which settings actually vary between environments (IAC.7). Isolate environment-specific values in `variables.<env>.yml` files and reference a single shared stage template.
 
 # Compliant pattern
 

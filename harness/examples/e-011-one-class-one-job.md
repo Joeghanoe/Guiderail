@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-011 A health endpoint is its own class, and the client decides what its response means"
-description: The health function does not share a class with business functions, and the service class answers "is it healthy" itself instead of passing the raw response out.
+description: Health endpoints belong in dedicated classes, and client services interpret their own upstream health status.
 example_id: E-011
 rule: /rules/code/code-5-one-responsibility.md
 verdict: violation
@@ -18,11 +18,11 @@ sources:
 
 # Situation
 
-A connector has business functions and now gets a health endpoint. The change puts the health function in the same class as the business functions and has the service return the partner's raw ping response for the function to interpret.
+A connector service bundles health check endpoints inside business function classes and passes raw ping responses out to callers.
 
 # Why (verdict)
 
-The health function has nothing to do with the partner functionality, so the class now has two reasons to change. The service class is the one that knows the partner; when it hands out the raw response, the decision "is the partner healthy" moves to the caller, which will not agree with the next caller. One class per job, and the class that talks to a dependency decides what its answer means (CODE.5).
+Health checks and business functions change for completely different reasons. Mixing them violates single responsibility (CODE.5). Furthermore, the client service that communicates with a partner dependency knows how to interpret partner health—it should not force callers to parse raw response payloads.
 
 # Compliant pattern
 

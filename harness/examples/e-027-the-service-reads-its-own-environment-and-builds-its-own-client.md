@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-027 A service builds its own HttpClient and reads environment variables next to the injected factory"
-description: One method asks the injected factory for a client for the token call and then news up a bare HttpClient for the real call; register a named or typed client and let the factory own every call.
+description: A service uses an injected factory for token requests but manually instantiates HttpClient for API calls; register a typed client so all HTTP calls are managed centrally.
 example_id: E-027
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
@@ -13,11 +13,11 @@ generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }
 
 # Situation
 
-An external API client already receives `IHttpClientFactory` and uses it to fetch an OAuth token. For the actual calls, a helper creates `new HttpClient()` and sets the bearer header on it. A sibling service reads `Environment.GetEnvironmentVariable` three times inside a method to find the names of its settings.
+An API client uses `IHttpClientFactory` to retrieve an auth token, but then spins up a manual `new HttpClient()` for business calls and reads settings directly via `Environment.GetEnvironmentVariable`.
 
 # Why (verdict)
 
-The token call can be stubbed with a handler, the business call cannot: it goes to the real endpoint, so the method that matters is untestable without the external endpoint. A bare `new HttpClient()` per call also exhausts sockets under load, and the commented-out lines above it show someone already tried to add a client certificate there and gave up because the handler cannot be configured by hand and tested (T.2). Environment access moves to the composition root, where an options class is bound and validated once. The service takes `HttpClient` or `IOptions<T>` and nothing else.
+Instantiating `HttpClient` manually bypasses connection pooling and makes core business methods untestable without contacting live external endpoints (T.2). Reading environment variables inside methods also scatters configuration throughout the codebase. Configure typed HTTP clients and bind validated options at startup in the composition root.
 
 # Compliant pattern
 

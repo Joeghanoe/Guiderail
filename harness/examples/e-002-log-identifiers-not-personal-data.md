@@ -1,7 +1,7 @@
 ---
 type: Example
 title: "E-002 Log identifiers, not personal data"
-description: Log statements carry an identifier that support can look up, never a name or e-mail address.
+description: Log statements include support lookup IDs instead of personally identifiable information like names or email addresses.
 example_id: E-002
 rule: /rules/security/sec-2-no-secrets-or-personal-data.md
 verdict: violation
@@ -14,11 +14,11 @@ generated: { by: claude-code/claude-opus-5-5, at: 2026-10-18T23:00:00Z }
 
 # Situation
 
-A service logs that it sent a notification to a customer.
+A service logs customer notification events.
 
 # Why (verdict)
 
-A name or e-mail address in a log line is personal data in every log store, export and support ticket that copies it. The customer's identifier gives support the same lookup without spreading personal data (SEC.2).
+Writing personal details (names, emails) into log lines leaks PII into downstream logging platforms, support tickets, and external exports (SEC.2). Log a customer or entity ID instead, giving support teams the necessary lookup reference without exposing personal data.
 
 # Compliant pattern
 
