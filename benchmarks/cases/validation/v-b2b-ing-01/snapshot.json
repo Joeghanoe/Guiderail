@@ -1,0 +1,18 @@
+{
+  "component": "b2b-ing",
+  "root": "component root; paths are relative to it",
+  "files": [
+    {
+      "path": "policies/vendor-ingest-api_post.xml",
+      "sha256": "277a46ac6f2934ff5e181564ec67c48b6cf93d59cf050cc70fe5554f36f1da27"
+    },
+    {
+      "path": "openapi/vendor-ingest-v1.yaml",
+      "sha256": "20d82b92a17d0e1be24961d7856075ae2d0f0d98cec2359a51055393eef42d6d"
+    },
+    {
+      "path": "readme.md",
+      "sha256": "7e876bc9b0e0feac11e864cbc5b6dd528b05829db14de47f7e4895f4dbc94542"
+    }
+  ]
+}

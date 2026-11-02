@@ -1,0 +1,27 @@
+{
+  "component": "hub-plat",
+  "pin": "sha256 of file bytes; sources have no VCS metadata",
+  "paths_are_neutral_aliases": true,
+  "files": [
+    {
+      "path": "domain/Employees/v1/Employee.cs",
+      "sha256": "226600d4ab015c7c7662e4d2a642004f0fe12feaff85331cd632a0606db00088"
+    },
+    {
+      "path": "domain/Employees/v1/EmploymentContract.cs",
+      "sha256": "0acd46be8f3fe9873c162d423044883a2383f9d969b3351eb7baeb2824fbc35b"
+    },
+    {
+      "path": "domain/Deals/v1/Deal.cs",
+      "sha256": "6f47286f07a40f51c41eb87245f728d15f3cea307f1eb0d675098d7141f044d7"
+    },
+    {
+      "path": "domain/package.csproj",
+      "sha256": "2c82dae7a6492e5dc0d99b6b5a5d1c89a4702b892f71757981e46302949d6115"
+    },
+    {
+      "path": "domain/azure-pipelines.yml",
+      "sha256": "491960cab06b41d654bd12ce5fbac11550b443713c9d29d11f12dd49c14057c3"
+    }
+  ]
+}

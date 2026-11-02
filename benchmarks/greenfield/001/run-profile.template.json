@@ -1,0 +1,14 @@
+{
+  "scenario_id": "greenfield-001",
+  "provider": null,
+  "model": null,
+  "options": {},
+  "adapter_version": null,
+  "adapter": {
+    "argv": ["<adapter-executable>", "--workspace", "{workspace}", "--prompt-file", "{prompt}", "--trace-dir", "{trace_dir}"]
+  },
+  "isolation": {"mode": "none", "evidence": null},
+  "protected_paths": [],
+  "human_interventions": 0,
+  "review_minutes": null
+}

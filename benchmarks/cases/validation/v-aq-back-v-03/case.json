@@ -1,0 +1,20 @@
+{
+  "id": "v-aq-back-v-03",
+  "role": "validation",
+  "kind": "refactor",
+  "components": [
+    "aq-back-v"
+  ],
+  "stack": "dotnet-isolated azure-functions durable-tasks",
+  "size": "M",
+  "rule_ids": [
+    "T.2",
+    "CODE.8",
+    "T.3",
+    "DEL.3"
+  ],
+  "hard_gates": [
+    "T.1",
+    "DEL.3"
+  ]
+}

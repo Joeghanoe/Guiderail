@@ -1,0 +1,98 @@
+{
+  "title": "Partner orders to the order system: process validation",
+  "process": "The process: the partner places an order  >  the platform hands it to the order system  >  the warehouse picks it  >  the partner is told it shipped.",
+  "systems": ["Status partner", "Status order system"],
+  "reference": "Technical plan for the tester (sample files, queries): <file name>",
+  "scenarios": [
+    {
+      "id": "1",
+      "title": "GOOD: an order follows the whole process, from the partner to shipped",
+      "stages": [
+        {
+          "title": "Place and hand over",
+          "steps": [
+            {
+              "who": "Partner",
+              "step": "The partner places an order for a test product",
+              "status_a": "Placed",
+              "expected": "The order is visible at the partner. Note the order number."
+            },
+            {
+              "who": "Platform",
+              "step": "The order is handed to the order system automatically",
+              "status_a": "Placed",
+              "status_b": "New",
+              "target": "10 min",
+              "expected": "One order exists in the order system within 10 minutes. Customer, product and amount are those of the partner's order."
+            }
+          ]
+        },
+        {
+          "title": "Fulfil and report back",
+          "steps": [
+            {
+              "who": "Warehouse",
+              "step": "The warehouse picks and ships the order",
+              "status_a": "Placed",
+              "status_b": "Shipped",
+              "expected": "The normal warehouse process works as before."
+            },
+            {
+              "who": "Partner",
+              "step": "The partner receives the shipping message",
+              "status_a": "Shipped",
+              "status_b": "Shipped",
+              "expected": "The partner shows the order as shipped."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "BAD: the process is interrupted by a message that cannot be read",
+      "stages": [
+        {
+          "title": "Hand-over fails safely",
+          "steps": [
+            {
+              "who": "Platform",
+              "step": "A message arrives that is not an order",
+              "status_b": "none",
+              "expected": "The platform still answers 'accepted' so the sender is not blocked. No order is created."
+            }
+          ]
+        },
+        {
+          "title": "The support team takes over",
+          "steps": [
+            {
+              "who": "Support team",
+              "step": "The team is warned and finds the message",
+              "status_b": "none",
+              "expected": "A warning mail arrived. The message is kept aside with the reason and its content unchanged."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "IN BETWEEN: orders that need no action",
+      "stages": [
+        {
+          "title": "Not relevant",
+          "steps": [
+            {
+              "who": "Partner",
+              "step": "The partner sends an order for a product we do not handle",
+              "status_a": "Placed",
+              "status_b": "none",
+              "expected": "Accepted and skipped. No order, nothing kept aside, and the skip is counted."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

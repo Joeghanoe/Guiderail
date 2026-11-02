@@ -1,0 +1,6 @@
+[
+  {
+    "component": "src/<Component>/**",
+    "scenarios": ["tests/<Suite>/**/Features/<Domain>/**"]
+  }
+]

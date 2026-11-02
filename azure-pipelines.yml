@@ -1,0 +1,57 @@
+# CI for the harness itself: the bundle is valid OKF, indexes are current, and the tools and hooks behave.
+trigger:
+  branches:
+    include:
+      - main
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - bash: |
+      python3 -m pip install pre-commit==4.7.0
+      pre-commit run --all-files --show-diff-on-failure
+    displayName: "Markdown formatting"
+
+  - bash: python3 -I harness/tools/harness/bundle.py check
+    displayName: "Bundle check (OKF + harness conventions)"
+
+  # The always-loaded context only grows on purpose: a PR may not raise the recorded budget above main's
+  # unless a maintainer sets the pipeline variable AllowContextGrowth to true for that run.
+  - bash: infra/scripts/check-context-budget.sh
+    displayName: "Context budget (always-loaded text)"
+
+  - bash: python3 -I harness/tools/harness/bundle.py privacy-check
+    displayName: "Reject private feedback and raw eval artifacts"
+
+  - task: UseDotNet@2
+    displayName: "Install .NET SDK for structural checker fixtures"
+    inputs:
+      packageType: sdk
+      version: 10.0.x
+
+  - bash: tests/run.sh
+    displayName: "Tool and hook tests"
+
+  - bash: shellcheck install.sh tests/run.sh infra/scripts/*.sh harness/hooks/*.sh harness/tools/*/*.sh harness/templates/repo/scripts/verify.sh
+    displayName: "shellcheck"
+
+  # Reviewer evals: only when something that shapes the review changed, and only with an API key.
+  - bash: infra/scripts/review-changed.sh
+    displayName: "Did the review change?"
+
+  - bash: |
+      npm install --global "@anthropic-ai/claude-code@$(ClaudeCodeVersion)" >/dev/null
+      python3 -I harness/tools/review/eval.py --model "$(ReviewModel)" --out "$(Build.ArtifactStagingDirectory)/evals"
+    displayName: "Reviewer evals (gate)"
+    condition: and(succeeded(), eq(variables['EvalsNeeded'], 'true'))
+    env:
+      ANTHROPIC_API_KEY: $(AnthropicApiKey)
+
+  - publish: $(Build.ArtifactStagingDirectory)/evals
+    artifact: reviewer-evals
+    condition: eq(variables['EvalsNeeded'], 'true')

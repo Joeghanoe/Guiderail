@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+reference/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -360,3 +361,16 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Legacy raw eval output and mined review comments are private local data.
+evals/results/
+feedback/mined/
+
+# Golden Path runtime state: lives under ~/.golden-path-harness (GOLDEN_PATH_HOME), never in the checkout
+.golden-path-harness/
+/benchmarks/**/runs/
+/benchmarks/**/frozen/
+/benchmarks/**/results/
+/benchmarks/**/.private/
+workspaces/
+*.credentials

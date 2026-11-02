@@ -1,0 +1,8 @@
+M:System.Net.Http.HttpClient.#ctor;T.2: inject IHttpClientFactory or a typed client
+M:System.Net.Http.HttpClient.#ctor(System.Net.Http.HttpMessageHandler);T.2: inject IHttpClientFactory or a typed client
+M:System.Net.Http.HttpClient.#ctor(System.Net.Http.HttpMessageHandler,System.Boolean);T.2: inject IHttpClientFactory or a typed client
+M:System.Environment.GetEnvironmentVariable(System.String);T.2: bind options and validate them on start
+P:System.DateTime.Now;T.2: inject TimeProvider
+P:System.DateTime.UtcNow;T.2: inject TimeProvider
+P:System.DateTimeOffset.Now;T.2: inject TimeProvider
+P:System.DateTimeOffset.UtcNow;T.2: inject TimeProvider

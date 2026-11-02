@@ -1,0 +1,21 @@
+{
+  "id": "v-aq-front-02",
+  "role": "validation",
+  "kind": "refactor",
+  "components": [
+    "aq-front"
+  ],
+  "stack": "react typescript tanstack-query vitest",
+  "size": "S",
+  "rule_ids": [
+    "CODE.4",
+    "CODE.2",
+    "CODE.3",
+    "T.3",
+    "DEL.3"
+  ],
+  "hard_gates": [
+    "T.1",
+    "DEL.3"
+  ]
+}

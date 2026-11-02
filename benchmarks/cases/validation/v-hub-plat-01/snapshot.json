@@ -1,0 +1,31 @@
+{
+  "component": "hub-plat",
+  "pin": "sha256 of file bytes; sources have no VCS metadata",
+  "paths_are_neutral_aliases": true,
+  "files": [
+    {
+      "path": "src/Messaging/EventMessageProcessor.cs",
+      "sha256": "c819d25fd0c7d5f4b1e89bae2bca227cbe781ed2562ecb602a879f0166b93294"
+    },
+    {
+      "path": "src/Messaging/MessageOutcome.cs",
+      "sha256": "e9f4682a9460a92e48ea559eca076966e057886bf45b44ccd36980d5751eea11"
+    },
+    {
+      "path": "src/Messaging/IMessageActions.cs",
+      "sha256": "f2046cebc17d8fda8a7dc07ab8f0e6d85c81569ce5c44c140262de15bd98a4b0"
+    },
+    {
+      "path": "src/Messaging/ServiceBusMessageActionsAdapter.cs",
+      "sha256": "90ddea5040804aa7c42f32d942efa978f90ef96fd6949e5fc92c8ff58b39aaa9"
+    },
+    {
+      "path": "src/Messaging/IMessageTelemetry.cs",
+      "sha256": "d8f35688e930afcf5c78f8c4b2ee80835e79f7f4885af36d6af4093b1c7be25d"
+    },
+    {
+      "path": "tests/EventMessageProcessorTests.cs",
+      "sha256": "561e6393f219d0509ae9076234d0545cdcc7bb4710f0eac7c4b901815b760ee9"
+    }
+  ]
+}

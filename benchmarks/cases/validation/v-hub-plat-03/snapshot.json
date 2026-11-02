@@ -1,0 +1,31 @@
+{
+  "component": "hub-plat",
+  "pin": "sha256 of file bytes; sources have no VCS metadata",
+  "paths_are_neutral_aliases": true,
+  "files": [
+    {
+      "path": "infra/Modules/servicebus-queue.bicep",
+      "sha256": "fd0dbf7200ea0cbc81fd90ed4535072c47954db4946d89b000da0d0a480569f2"
+    },
+    {
+      "path": "pipelines/connector-a.yml",
+      "sha256": "bc1d4082fa34a05afeaa9dae123b8846909ccb4cbb4387b37bb10ddcd088e1ff"
+    },
+    {
+      "path": "pipelines/connector-b.yml",
+      "sha256": "de9f42e8851c8eab42468bf17526d781c3ae98e101bbe9f40b904f47e80d9db4"
+    },
+    {
+      "path": "pipelines/connector-c.yml",
+      "sha256": "dbcdb75e865248ed66fee41901d8a78f394b43f0c299ac6a6baa921b6e487344"
+    },
+    {
+      "path": "src/Messaging/EventMessageProcessorOptions.cs",
+      "sha256": "ccb98e5f3428d834f2903a4b1db86e8eb1a1a7e512d84e92dfe5adbecd4ce5dc"
+    },
+    {
+      "path": "src/Configuration/ConnectorPlatformOptions.cs",
+      "sha256": "67d589cc027bf197f9818574865d268de33841ac42752f68079a2e8f20b60147"
+    }
+  ]
+}

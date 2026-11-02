@@ -1,0 +1,3 @@
+Security reviewed our dead-letter queues and the Application Insights custom events from the shared message processor. They found that dead-lettered messages carry the full message body (customer and employee details) and the complete exception text with stack trace, and that the per-message custom event has the exception message in its `ErrorMessage` property.
+
+Fix this in the shared processor. We still need to be able to tell from the queue and from telemetry why a message failed and which event it was, and the existing connectors that use the processor must keep compiling. Run the build and tests the way the pipeline does and tell me what you ran.

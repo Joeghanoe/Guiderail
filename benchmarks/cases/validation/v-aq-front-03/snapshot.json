@@ -1,0 +1,34 @@
+{
+  "component": "aq-front",
+  "pin": "sha256 of each file at the time the case was written; sources have no git metadata",
+  "files": [
+    {
+      "path": "src/pages/overview-page.tsx",
+      "sha256": "7aa0cfe267a325331a26f3c19cba63faa37884f614825ef75192643a951a78b4"
+    },
+    {
+      "path": "src/lib/api-model.ts",
+      "sha256": "3dccdd52eee59f944069f829b0d4486cd235b0303ceae66bbac0c5da80acb7a5"
+    },
+    {
+      "path": "src/store/overview-store.ts",
+      "sha256": "f68747cc8d761be49aa9411d793aa70b1b735c3f6eeee481fcc44b2a33d5b0a7"
+    },
+    {
+      "path": "src/overview/ScenarioLegend.tsx",
+      "sha256": "894494e6dbd14b44f90fe0ac4940189f91ae7a4f87241e6087066ad4f3a0c56f"
+    },
+    {
+      "path": "src/overview/types.ts",
+      "sha256": "bbd0d0a01a6fa0fe067da6fa6f39f26a74a908abf6a436bf2d2ec1a903badfff"
+    },
+    {
+      "path": "src/hooks/use-overview-health.ts",
+      "sha256": "c5549fb9ec149864380623fe9be771820d56e864cf75440f02af95001e0c53ca"
+    },
+    {
+      "path": "src/components/ui/badge.tsx",
+      "sha256": "81ae24325209085fabe6b2e8bf81117fc0011c9e915f4c7bbe76e5ac2517f26a"
+    }
+  ]
+}

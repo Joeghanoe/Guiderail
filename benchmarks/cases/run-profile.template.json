@@ -1,0 +1,37 @@
+{
+  "provider": null,
+  "model": null,
+  "options": {},
+  "adapter_version": null,
+  "adapter": {
+    "argv": [
+      "<adapter-executable>",
+      "--workspace",
+      "{workspace}",
+      "--prompt-file",
+      "{prompt}",
+      "--trace-dir",
+      "{trace_dir}"
+    ]
+  },
+  "isolation": {
+    "mode": "none",
+    "evidence": null
+  },
+  "protected_paths": [],
+  "human_interventions": 0,
+  "review_minutes": null,
+  "grader": {
+    "argv": [
+      "claude",
+      "-p",
+      "--model",
+      "<grader-model>",
+      "--setting-sources",
+      "project",
+      "--strict-mcp-config",
+      "--disable-slash-commands",
+      "--no-session-persistence"
+    ]
+  }
+}

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Launcher: ./dk build spec.json -o out.drawio --png out.png   |   ./dk icons "logic apps"
+D="$(cd "$(dirname "$0")" && pwd)"
+PYTHONPATH="$D" exec python3 -m drawio_kit "$@"

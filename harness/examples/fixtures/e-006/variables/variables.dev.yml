@@ -1,0 +1,3 @@
+variables:
+  appServicePlanSku: B1
+  retention: 30

@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "title": "Example — integrations and the systems they talk to",
+    "pagename": "Example LLD",
+    "subtitle": "{total} logic apps in 2 flows. Line colour = system, dashed = direct (not via the gateway).",
+    "source": "Example data, not a real environment.",
+    "titleblock": [["Title", "Example LLD"], ["Status", "Example"], ["Version", "v0.1"]]
+  },
+  "systems": {
+    "erp": {"name": "ERP", "color": "#d4003b", "legend": "master data"},
+    "crm": {"name": "CRM", "color": "#00a1e0", "legend": "quotes"},
+    "files": {"name": "File store", "color": "#7e3fb5", "legend": "documents"}
+  },
+  "bands": [
+    {"id": "gw", "icon": "apim", "title": "Gateway — every hop to a system passes here", "fill": "#f4f0fa", "stroke": "#a68bc2",
+     "lanes": [{"id": "erp", "system": "erp", "label": "/erp"}, {"id": "crm", "system": "crm", "label": "/crm"}]},
+    {"id": "direct", "title": "Direct paths — bypass the gateway", "fill": "#fff7ec", "stroke": "#d6a64a",
+     "lanes": [{"id": "files", "system": "files", "label": "file connector"}]}
+  ],
+  "sections": [
+    {"id": "main", "expect": 3, "title": "Platform", "fill": "#f5f8fd", "stroke": "#b7c9e6",
+     "flows": [
+       {"id": "F1", "title": "Accounts", "note": "ERP is master. A poller publishes changes; one publisher writes to the CRM.",
+        "rows": [
+          {"n": "rcv-account-getdata-erp", "s": "Timer 5 min → event Account", "r": 100, "u": "eg", "l": ["erp:r"]},
+          {"n": "snd-account-publish-crm", "s": "event Account", "r": 10, "u": "eg,xslt", "l": ["crm:w"], "tip": "POST /crm/account"}
+        ]},
+       {"id": "F2", "title": "Quote documents", "note": "A quote file is copied to the file store directly.",
+        "rows": [
+          {"n": "snd-quote-file-store", "s": "event Quote", "r": 5, "u": "eg", "l": ["crm:r", "files:w"]}
+        ]}
+     ]}
+  ]
+}

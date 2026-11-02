@@ -1,0 +1,20 @@
+{
+  "id": "v-aq-front-01",
+  "role": "validation",
+  "kind": "defect",
+  "components": [
+    "aq-front"
+  ],
+  "stack": "react typescript tanstack-query vitest",
+  "size": "M",
+  "rule_ids": [
+    "CODE.7",
+    "CODE.2",
+    "T.4",
+    "T.2"
+  ],
+  "hard_gates": [
+    "T.1",
+    "T.4"
+  ]
+}

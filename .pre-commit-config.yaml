@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: prettier-markdown
+        name: Format Markdown
+        language: node
+        additional_dependencies: [prettier@3.9.10]
+        entry: prettier --write --ignore-unknown
+        types: [markdown]
