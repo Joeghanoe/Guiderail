@@ -60,11 +60,14 @@ tests/run.sh          tests for the tools, hooks and install; no network
 - creates the one harness root `~/.golden-path-harness` (or `$GOLDEN_PATH_HOME`) with `harness/` and `feedback/` links plus `config/ cache/ state/ workspaces/ logs/` for runtime state, which update and uninstall never delete;
 - removes the old top-level `~/.harness` and `~/.harness-feedback` links if present (run it once after pulling this change; the hooks and allow rules in `~/.claude/settings.json` are rewritten to the new root);
 - imports `AGENTS.base.md` from `~/.claude/CLAUDE.md`;
-- adds the guard hooks, the Stop verify and `/tv-review` for Claude Code;
+- adds the guard hooks and the Stop verify for Claude Code;
+- installs `/tv-review` in `~/.claude/skills/` for Claude Code and `~/.copilot/skills/` for Copilot in VS Code and CLI;
 - adds the instructions for Copilot in VS Code;
 - removes the old AI Hub import, marketplace and `Bash(az ...)` allow rules.
 
 Every changed file is backed up first.
+
+After installing, start a fresh Copilot chat and check `/tv-review` in the slash menu. In VS Code, `Chat: Open Customizations` > Skills shows discovered skills. Existing VS Code profiles may also show a `Review Migrations` notice for older customizations; review those separately. Installing general instructions alone does not register `/tv-review`.
 
 Give agents a read-only cloud login, once per machine. You run this, never an agent:
 
@@ -102,6 +105,8 @@ An `@import` that is present is not proof that it was expanded. `tools/harness/c
 Re-run after a Claude Code or Copilot update, or a change to how the adapter imports.
 
 ## Evaluate the reviewer
+
+Reviews use explicit adversarial topics: spec coverage, access and least privilege, failure and recovery, operations and capacity, and delivery risks. Pass additional topics to `/tv-review` with the target. A repository or release review follows [review-repository.md](harness/playbooks/review-repository.md); change reviews keep the existing fix workflow. The [human report template](harness/templates/review-report.md) records scope, checks, decisions, spec coverage, findings and open verifications. Pipeline findings retain their existing JSON contract.
 
 The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Human-verified violation, compliant and boundary examples generate reviewer evals; undecided feedback and automation proposals do not. Their bad examples must be flagged by the linked rule and their good examples must not; boundary cases test only the good side. Run `python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md). The [verdict and status reference](docs/example-verdicts.md) explains classification, human acceptance, advisory cases and pass/fail/error results.
 

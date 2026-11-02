@@ -13,6 +13,7 @@
 #   ~/.claude/CLAUDE.md         a marked block that imports AGENTS.base.md
 #   ~/.claude/settings.json     the guard hooks, the Stop verify, an allow rule for cloud-read.sh
 #   ~/.claude/skills/tv-review/ /tv-review for Claude Code
+#   ~/.copilot/skills/tv-review/ /tv-review for Copilot (VS Code and CLI)
 #   VS Code user prompts        teamvalue.instructions.md for Copilot
 # Removes the old AI Hub wiring: its CLAUDE.md/AGENTS.md import block, its Claude marketplace and plugin, and
 # its VS Code marketplace entry. Bash(az ...) allow rules are removed too: the guard blocks az outside
@@ -176,14 +177,20 @@ for name in ("known_marketplaces.json", "installed_plugins.json"):
         if stale:
             write(path, json.dumps(data, indent=2) + "\n")
 
-# /tv-review for Claude Code; /example was dropped, so remove any copy left by an older install
-for name in ("example", "tv-review"):
-    skill = home / ".claude" / "skills" / name / "SKILL.md"
-    if install and name == "tv-review":
-        write(skill, (here / f"adapters/{name}.skill.md").read_text(encoding="utf-8"))
+# Both clients discover native personal skills; VS Code profile instructions do not register a slash command.
+for client in (".claude", ".copilot"):
+    skill = home / client / "skills" / "tv-review" / "SKILL.md"
+    if install:
+        write(skill, (here / "adapters/tv-review.skill.md").read_text(encoding="utf-8"))
     elif skill.exists():
+        backup(skill)
         skill.unlink()
         print(f"removed {skill}")
+# /example was dropped, so remove any Claude copy left by an older install.
+example_skill = home / ".claude" / "skills" / "example" / "SKILL.md"
+if example_skill.exists():
+    example_skill.unlink()
+    print(f"removed {example_skill}")
 # Remove legacy orchestrate skill if present
 stale_orchestrate = home / ".claude" / "skills" / "orchestrate"
 if stale_orchestrate.exists():
