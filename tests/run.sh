@@ -203,6 +203,16 @@ expect 0 "edit after the lookup is allowed" gate gs1 "pipelines/deploy.yml"
 expect 2 "another session still needs its own lookup" gate gs2 "pipelines/deploy.yml"
 expect 0 "no session id fails open" gate "" "pipelines/deploy.yml"
 
+echo "== agy edit gate (H.2)"
+agy_gate() { jq -n --arg c "$1" --arg t "$2" --arg a "$3" '{conversationId: $c, toolCall: {name: $t, args: ($a | fromjson)}}' | TMPDIR="$gate_state" "$h/hooks/agy-edit-gate.sh"; }
+agy_out() { agy_gate "$@" | jq -r .decision; }
+expect 0 "agy: edit before the lookup is denied" test "$(agy_out ag1 edit_file '{"Path":"\"/r/a.yml\""}')" = deny
+expect 0 "agy: the lookup is allowed and pre-approved" bash -c "$(declare -f agy_gate); gate_state='$gate_state'; h='$h'; agy_gate ag1 run_command '{\"CommandLine\":\"python3 x/bundle.py select --brief a.yml\"}' | jq -e '.decision == \"allow\" and (.permissionOverrides | length == 1)'"
+expect 0 "agy: first edit of a file type returns the rules" bash -c "$(declare -f agy_gate); gate_state='$gate_state'; h='$h'; agy_gate ag1 edit_file '{\"Path\":\"/r/a.yml\"}' | jq -e '.decision == \"deny\" and (.reason | contains(\"IAC\") or contains(\"CLD\"))'"
+expect 0 "agy: the same edit then passes" test "$(agy_out ag1 edit_file '{"Path":"/r/a.yml"}')" = allow
+expect 0 "agy: a chained command does not mark the lookup" test "$(agy_out ag2 run_command '{"CommandLine":"python3 bundle.py select a; rm x"}')" = allow -a "$(agy_out ag2 write_file '{"Path":"/r/b.md"}')" = deny
+expect 0 "agy: other tools pass" test "$(agy_out ag3 read_file '{"Path":"/r/a.yml"}')" = allow
+
 echo "== cloud-read (stubs)"
 mkdir -p "$tmp/bin"
 for cli in az terraform tofu kubectl hcloud; do
