@@ -9,7 +9,7 @@ Functional
 - G05 The API version is a named constant next to the others; the base URL and path are not typed twice.
 - G06 A default cadence entry exists for the new dataset, in the same place as the others.
 - G07 All requests go through the existing resilient sender (shared budget, 429/503 handling); no new HttpClient and no in-process retry loop.
-- G08 A unit test with a stub HTTP handler covers the mapping and the URL, without a network.
+- G08 (Behavioral Confidence): Unit tests verify observable behavior and critical business invariants (registration, checkpoint naming, cadence, and DTO projection) without network dependencies. Tests assert outcomes and edge cases rather than private calls or mock wiring.
 
 Rules checked: CODE.4 (the dataset name, activity name and key are not retyped as literals), CODE.7 (a doc or setting that lists datasets is updated if one exists in the snapshot), CODE.8 (collaborators come in through the constructor and are registered in the composition root), T.2 (no clock or HTTP created inside), T.5 (a scenario or test states the intent), SEC.3 (no key or connection string), OBS.3 (named metric, identifiers and counts, no payload in logs).
 
