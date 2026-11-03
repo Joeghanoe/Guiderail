@@ -48,6 +48,8 @@ The user's `az` login is already in place; never log in (CLD.1). For a task that
 
 CI is the full gate. Before you say a change is done run the project verify (`tools/code/project-verify.sh path`): the Stop hook runs it with `--fast`. Add what CI misses there, and propose a critical check to the repo's CI as a diff for a human. Report what ran, what failed with its output, and what you skipped and why.
 
+New behaviour, service methods, mappings or endpoints ship with a test that calls it, even where neighbouring code has none (T.1). With no test project or test directory in reach, add the test file directly beside the code. Before declaring done, re-run `python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select --brief --changed` against your modified diff and ensure each flagged rule has evidence in your changes.
+
 Code you write is testable (T.2): I/O, configuration and time come in through DI. Behaviour that the integration suite can reach comes with a scenario (T.5). A defect found in DEV or production gets a layer 0 or 1 test (T.4).
 
 ## Findings and feedback
