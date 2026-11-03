@@ -95,6 +95,10 @@ if grep -Eq '(^|[;&|(`[:space:]])(bash|sh|zsh|dash|ksh)[[:space:]]+(-[a-z]+[[:sp
 fi
 if grep -Eq "(^|[;&|(\`[:space:]])(az|azd|terraform|tofu|kubectl|hcloud|helm)([[:space:]]|$)|(^|[[:space:]])func[[:space:]]+azure" <<<"$lcc"; then
   if via_wrapper; then
+    # Any delete or destroy is a human's job (CLD.1, CLD.2); the wrapper refuses it too, this stops it before the call.
+    if grep -Eq '(^|[[:space:]])(delete|destroy)(-[a-z0-9-]*)?([[:space:]]|$)' <<<"$(unquoted "$lc")"; then
+      block CLD.1 "a delete or destroy command. Agents only read cloud state; write the command down for a human."
+    fi
     exit 0
   fi
   if grep -Eq '^[[:space:]]*(terraform|tofu)([[:space:]]+-[^[:space:]]+)*[[:space:]]+(fmt|validate|version)([[:space:]]|$)' <<<"$lc" &&

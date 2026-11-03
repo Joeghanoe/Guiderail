@@ -36,7 +36,7 @@ Before reaching for the VS Code Azure extension, an MCP tool, `curl` or a raw CL
 | --- | --- | --- |
 | "pipeline failed" / "is it done?" | Pipeline failure & watcher | ADO: `ado-run-failure.sh` / `ado-run-watch.sh`; GitHub: `gh run view/watch`; Playbook: `diagnose-pipeline-failure.md` |
 | "PR status" / "PR comments" / "review" | PR tools & review playbook | ADO: `az repos pr list`, `ado-pr-threads.sh`, `az repos pr policy list`; GitHub: `gh pr view/list/checks`; Playbook: `review-change.md` |
-| "what's deployed?" / "check logs" / "errors in prod" / any Azure or ADO state (APIM, policy, subscription, repo): look up proactively/unasked | Resource & telemetry reader | `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh <az\|kubectl\|terraform> ...`; Playbook: `look-up-azure-and-devops.md` |
+| "what's deployed?" / "check logs" / "errors in prod" / Azure/ADO state (APIM, policy, subscription): look up proactively/unasked | Resource & telemetry reader | `~/.golden-path-harness/harness/tools/cloud/cloud-read.sh <az\|kubectl\|terraform> ...`; Playbook: `look-up-azure-and-devops.md` |
 | "check Sonar" / "quality gate" | Sonar reader | `~/.golden-path-harness/harness/tools/sonar/sonar-read.sh <endpoint> [params]` |
 | "does it look right?" / built or changed anything users see | UI screenshot and WCAG check | `node ~/.golden-path-harness/harness/tools/frontend/screenshot.mjs --url <localhost url>`; Playbook: `verify-frontend.md` (UI.1, UI.2) |
 
