@@ -86,6 +86,13 @@ fi
 if grep -Eq '(harness_azure_config_dir|azure_config_dir|harness_kubeconfig|kubeconfig|harness_dev_log_dirs)=' <<<"$lc"; then
   block CLD.1 "changing which cloud identity the CLI uses, or which files the local reader may open."
 fi
+# A cloud CLI inside a string that a shell then runs (`bash -c 'az group delete -n x'`, `eval "..."`) is a call, not text: the shell
+# scope above drops quoted arguments, so judge the raw command here. Any delete reaches the wrapper's refusal or this block.
+raw_lc="$(tr '[:upper:]' '[:lower:]' <<<"$raw")"
+if grep -Eq '(^|[;&|(`[:space:]])(bash|sh|zsh|dash|ksh)[[:space:]]+(-[a-z]+[[:space:]]+)*-[a-z]*c([[:space:]]|$)|(^|[;&|(`[:space:]])eval[[:space:]]' <<<"$raw_lc" &&
+  grep -Eq '(^|[^a-z0-9_.-])(az|azd|terraform|tofu|kubectl|hcloud|helm)[[:space:]]' <<<"$raw_lc"; then
+  block CLD.1 "cloud CLI inside a shell string (bash -c, eval). Call .harness/tools/cloud/cloud-read.sh directly; it refuses delete and every other write."
+fi
 if grep -Eq "(^|[;&|(\`[:space:]])(az|azd|terraform|tofu|kubectl|hcloud|helm)([[:space:]]|$)|(^|[[:space:]])func[[:space:]]+azure" <<<"$lcc"; then
   if via_wrapper; then
     exit 0

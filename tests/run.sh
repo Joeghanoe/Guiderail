@@ -109,6 +109,11 @@ expect 0 ".env.example can be read" bash_hook "cat .env.example"
 expect 0 "grep that only mentions az is not a call" bash_hook "grep -rn 'az login' docs"
 expect 0 "echo that only mentions az is not a call" bash_hook "echo az group delete"
 expect 2 "command substitution inside grep still runs az" bash_hook 'grep x $(az group delete -n a)'
+expect 2 "az group delete inside bash -c" bash_hook "bash -c 'az group delete -n rg-dev --yes'"
+expect 2 "az group delete inside eval" bash_hook 'eval "az group delete -n rg-dev"'
+expect 2 "az delete through sh -lc" bash_hook "sh -lc 'az vm delete -n vm -g rg'"
+expect 2 "any delete through the wrapper" bash_hook "~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az group delete -n rg-dev"
+expect 0 "bash -c without a cloud CLI" bash_hook "bash -c 'dotnet test'"
 expect 2 "xargs az is still a call" bash_hook "echo rg | xargs az group delete"
 expect 2 "az after a grep segment" bash_hook "grep x f; az group delete -n rg"
 expect 2 "az outside the wrapper" bash_hook "az group delete -n rg-dev --yes"
