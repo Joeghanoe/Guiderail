@@ -62,8 +62,21 @@ if [[ -n "$interp" ]]; then
   fi
 fi
 
+# A search or print of text that merely mentions a cloud CLI (`grep 'az login' notes.md`, `echo az`) is not a call to it. Segments that
+# start with one of these text-only commands are dropped before the CLD.1 checks below, unless they run something themselves
+# (command or process substitution). Anything else, including `xargs az`, `env az`, `bash -c "az ..."`, is still judged.
+text_only_dropped() {
+  perl -e 'local $/; my $c = <STDIN>; my @keep;
+    for my $seg (split /(?:&&|\|\||[;&|\n])/, $c) {
+      my $s = $seg; $s =~ s/^\s+//;
+      next if $s =~ /^(?:grep|egrep|fgrep|rg|echo|printf|cat|head|tail|wc|sort|uniq|diff|ls)\s/ && $s !~ /\$\(|`|<\(/;
+      push @keep, $seg; }
+    print join(";", @keep);' <<<"$1"
+}
+lcc="$(text_only_dropped "$lc")"
+
 # CLD.1: logging in or switching accounts is always done by the user
-if grep -Eq '(^|[;&|[:space:]])(az|azd)[[:space:]]+(login|logout|account[[:space:]]+(set|clear))|kubectl[[:space:]]+config[[:space:]]+(use-context|set-credentials)|hcloud[[:space:]]+configure|connect-azaccount|gh[[:space:]]+auth[[:space:]]+login' <<<"$lc"; then
+if grep -Eq '(^|[;&|[:space:]])(az|azd)[[:space:]]+(login|logout|account[[:space:]]+(set|clear))|kubectl[[:space:]]+config[[:space:]]+(use-context|set-credentials)|hcloud[[:space:]]+configure|connect-azaccount|gh[[:space:]]+auth[[:space:]]+login' <<<"$lcc"; then
   block CLD.1 "logging in or switching accounts. The user runs this; tell them the command."
 fi
 
@@ -73,7 +86,7 @@ fi
 if grep -Eq '(harness_azure_config_dir|azure_config_dir|harness_kubeconfig|kubeconfig|harness_dev_log_dirs)=' <<<"$lc"; then
   block CLD.1 "changing which cloud identity the CLI uses, or which files the local reader may open."
 fi
-if word 'az|azd|terraform|tofu|kubectl|hcloud|helm' || grep -Eq '(^|[[:space:]])func[[:space:]]+azure' <<<"$lc"; then
+if grep -Eq "(^|[;&|(\`[:space:]])(az|azd|terraform|tofu|kubectl|hcloud|helm)([[:space:]]|$)|(^|[[:space:]])func[[:space:]]+azure" <<<"$lcc"; then
   if via_wrapper; then
     exit 0
   fi

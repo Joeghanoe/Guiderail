@@ -45,3 +45,4 @@
 * [E-047 GitHub workflows share a configuration loader and environment deployment](e-047-github-promotion-reuses-deployment-logic.md) - GitHub workflows share a configuration loader and environment deployment. (boundary, human-reviewed)
 * [E-048 Ternaries choose simple values rather than nested operations](e-048-conditional-expressions-stay-simple.md) - Ternaries choose simple values rather than nested operations. (violation, human-reviewed)
 * [E-049 Nested job templates consume stage variables at runtime](e-049-nested-job-templates-consume-runtime-variables.md) - Nested job templates consume stage variables at runtime. (violation, human-reviewed)
+* [E-050 A resource named like a verb is data, and the wrapper holds no default org or subscription](e-050-option-values-are-data-not-commands.md) - The az wrapper judges the command words, not option values, and subscription and organization are passed on each call. (boundary, unverified)

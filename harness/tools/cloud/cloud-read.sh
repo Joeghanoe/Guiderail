@@ -46,8 +46,10 @@ words="$(printf '%s ' "${positional[@]:-}" | tr '[:upper:]' '[:lower:]')"
 last=""
 if ((${#positional[@]})); then last="${positional[${#positional[@]}-1]}"; fi
 
+# A federated credential is an issuer/subject pair, not a secret; the plain word "credential" still is refused.
+words_checked="${words//federated-credential/federated-identity}"
 secretish='(^|[ -])(keys?|secrets?|credentials?|password|passwords|token|tokens|sas|connection-string|connection-strings|certificates?|publishing|publish-profile)([ -]|$)'
-if grep -Eq "$secretish" <<<"$words"; then
+if grep -Eq "$secretish" <<<"$words_checked"; then
   refuse "'$cli $words' can return a secret."
 fi
 
@@ -64,9 +66,29 @@ case "$cli" in
     # reader, az uses the login the user did themselves, so layer 1 does not guarantee read-only: this denylist
     # carries it, and a state-changing verb it does not know is allowed. Not logged in means az fails; the user
     # logs in, the agent never does.
+    # Command words are the arguments that are not options and not an option's value: `--resource-group set-rg` names a
+    # resource group, it does not run `set`. Flags that take no value are listed so the word after them still counts as a
+    # command word (`az group --yes delete`). Any other option swallows the next word; if that word is exactly a
+    # state-changing verb it is refused anyway (`--foo delete`), which covers a boolean flag this list does not know.
+    az_bool_flags=" --yes -y --all --verbose --debug --only-show-errors --no-wait --help -h --force --recursive --no-prompt "
     az_words=()
+    az_values=()
+    expect_value=false
     for arg in "$@"; do
-      [[ "$arg" == -* ]] || az_words+=("$(tr '[:upper:]' '[:lower:]' <<<"$arg")")
+      lower="$(tr '[:upper:]' '[:lower:]' <<<"$arg")"
+      if [[ "$expect_value" == true && "$arg" != -* ]]; then
+        az_values+=("$lower")
+        expect_value=false
+        continue
+      fi
+      expect_value=false
+      if [[ "$arg" == --*=* ]]; then
+        continue
+      elif [[ "$arg" == -* ]]; then
+        [[ "$az_bool_flags" == *" $arg "* ]] || expect_value=true
+      else
+        az_words+=("$lower")
+      fi
     done
     if ((${#az_words[@]} == 0)); then
       [[ "$*" == "--version" || "$*" == "--help" || "$*" == "-h" ]] || refuse "no az command given."
@@ -76,7 +98,7 @@ case "$cli" in
 
     case "${az_words[0]}" in
       login | logout | configure | config | upgrade | extension | interactive | feedback)
-        refuse "az ${az_words[0]} changes authentication, configuration or the CLI installation."
+        refuse "az ${az_words[0]} changes authentication, configuration or the CLI installation. Pass --subscription <id> (Azure) or --org <url> (Azure DevOps) on each call instead."
         ;;
     esac
 
@@ -105,7 +127,7 @@ case "$cli" in
     mutating+='|submit|send|publish|deploy|build|commit|reset|regenerate|rotate|enable|disable|assign|unassign'
     mutating+='|grant|revoke|attach|detach|associate|disassociate|register|unregister|lock|unlock|approve|reject'
     mutating+='|cancel|abandon|purge|restore|recover|import|install|uninstall|upgrade|login|logout|ssh|rdp|tunnel'
-    mutating+='|connect|migrate'
+    mutating+='|connect|migrate|configure'
     for ((w = 0; w < ${#az_words[@]}; w++)); do
       word="${az_words[w]}"
       if [[ "$is_devops_invoke" == true && $w -eq 1 && "$word" == "invoke" ]]; then
@@ -113,6 +135,12 @@ case "$cli" in
       fi
       if grep -Eq "^($mutating)(-|$)" <<<"$word"; then
         refuse "az $az_path: '$word' changes state."
+      fi
+    done
+
+    for value in ${az_values[@]+"${az_values[@]}"}; do
+      if grep -Eq "^($mutating)$" <<<"$value"; then
+        refuse "az $az_path: option value '$value' is a state-changing verb; put the command words before the options."
       fi
     done
 

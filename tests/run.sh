@@ -106,6 +106,11 @@ expect 2 "az login is for the user" bash_hook "az login --tenant x"
 expect 2 "az account set is for the user" bash_hook "~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az account set -s x"
 expect 2 "Connect-AzAccount is for the user" bash_hook "pwsh -c Connect-AzAccount"
 expect 0 ".env.example can be read" bash_hook "cat .env.example"
+expect 0 "grep that only mentions az is not a call" bash_hook "grep -rn 'az login' docs"
+expect 0 "echo that only mentions az is not a call" bash_hook "echo az group delete"
+expect 2 "command substitution inside grep still runs az" bash_hook 'grep x $(az group delete -n a)'
+expect 2 "xargs az is still a call" bash_hook "echo rg | xargs az group delete"
+expect 2 "az after a grep segment" bash_hook "grep x f; az group delete -n rg"
 expect 2 "az outside the wrapper" bash_hook "az group delete -n rg-dev --yes"
 expect 2 "az chained after the wrapper" bash_hook ".harness/tools/cloud/cloud-read.sh az group list; az group delete -n x"
 expect 0 "KQL pipe inside double quotes is data" bash_hook '~/.golden-path-harness/harness/tools/cloud/cloud-read.sh az monitor app-insights query --app x --analytics-query "exceptions | where timestamp > ago(10m) | take 5"'
@@ -287,6 +292,16 @@ expect 3 "az group delete with the user's current login" cur az group delete -n 
 expect 3 "az keyvault secret show with the user's current login" cur az keyvault secret show --vault-name kv --name x
 expect 3 "az rest PUT with the user's current login" cur az rest --method put --url https://management.azure.com/x
 expect 0 "az rest GET with the user's current login" cur az rest --method get --url https://management.azure.com/x
+expect 0 "az option value that starts like a verb is data (resource group)" cr az apim api list --service-name apim-prod --resource-group set-rg
+expect 0 "az option value that starts like a verb is data (service name)" cr az apim api list --service-name publish-apim --resource-group rg --subscription 0000
+expect 0 "az --key=value form with a verb-like value" cr az apim list --resource-group=deploy-rg
+expect 0 "az apim policy read through az rest" cr az rest --method get --url "https://management.azure.com/subscriptions/0000/resourceGroups/rg/providers/Microsoft.ApiManagement/service/s/apis/a/policies/policy?api-version=2022-08-01&format=rawxml"
+expect 0 "az ad app federated-credential list is metadata" cr az ad app federated-credential list --id x
+expect 3 "az ad app credential list is still refused" cr az ad app credential list --id x
+expect 3 "az verb after a boolean flag" cr az group --yes delete -n rg
+expect 3 "az exact verb as the value of an unknown flag" cr az group --unknown-flag delete -n rg
+expect 3 "az devops configure changes local defaults" cr az devops configure -d organization=https://dev.azure.com/o
+expect 0 "az devops with --org on the call" cr az repos pr list --org https://dev.azure.com/o --project p
 expect 0 "az devops invoke GET is allowed" cur az devops invoke --area git --resource pullRequestThreads
 expect 3 "az devops invoke POST is refused" cur az devops invoke --http-method post --area git
 expect 3 "az devops invoke with in-file is refused" cur az devops invoke --in-file payload.json
