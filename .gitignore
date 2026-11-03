@@ -374,3 +374,12 @@ feedback/mined/
 /benchmarks/**/.private/
 workspaces/
 *.credentials
+
+# Local audits, run reports and experiment findings belong in $GOLDEN_PATH_HOME/testing.
+/docs/audits/
+/docs/verification/
+/testing/
+/benchmarks/**/findings*.md
+/benchmarks/inventory.md
+/benchmarks/code5-validation.md
+/benchmarks/engineering-standards-decisions.md

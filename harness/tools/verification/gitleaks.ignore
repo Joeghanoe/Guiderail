@@ -1,0 +1,5 @@
+# Three historical, deliberately synthetic dev-read redaction fixtures.
+# Exact commit/path/rule/line fingerprints only. New commits are scanned normally.
+da6b103303920698067da6a284ee4328839d34fd:tests/dev-read.sh:private-key:76
+da6b103303920698067da6a284ee4328839d34fd:tests/dev-read.sh:jwt:72
+da6b103303920698067da6a284ee4328839d34fd:tests/dev-read.sh:generic-api-key:70

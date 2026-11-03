@@ -8,7 +8,7 @@
 # Installs:
 #   ~/.golden-path-harness/     the one harness-owned root (override with GOLDEN_PATH_HOME):
 #     harness, feedback         links to this repo's harness/ and feedback/
-#     config cache state workspaces logs   mutable runtime state; never touched by update or uninstall
+#     config cache state workspaces logs testing   mutable runtime state; never touched by update or uninstall
 # Removes the legacy ~/.harness and ~/.harness-feedback links (and their hook/allow entries) when it finds them.
 #   ~/.claude/CLAUDE.md         a marked block that imports AGENTS.base.md
 #   ~/.claude/settings.json     the guard hooks, the Stop verify, an allow rule for cloud-read.sh
@@ -98,7 +98,7 @@ def make_link(link, target):
 # One root for everything the harness owns
 (here / "feedback").mkdir(exist_ok=True)
 if install:
-    for name in ("config", "cache", "state", "workspaces", "logs"):
+    for name in ("config", "cache", "state", "workspaces", "logs", "testing"):
         (gp_home / name).mkdir(parents=True, exist_ok=True)
 for name, target in (("harness", here / "harness"), ("feedback", here / "feedback")):
     root_link = gp_home / name

@@ -13,11 +13,9 @@ and baseline; the checker never edits either. Pin the selected SDK and checker c
 Save stdout outside the repository as the JSON report. Exit 0 means no structural findings, 1 means
 CODE.5 findings, and 2 means the check could not complete. An error must not be scored as compliance.
 
-Generated files (`.g.cs`, `.generated.cs`, or an auto-generated marker in the first five lines) are
-reported not applicable. A partial type may use `Type.Part.cs`. Private nested helpers may remain;
-public/internal/protected (including private protected) nested types are findings. Unchanged violating declarations in the same baseline path
-are reported in `inheritedFindings`; only current `findings` affect the violation exit code. A changed declaration in a mixed file is evaluated without requiring unchanged siblings
-to move. Audit mode reports all structural violations and does not distinguish inherited issues.
+The [checker source](Program.cs) is authoritative for structural mechanics and exclusions.
+`tests/test_code_types.py` demonstrates the accepted cases. This page documents invocation and
+report handling rather than maintaining another list of the policy's exception details.
 
 Limitations: this is a syntax check, not a build or semantic analysis. It cannot establish responsibility,
 whether a private helper has only one user, or whether a generated marker is truthful. Conditional code
@@ -26,9 +24,9 @@ is textual per declaration; formatting changes may cause a declaration to be con
 languages remain covered by review. Run independent build/tests and review alongside this check.
 
 Fixtures: `python -m unittest discover -s tests -p test_code_types.py` after building. The fixed fixture
-verdicts exercise the approved scope. They do not change reviewer thresholds or make this a pipeline gate.
+verdicts exercise the approved scope. They do not change reviewer thresholds. The [verification runner](../verification/index.md) integrates this checker into the full verify template and an independent reusable PR step.
 
 `tests/run.sh` builds the checker and runs its fixtures; CI installs the .NET 10 SDK first.
-This gates checker regressions in the harness, not CODE.5 compliance in consumer projects.
+These fixtures gate checker regressions. Consumer compliance is checked only where the updated verify template or reusable PR pipeline is adopted; see [the gate](../../gates/code-types.md).
 JSON schema version 2 adds `inheritedFindings`, `symbols` and `coverage`. Baseline syntax errors
 return exit 2. Capture the checker commit and SDK version alongside JSON for reproducibility.

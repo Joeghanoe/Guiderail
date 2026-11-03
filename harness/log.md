@@ -1,5 +1,19 @@
 # Change log
 
+## 2026-11-03
+
+- Moved audit documents, model comparisons, validation findings and raw execution evidence into the owner's local `$GOLDEN_PATH_HOME/testing/` storage. Preserved reusable checks, regression fixtures and benchmark definitions in Git. Installation creates the persistent testing directory; ignore rules keep run records out of the checkout.
+
+## 2026-11-02
+
+- Added checksum-pinned Gitleaks and a PSRule for Azure Key Vault pilot with real-engine calibration. Gitleaks scans current source in harness CI and PR commit ranges in adopting repositories. PSRule uses explicit deployment inputs; successful unchanged entry-template evidence suppresses only overlapping legacy IAC.4 literals. Usage lives in the [verification tools](tools/verification/index.md); calibration reports are local testing records.
+- Made executable C# structural mechanics authoritative in the checker and removed the parallel detailed list from guidance. Kept semantic expectations and all existing examples. Recorded three exact historical fingerprints for synthetic redaction fixtures; current fixtures construct equivalent test output at runtime.
+
+- Added a distributed, validated requirement registry and evidence receipts. Kept existing OKF types, rule IDs, example verdicts, reviewer thresholds and all examples. See [verification contracts](tools/verification/index.md).
+- Integrated the existing CODE.5 Roslyn checker with baseline discovery, explicit conditional configurations, retained JSON and separate failure/error handling. The reusable PR template runs the check independently of guidance selection and publishes verification evidence.
+- Replaced attempted-command and extension markers with successful, content-deduplicated edit-time retrieval for Claude and agy. Fixed the reviewer-eval trigger's stale selector path and covered supported adapters.
+- Added regression fixtures and an owner-authorized synthetic agy smoke test. Preserved permission failures and timeout evidence alongside the successful verification-only follow-up. Implementation run evidence is stored locally under `$GOLDEN_PATH_HOME/testing/`. Copied bundles report unknown source revision instead of inheriting the consumer commit.
+
 ## 2026-11-01
 
 - Added loop- and graph-based orchestration guidance: bounded work packages, named responsibilities, tiered models, explicit retry limits and reviewer checks for generated-code failures (`83be9a0`).

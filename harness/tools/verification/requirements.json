@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "requirements": [
+    {
+      "requirement_id": "CODE.5.file-layout",
+      "parent_rule_id": "CODE.5",
+      "source": "rules/code/code-5-one-responsibility.md",
+      "statement": "Added or changed C# declarations follow the approved file/type layout.",
+      "verification_method": [
+        "static-analysis"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "CheckTypes",
+          "path": "tools/code/CheckTypes.csproj",
+          "report_schema": 2
+        }
+      ],
+      "coverage": {
+        "scope": "C# declarations against a pinned baseline and explicit supported configurations",
+        "exclusions": [
+          "Generated files",
+          "Private nested helpers"
+        ],
+        "residual": [
+          "Cohesive responsibility",
+          "Private-helper single-user ownership",
+          "Other languages"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "CODE.5.responsibility",
+      "parent_rule_id": "CODE.5",
+      "source": "rules/code/code-5-one-responsibility.md",
+      "statement": "Classes own a cohesive responsibility.",
+      "verification_method": [
+        "llm-judge",
+        "human-review"
+      ],
+      "automation_status": "semantic-only",
+      "automation_tool": [],
+      "coverage": {
+        "scope": "Responsibilities and dependency ownership in the task diff",
+        "exclusions": [],
+        "residual": [
+          "Requires caller and design context"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe",
+      "rubric": "tools/verification/rubrics/code5-responsibility.md"
+    },
+    {
+      "requirement_id": "T.1.verify-command",
+      "parent_rule_id": "T.1",
+      "source": "rules/testing/t-1-done-means-verified.md",
+      "statement": "The configured repository verification command completes successfully.",
+      "verification_method": [
+        "deterministic"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "verification command recorder",
+          "path": "tools/verification/verify.py"
+        }
+      ],
+      "coverage": {
+        "scope": "Exit status and retained output of the explicitly invoked command",
+        "exclusions": [],
+        "residual": [
+          "Does not prove the command includes every required check",
+          "Does not establish test coverage or truthful reporting"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "T.2.configured-banned-symbols",
+      "parent_rule_id": "T.2",
+      "source": "rules/testing/t-2-services-do-not-create-io.md",
+      "statement": "Configured banned API symbols are absent outside scoped exceptions.",
+      "verification_method": [
+        "static-analysis"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "Microsoft.CodeAnalysis.BannedApiAnalyzers",
+          "path": "templates/repo/Directory.Build.props",
+          "version": "3.3.4",
+          "rule": "RS0030"
+        }
+      ],
+      "coverage": {
+        "scope": "Only symbols configured by an adopting .NET consumer",
+        "exclusions": [
+          "Approved composition-root and persistence-model exceptions"
+        ],
+        "residual": [
+          "SDK/configuration/filesystem access beyond configured symbols",
+          "Consumer adoption is optional"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "IAC.4.explicit-bad-literals",
+      "parent_rule_id": "IAC.4",
+      "source": "rules/iac/iac-4-key-vault-hardened.md",
+      "statement": "Explicit literal false settings are rejected by the existing IaC check.",
+      "verification_method": [
+        "deterministic"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "check-iac.py",
+          "path": "tools/iac/check-iac.py"
+        }
+      ],
+      "coverage": {
+        "scope": "Supported wrong literals in changed Bicep/Terraform lines",
+        "exclusions": [],
+        "residual": [
+          "Missing settings",
+          "Expressions and parameters",
+          "Access policy admission",
+          "Approved waiver review"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "IAC.4.resolved-vault",
+      "parent_rule_id": "IAC.4",
+      "source": "rules/iac/iac-4-key-vault-hardened.md",
+      "statement": "Evaluate vault protection settings after resource expansion.",
+      "verification_method": [
+        "static-analysis"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "PSRule for Azure",
+          "version": "1.47.0",
+          "path": "tools/verification/keyvault.ps1",
+          "profile": "keyvault_rules in tools/verification/tool-lock.json"
+        }
+      ],
+      "coverage": {
+        "scope": "Selected PSRule Key Vault rules on offline expanded Bicep/ARM templates and optional ARM parameters",
+        "exclusions": [],
+        "residual": [
+          "Access-policy admission and IAM scope require review",
+          "Only the explicitly supplied deployment inputs are covered",
+          "Pilot adoption is explicit"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "SEC.2.secret-scan",
+      "parent_rule_id": "SEC.2",
+      "source": "rules/security/sec-2-no-secrets-or-personal-data.md",
+      "statement": "Scan committed source for recognizable secrets.",
+      "verification_method": [
+        "static-analysis"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "Gitleaks CLI",
+          "version": "8.30.1",
+          "path": "tools/verification/standard_checks.py"
+        }
+      ],
+      "coverage": {
+        "scope": "Pinned Gitleaks defaults over a declared commit range or working tree, with redacted evidence",
+        "exclusions": [],
+        "residual": [
+          "Novel secrets",
+          "Personal data",
+          "Runtime output and prompts",
+          "History outside selected commit range"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "CODE.7.named-contracts",
+      "parent_rule_id": "CODE.7",
+      "source": "rules/code/code-7-linked-changes.md",
+      "statement": "Executable checks detect disagreement between named cross-file contracts.",
+      "verification_method": [
+        "behavioral-test"
+      ],
+      "automation_status": "custom-automation-candidate",
+      "automation_tool": [],
+      "coverage": {
+        "scope": "Repository-declared catalogue/query/configuration pairs",
+        "exclusions": [],
+        "residual": [
+          "Each consumer needs its real production parser and contract fixtures"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "UI.2.element-purpose",
+      "parent_rule_id": "UI.2",
+      "source": "rules/frontend/ui-2-show-what-users-can-do.md",
+      "statement": "Screen elements support the named user goal.",
+      "verification_method": [
+        "llm-judge",
+        "human-review"
+      ],
+      "automation_status": "semantic-only",
+      "automation_tool": [],
+      "coverage": {
+        "scope": "Audience, task and screenshot evidence",
+        "exclusions": [],
+        "residual": [
+          "No widget or word-count proxy"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "E-016.sonar-read-only",
+      "parent_rule_id": "E-016",
+      "source": "examples/e-016-sonar-findings-through-a-read-wrapper.md",
+      "statement": "Sonar findings are fetched through the existing read-only wrapper.",
+      "verification_method": [
+        "deterministic"
+      ],
+      "automation_status": "implemented",
+      "automation_tool": [
+        {
+          "name": "sonar-read.sh",
+          "path": "tools/sonar/sonar-read.sh"
+        }
+      ],
+      "coverage": {
+        "scope": "Wrapper endpoint, method and credential handling",
+        "exclusions": [],
+        "residual": [
+          "Effective token permissions require separate evidence"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    },
+    {
+      "requirement_id": "P10.reference",
+      "parent_rule_id": "P10",
+      "source": "principles/p-10-ai-requires-context.md",
+      "statement": "Consult authoritative context, ownership and decision boundaries.",
+      "verification_method": [
+        "none"
+      ],
+      "automation_status": "guidance-only",
+      "automation_tool": [],
+      "coverage": {
+        "scope": "Reference to external principle authority",
+        "exclusions": [],
+        "residual": [
+          "This pointer is not an executable acceptance criterion"
+        ]
+      },
+      "owner": "team:teamvalue-aicoe"
+    }
+  ]
+}

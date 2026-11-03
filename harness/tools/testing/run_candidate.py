@@ -140,7 +140,7 @@ def expand_tree(entry):
     skipped = tuple(x.rstrip("/") for x in entry.get("exclude", []))
     for file in sorted(p for p in root.rglob("*") if p.is_file()):
         rel = file.relative_to(root).as_posix()
-        if "__pycache__" in file.parts or any(rel == s or rel.startswith(s + "/") for s in skipped):
+        if {"__pycache__", "bin", "obj"} & set(pathlib.PurePosixPath(rel).parts) or any(rel == s or rel.startswith(s + "/") for s in skipped):
             continue
         yield {"source": file.relative_to(REPOSITORY).as_posix(), "path": entry["path"] + "/" + rel}
 

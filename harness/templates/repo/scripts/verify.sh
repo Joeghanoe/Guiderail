@@ -38,16 +38,21 @@ if [[ "${1:-}" == "--fast" ]]; then
   exit 0
 fi
 
-# CODE.5: one type per file, from the harness checker (needs the .NET SDK; syntax only).
-if [[ -n "$harness" && -f "$harness/tools/code/CheckTypes.csproj" ]]; then
-  checker="$(mktemp -d)"
-  trap 'rm -rf "$checker"' EXIT
-  cp -R "$harness/tools/code/." "$checker/"
-  rm -rf "$checker/bin" "$checker/obj"
-  dotnet build "$checker/CheckTypes.csproj" -c Release -o "$checker/out" --nologo -v q >/dev/null
-  sources=()
-  while IFS= read -r source; do sources+=("${source#./}"); done < <(find . -name '*.cs' -not -path '*/bin/*' -not -path '*/obj/*' -not -path './.harness/*')
-  [[ ${#sources[@]} -eq 0 ]] || dotnet "$checker/out/CheckTypes.dll" "${sources[@]}" >/dev/null || { echo "verify: CODE.5 findings; run the checker for the list" >&2; exit 1; }
+# CODE.5 runs independently of guidance selection. CI may run it once as a separate required step.
+if [[ "${HARNESS_CODE5_EXTERNAL:-0}" == "1" ]]; then
+  echo "verify: CODE.5 delegated to the independent CI step"
+else
+  [[ -n "$harness" && -f "$harness/tools/verification/verify.py" ]] || {
+    echo "verify: CODE.5 runner unavailable; verification incomplete" >&2; exit 2;
+  }
+  evidence="${HARNESS_EVIDENCE_DIR:-$(mktemp -d)}/code-types"
+  code5_args=(--repo "$PWD" --out "$evidence")
+  [[ -z "${HARNESS_BASE_REF:-}" ]] || code5_args+=(--baseline "$HARNESS_BASE_REF")
+  if [[ -n "${CODE5_SYMBOLS:-}" ]]; then
+    IFS=';' read -r -a configurations <<<"$CODE5_SYMBOLS"
+    for configuration in "${configurations[@]}"; do code5_args+=(--symbols "$configuration"); done
+  fi
+  python3 -I "$harness/tools/verification/verify.py" code-types "${code5_args[@]}"
 fi
 
 dotnet restore "$sln"

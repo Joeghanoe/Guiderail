@@ -141,6 +141,7 @@ class RunCandidateTests(unittest.TestCase):
         files = [e["path"] for e in runner.expand_tree({"source": "harness", "path": "c/.harness", "exclude": ["examples", "tools/testing", "tools/index.md"]})]
         self.assertTrue(any(f.startswith("c/.harness/rules/") for f in files))
         self.assertFalse(any("/.harness/examples/" in f or "/tools/testing/" in f or f.endswith("tools/index.md") or "__pycache__" in f for f in files))
+        self.assertFalse(any({"bin", "obj"} & set(pathlib.PurePosixPath(f).parts) for f in files))
         self.assertTrue(tree.is_dir())
 
     def test_folder_mode_passes_env_and_reports_same_user_class(self):

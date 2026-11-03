@@ -1,0 +1,4 @@
+title = "GuideRail secret scanning"
+[extend]
+useDefault = true
+# No blanket baseline or path exclusions. Review narrowly scoped exceptions here.

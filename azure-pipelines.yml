@@ -20,6 +20,9 @@ steps:
   - bash: python3 -I harness/tools/harness/bundle.py check
     displayName: "Bundle check (OKF + harness conventions)"
 
+  - bash: python3 -I harness/tools/verification/verify.py check
+    displayName: "Verification requirement registry"
+
   # The always-loaded context only grows on purpose: a PR may not raise the recorded budget above main's
   # unless a maintainer sets the pipeline variable AllowContextGrowth to true for that run.
   - bash: infra/scripts/check-context-budget.sh
@@ -34,8 +37,23 @@ steps:
       packageType: sdk
       version: 10.0.x
 
+  - bash: python3 -I harness/tools/verification/install-tools.py --out "$(Agent.TempDirectory)/check-tools"
+    displayName: "Install checksum-pinned standard check tools"
+
+  - bash: |
+      python3 -I harness/tools/verification/verify.py gitleaks --repo . --working-tree \
+        --tools "$(Agent.TempDirectory)/check-tools" --stage ci \
+        --out "$(Agent.TempDirectory)/harness-secrets"
+    displayName: "Gitleaks, current source including new files"
+
   - bash: tests/run.sh
-    displayName: "Tool and hook tests"
+    displayName: "Tool and hook tests, including real standard scanners"
+    env:
+      HARNESS_CHECK_TOOLS: $(Agent.TempDirectory)/check-tools
+
+  - publish: $(Agent.TempDirectory)/harness-secrets
+    artifact: harness-secret-scan
+    condition: always()
 
   - bash: shellcheck install.sh tests/run.sh infra/scripts/*.sh harness/hooks/*.sh harness/tools/*/*.sh harness/templates/repo/scripts/verify.sh
     displayName: "shellcheck"

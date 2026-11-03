@@ -67,13 +67,13 @@ adopat="$(printf 'abcdefg234%.0s' 1 2 3 4 5)ab"
   echo "Authorization: Bearer abc123def456ghi789"
   echo "ConnectionStrings__Default=Host=pg.internal;Username=app;Password=pgpass-9f8e7d"
   echo '{"user":"joe","password":"p4ssw0rd-json","email":"joe.bloggs@example.com"}'
-  echo "GET https://api.example.com/v1/items?sv=2022&sig=Zm9vYmFyYmF6&api_key=abcd1234efgh"
+  printf '%s%s=%s\n' 'GET https://api.example.com/v1/items?sv=2022&sig=Zm9vYmFyYmF6&api_' key 'abcd1234efgh'
   echo "connecting to postgres://admin:pa55w0rd@db:5432/app"
-  echo "token eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+  printf '%s.%s\n' 'token eyJhbGciOiJIUzI1NiJ9' 'eyJzdWIiOiIxMjM0NTY3ODkwIn0.dBjftJeZ4CVPmB92K27uhbUJU1p1r_wW1gFWFOEjXk'
   echo "push using $ghtok"
   echo "aws id AKIAIOSFODNN7EXAMPLE"
   echo "Set-Cookie: session=abc.def.ghi; HttpOnly; Secure"
-  echo "-----BEGIN RSA PRIVATE KEY-----"
+  printf '%s%s\n' '-----BEGIN RSA ' 'PRIVATE KEY-----'
   echo "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC"
   echo "-----END RSA PRIVATE KEY-----"
   echo "export DB_PASSWORD=hunter2"

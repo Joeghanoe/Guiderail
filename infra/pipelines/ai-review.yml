@@ -35,6 +35,15 @@ parameters:
     default: .harness-scenarios.json
   - name: claudeCodeVersion
     type: string
+  - name: verificationTimeoutSeconds
+    type: number
+    default: 1800
+  - name: code5Symbols
+    type: object
+    default: []
+  - name: keyVaultPilots
+    type: object
+    default: []
   - name: aiReview
     type: boolean
     default: true
@@ -62,6 +71,7 @@ steps:
       set -euo pipefail
       mkdir -p "$(Agent.TempDirectory)/review"
       target="origin/${SYSTEM_PULLREQUEST_TARGETBRANCH#refs/heads/}"
+      git merge-base "$target" HEAD >"$(Agent.TempDirectory)/review/base.txt"
       git diff --name-only "$target"...HEAD >"$(Agent.TempDirectory)/review/changed.txt"
       git diff "$target"...HEAD >"$(Agent.TempDirectory)/review/diff.patch"
       project="$(jq -rn --arg p "$SYSTEM_TEAMPROJECT" '$p | @uri')"
@@ -74,9 +84,69 @@ steps:
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
 
-  - bash: ${{ parameters.verifyCommand }}
-    displayName: "Verify (T.1)"
+  - bash: python3 -I .harness/tools/verification/install-tools.py --out "$(Agent.TempDirectory)/check-tools"
+    displayName: "Install pinned check tools"
     workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - bash: |
+      python3 -I .harness/tools/verification/verify.py gitleaks --repo . --stage ci \
+        --baseline "$(cat "$(Agent.TempDirectory)/review/base.txt")" \
+        --tools "$(Agent.TempDirectory)/check-tools" --out "$(Agent.TempDirectory)/verification/secrets"
+    displayName: "Gitleaks, PR commit range"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - ${{ each pilot in parameters.keyVaultPilots }}:
+      - bash: |
+          args=(--repo . --stage ci --tools "$(Agent.TempDirectory)/check-tools" \
+            --template "$VAULT_TEMPLATE" --out "$VAULT_OUTPUT")
+          [[ -z "$VAULT_PARAMETERS" ]] || args+=(--parameters "$VAULT_PARAMETERS")
+          python3 -I .harness/tools/verification/verify.py psrule "${args[@]}"
+        displayName: "PSRule Key Vault pilot: ${{ pilot.name }}"
+        workingDirectory: $(Pipeline.Workspace)/s/repo
+        env:
+          VAULT_TEMPLATE: ${{ pilot.template }}
+          VAULT_PARAMETERS: ${{ coalesce(pilot.parameters, '') }}
+          VAULT_OUTPUT: $(Agent.TempDirectory)/verification/psrule-${{ pilot.name }}
+
+  - bash: |
+      python3 -I .harness/tools/verification/verify.py run --repo . --stage ci \
+        --timeout "${{ parameters.verificationTimeoutSeconds }}" --requirement T.1.verify-command --out "$(Agent.TempDirectory)/verification/command" \
+        -- bash -c "$VERIFY_COMMAND"
+    displayName: "Verify (T.1), with execution evidence"
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+    env:
+      VERIFY_COMMAND: ${{ parameters.verifyCommand }}
+      HARNESS_CODE5_EXTERNAL: "1"
+
+  - bash: |
+      args=(--repo . --stage ci --baseline "$(cat "$(Agent.TempDirectory)/review/base.txt")" \
+        --out "$(Agent.TempDirectory)/verification/code-types")
+      if [[ -n "$CODE5_SYMBOLS" ]]; then
+        IFS=';' read -r -a configurations <<<"$CODE5_SYMBOLS"
+        for configuration in "${configurations[@]}"; do args+=(--symbols "$configuration"); done
+      fi
+      python3 -I .harness/tools/verification/verify.py code-types "${args[@]}"
+    displayName: "C# layout against PR baseline (CODE.5)"
+    condition: succeededOrFailed()
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+    env:
+      CODE5_SYMBOLS: ${{ join(';', parameters.code5Symbols) }}
+
+  - bash: |
+      python3 -I .harness/tools/verification/verify.py report \
+        --out "$(Agent.TempDirectory)/verification/receipt.json" \
+        --required T.1.verify-command CODE.5.file-layout SEC.2.secret-scan --review CODE.5.responsibility \
+        --results "$(Agent.TempDirectory)/verification/command/receipt.json" \
+        "$(Agent.TempDirectory)/verification/code-types/receipt.json" \
+        "$(Agent.TempDirectory)/verification/secrets/receipt.json"
+    displayName: "Verification receipt, semantic review remains separate"
+    condition: succeededOrFailed()
+    workingDirectory: $(Pipeline.Workspace)/s/repo
+
+  - publish: $(Agent.TempDirectory)/verification
+    artifact: harness-verification
+    displayName: "Publish verification evidence, including failures"
+    condition: always()
 
   - bash: |
       python3 .harness/tools/testing/check-scenarios.py --config "${{ parameters.scenarioConfig }}" \
@@ -85,7 +155,11 @@ steps:
     workingDirectory: $(Pipeline.Workspace)/s/repo
 
   - bash: |
-      python3 .harness/tools/iac/check-iac.py --description "$(Agent.TempDirectory)/review/pr.txt" \
+      args=(--description "$(Agent.TempDirectory)/review/pr.txt")
+      for receipt in "$(Agent.TempDirectory)"/verification/psrule-*/receipt.json; do
+        [[ ! -f "$receipt" ]] || args+=(--psrule-receipt "$receipt")
+      done
+      python3 .harness/tools/iac/check-iac.py "${args[@]}" \
         <"$(Agent.TempDirectory)/review/changed.txt"
     displayName: "IaC settings (IAC.2, IAC.3, IAC.4)"
     workingDirectory: $(Pipeline.Workspace)/s/repo

@@ -104,10 +104,12 @@ def glob_to_regex(pattern):
 def is_stale(meta, now):
     """OKF stale_after: a concept is stale when now >= stale_after."""
     value = unquote(meta.get("stale_after", "")).replace("Z", "+00:00")
+    if not value:
+        return False
     try:
         return now >= datetime.datetime.fromisoformat(value)
-    except ValueError:
-        return False
+    except (ValueError, TypeError):
+        raise ValueError(f"invalid stale_after timestamp: {value!r}; include a timezone")
 
 
 def human_verified(meta):
@@ -485,8 +487,9 @@ def cmd_submit_feedback(root, args):
     return 0
 
 
-def cmd_select(root, args):
-    changed = list(args.paths) or [line.strip() for line in sys.stdin if line.strip()]
+def select_documents(root, changed, now=None):
+    """Return the existing selection contract; callers distinguish errors from empty results."""
+    changed = [path.replace("\\", "/").removeprefix("./") for path in changed]
     rules, examples, summary = {}, [], {}
     for path, meta, _ in concepts(root):
         if not meta:
@@ -494,22 +497,38 @@ def cmd_select(root, args):
         kind = unquote(meta.get("type", ""))
         rel = "/" + path.relative_to(root).as_posix()
         if kind == "Rule":
-            globs = [glob_to_regex(g) for g in json.loads(meta.get("applies_to", "[]"))]
+            patterns = json.loads(meta.get("applies_to", "[]"))
+            if not isinstance(patterns, list) or not patterns or not all(isinstance(g, str) for g in patterns):
+                raise ValueError(f"{rel}: applies_to must be a nonempty JSON list of globs")
+            globs = [glob_to_regex(g) for g in patterns]
             if any(g.match(f) for g in globs for f in changed):
                 rules[rel] = unquote(meta.get("rule_id", ""))
                 summary[rules[rel]] = unquote(meta.get("description", ""))
         elif kind == "Example":
             examples.append((rel, meta))
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = now or datetime.datetime.now(datetime.timezone.utc)
     relevant = [(rel, m) for rel, m in examples if set(as_list(m.get("rule", ""))) & set(rules)]
     stale = [rel for rel, m in relevant if is_stale(m, now)]
-    precedent = [rel for rel, m in relevant if human_verified(m) and rel not in stale]
-    hints = [rel for rel, m in relevant if not human_verified(m) and rel not in stale]
+    precedent = [rel for rel, m in relevant if human_verified(m) and rel not in stale
+                 and unquote(m.get("verdict", "")) not in {"open", "rejected"}]
+    hints = [rel for rel, _ in relevant if rel not in precedent and rel not in stale]
+    return {"rules": rules, "summary": dict(sorted(summary.items())), "precedent": precedent,
+            "hints": hints, "stale": stale}
+
+
+def cmd_select(root, args):
+    changed = list(args.paths) or [line.strip() for line in sys.stdin if line.strip()]
+    try:
+        selected = select_documents(root, changed)
+    except (ValueError, OSError) as error:
+        print(f"select: {error}", file=sys.stderr)
+        return 2
+    rules, summary = selected["rules"], selected["summary"]
     if args.brief:
         by_rule = {}
-        for rel, m in sorted(relevant, key=lambda r: (not human_verified(r[1]), r[0])):
-            if rel in stale:
-                continue
+        relevant = [(rel, parse(root / rel.lstrip("/"))[0])
+                    for rel in selected["precedent"] + selected["hints"]]
+        for rel, m in relevant:
             for rid in as_list(m.get("rule", "")):
                 if rid in rules:
                     by_rule.setdefault(rules[rid], []).append((rel, unquote(m.get("title", ""))))
@@ -519,7 +538,7 @@ def cmd_select(root, args):
                 for rel, title in by_rule.get(rule_id, []):
                     print(f"  example: {rel} - {title}")
         return 0
-    print(json.dumps({"rules": rules, "summary": dict(sorted(summary.items())), "precedent": precedent, "hints": hints, "stale": stale}, indent=2))
+    print(json.dumps(selected, indent=2))
     return 0
 
 

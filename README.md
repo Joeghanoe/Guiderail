@@ -10,6 +10,8 @@ The knowledge is an [Open Knowledge Format](https://github.com/GoogleCloudPlatfo
 
 Material changes and approval outcomes are summarized in [harness/log.md](harness/log.md). Current conventions live in [docs/decisions/feedback-conventions.md](docs/decisions/feedback-conventions.md); architectural decisions remain in `docs/adr/`.
 
+Executable check usage lives with the [verification tools](harness/tools/verification/index.md). Audits, model comparisons and verification run reports belong in `$GOLDEN_PATH_HOME/testing/`, defaulting to `~/.golden-path-harness/testing/`, outside Git.
+
 ## Layers
 
 | Layer | What | Hard or soft |
@@ -51,13 +53,19 @@ install.sh            installs the harness for your user; removes the old AI Hub
 tests/run.sh          tests for the tools, hooks and install; no network
 ```
 
+## Local testing records
+
+Use `~/.golden-path-harness/testing/` for audit documents, experiment scripts, comparison reports, generated workspaces and raw run evidence. Use `archives/` for frozen report snapshots and `runs/` for execution artifacts. Keep credentials out of both. Installation and uninstall preserve this directory.
+
+Reusable checks, deterministic test fixtures and benchmark task definitions remain versioned with their code. One-off findings and machine-specific run results do not belong in the checkout.
+
 ## Install (once per machine)
 
 ```bash
 ./install.sh          # again after every git pull; ./install.sh --uninstall undoes it
 ```
 
-- creates the one harness root `~/.golden-path-harness` (or `$GOLDEN_PATH_HOME`) with `harness/` and `feedback/` links plus `config/ cache/ state/ workspaces/ logs/` for runtime state, which update and uninstall never delete;
+- creates the one harness root `~/.golden-path-harness` (or `$GOLDEN_PATH_HOME`) with `harness/` and `feedback/` links plus `config/ cache/ state/ workspaces/ logs/ testing/` for runtime state, which update and uninstall never delete;
 - removes the old top-level `~/.harness` and `~/.harness-feedback` links if present (run it once after pulling this change; the hooks and allow rules in `~/.claude/settings.json` are rewritten to the new root);
 - imports `AGENTS.base.md` from `~/.claude/CLAUDE.md`;
 - adds the guard hooks and the Stop verify for Claude Code;

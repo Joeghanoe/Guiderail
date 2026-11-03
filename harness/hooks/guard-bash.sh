@@ -6,15 +6,6 @@ set -euo pipefail
 input="$(cat)"
 cmd="$(jq -r '.tool_input.command // ""' <<<"$input")"
 
-# H.2: a rule lookup (bundle.py select) marks this session so hooks/edit-gate.sh lets edits through.
-if grep -Eq 'bundle\.py[[:space:]]+select([[:space:]]|$)' <<<"$cmd"; then
-  sid="$(jq -r '.session_id // ""' <<<"$input")"
-  if [[ -n "$sid" ]]; then
-    mkdir -p "${TMPDIR:-/tmp}/golden-path-harness-lookup/${sid//[^A-Za-z0-9_-]/_}" &&
-      touch "${TMPDIR:-/tmp}/golden-path-harness-lookup/${sid//[^A-Za-z0-9_-]/_}/selected"
-  fi
-fi
-
 # What the command DOES, as opposed to text it only carries (see guard-scopes.pl). The shell scope drops heredoc bodies that are file
 # content and the quoted arguments of prose flags; heredoc bodies fed to a script interpreter go to the narrow checks below, so
 # a script that merely mentions an environment variable or a dotenv path is not blocked, and one that dumps the environment or reads

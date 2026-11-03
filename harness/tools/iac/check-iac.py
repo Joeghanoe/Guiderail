@@ -13,6 +13,8 @@ Example:
 """
 
 import argparse
+import json
+import hashlib
 import pathlib
 import re
 import sys
@@ -38,9 +40,11 @@ CHECKS = [
 ]
 
 
-def scan(path):
+def scan(path, covered_vaults=()):
     for number, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
         for rule, message, pattern in CHECKS:
+            if rule == "IAC.4" and path.as_posix() in covered_vaults:
+                continue
             if pattern.search(line):
                 yield f"{path}:{number}: {rule} {message}"
 
@@ -48,9 +52,23 @@ def scan(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--description", help="file with the PR description, for the waiver line")
+    parser.add_argument("--psrule-receipt", action="append", default=[], help="Successful resolved-vault evidence; avoids duplicate IAC.4 literal checks on that entry template")
     args = parser.parse_args()
     paths = [pathlib.Path(p.strip()) for p in sys.stdin if p.strip()]
-    hits = [hit for p in paths if p.suffix in SUFFIXES and p.is_file() for hit in scan(p)]
+    covered_vaults = set()
+    for file in args.psrule_receipt:
+        receipt = json.loads(pathlib.Path(file).read_text(encoding="utf-8"))
+        if receipt.get("requirement_id") == "IAC.4.resolved-vault" and receipt.get("status") == "pass":
+            template = receipt.get("template", "")
+            if (template and not pathlib.PurePosixPath(template).is_absolute()
+                    and ".." not in pathlib.PurePosixPath(template).parts
+                    and pathlib.Path(template).is_file()
+                    and hashlib.sha256(pathlib.Path(template).read_bytes()).hexdigest() == receipt.get("template_sha256")
+                    and receipt.get("report", {}).get("vaults", 0) > 0
+                    and receipt["report"].get("results")
+                    and all(r.get("outcome") == "Pass" for r in receipt["report"]["results"])):
+                covered_vaults.add(template)
+    hits = [hit for p in paths if p.suffix in SUFFIXES and p.is_file() for hit in scan(p, covered_vaults)]
     for hit in hits:
         print(hit)
     description = pathlib.Path(args.description).read_text(encoding="utf-8") if args.description else ""

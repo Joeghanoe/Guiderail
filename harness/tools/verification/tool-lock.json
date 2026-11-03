@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "gitleaks": "8.30.1",
+  "bicep": "0.48.1",
+  "platforms": {
+    "Darwin-arm64": {
+      "gitleaks": {
+        "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+        "sha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5"
+      },
+      "bicep": {
+        "url": "https://github.com/Azure/bicep/releases/download/v0.48.1/bicep-osx-arm64",
+        "sha256": "62cd5958c62fa1b738e9b69f24799fabddb90ed83fdb7d6d2563dde376ce479d"
+      }
+    },
+    "Darwin-x86_64": {
+      "gitleaks": {
+        "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_x64.tar.gz",
+        "sha256": "dfe101a4db2255fc85120ac7f3d25e4342c3c20cf749f2c20a18081af1952709"
+      },
+      "bicep": {
+        "url": "https://github.com/Azure/bicep/releases/download/v0.48.1/bicep-osx-x64",
+        "sha256": "6a8188d521a7c6740c8b58983093dfd9f7897d37bdf1551f775022e22397d7c5"
+      }
+    },
+    "Linux-x86_64": {
+      "gitleaks": {
+        "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz",
+        "sha256": "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+      },
+      "bicep": {
+        "url": "https://github.com/Azure/bicep/releases/download/v0.48.1/bicep-linux-x64",
+        "sha256": "b09ec25a9d376c1f8e33ede6ed22b587f915ad68488d5db77a6f9541748c7f6e"
+      }
+    },
+    "Linux-aarch64": {
+      "gitleaks": {
+        "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_arm64.tar.gz",
+        "sha256": "e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080"
+      },
+      "bicep": {
+        "url": "https://github.com/Azure/bicep/releases/download/v0.48.1/bicep-linux-arm64",
+        "sha256": "9cbf6a211137e894a863fbc842e355c2197fc2124a7bda902afe1bceffa35245"
+      }
+    }
+  },
+  "modules": {
+    "PSRule": {
+      "version": "2.9.0",
+      "url": "https://www.powershellgallery.com/api/v2/package/PSRule/2.9.0",
+      "sha256": "222554e3a04047fdb580720c9275486ca2ec0dd1982fcc1e75c2f6345fd8fa5f"
+    },
+    "PSRule.Rules.Azure": {
+      "version": "1.47.0",
+      "url": "https://www.powershellgallery.com/api/v2/package/PSRule.Rules.Azure/1.47.0",
+      "sha256": "4a202b36126c7dfec21906e0cfc5ada67e64eb0c4a2dad3e3a7415f01c8e13c1"
+    }
+  },
+  "keyvault_rules": [
+    "Azure.KeyVault.RBAC",
+    "Azure.KeyVault.SoftDelete",
+    "Azure.KeyVault.PurgeProtect"
+  ]
+}

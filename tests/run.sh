@@ -37,8 +37,15 @@ shim() {
 bash_hook() { jq -n --arg c "$1" '{tool_input: {command: $c}}' | "$h/hooks/guard-bash.sh"; }
 read_hook() { jq -n --arg p "$1" '{tool_name: "Read", tool_input: {file_path: $p}}' | "$h/hooks/guard-read.sh"; }
 
+echo "== framework registry, retrieval and receipts"
+expect 0 "verification registry and receipt contracts" python3 -I "$here/tests/test_verification.py"
+expect 0 "selector and edit-context regression contracts" python3 -I "$here/tests/test_context.py"
+expect 0 "review-input change detection matrix" python3 -I "$here/tests/test_review_changed.py"
+
+expect 0 "standard scanner calibration (real tools when configured)" python3 -I "$here/tests/test_standard_checks.py"
+
 echo "== CODE.5 structural checker"
-expect 0 "CODE.5 checker builds" dotnet build "$h/tools/code/CheckTypes.csproj"
+expect 0 "CODE.5 checker builds" dotnet build "$h/tools/code/CheckTypes.csproj" --disable-build-servers -p:UseSharedCompilation=false
 expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test_code_types.py
 expect 0 "provider-neutral backup grader controls" python3 -I "$here/tests/test_backup_eval.py"
 expect 0 "greenfield design checks" python3 -I "$here/tests/test_design_check.py"
@@ -197,18 +204,18 @@ echo "== edit-gate (H.2)"
 gate_state="$(mktemp -d)"
 gate() { jq -n --arg s "$1" --arg f "$2" '{session_id: $s, tool_input: {file_path: $f}}' | TMPDIR="$gate_state" "$h/hooks/edit-gate.sh"; }
 lookup() { jq -n --arg s "$1" '{session_id: $s, tool_input: {command: "python3 bundle.py select --brief a.yml"}}' | TMPDIR="$gate_state" "$h/hooks/guard-bash.sh"; }
-expect 2 "edit before the rule lookup is denied" gate gs1 "pipelines/deploy.yml"
+expect 0 "first edit performs a successful rule lookup" gate gs1 "pipelines/deploy.yml"
 expect 0 "the lookup passes guard-bash" lookup gs1
 expect 0 "edit after the lookup is allowed" gate gs1 "pipelines/deploy.yml"
-expect 2 "another session still needs its own lookup" gate gs2 "pipelines/deploy.yml"
-expect 0 "no session id fails open" gate "" "pipelines/deploy.yml"
+expect 0 "another session performs its own rule lookup" gate gs2 "pipelines/deploy.yml"
+expect 0 "no session id delivers uncached guidance" gate "" "pipelines/deploy.yml"
 
 echo "== agy edit gate (H.2)"
 agy_gate() { jq -n --arg c "$1" --arg t "$2" --arg a "$3" '{conversationId: $c, toolCall: {name: $t, args: ($a | fromjson)}}' | TMPDIR="$gate_state" "$h/hooks/agy-edit-gate.sh"; }
 agy_out() { agy_gate "$@" | jq -r .decision; }
-expect 0 "agy: edit before the lookup is denied" test "$(agy_out ag1 edit_file '{"Path":"\"/r/a.yml\""}')" = deny
-expect 0 "agy: the lookup is allowed and pre-approved" bash -c "$(declare -f agy_gate); gate_state='$gate_state'; h='$h'; agy_gate ag1 run_command '{\"CommandLine\":\"python3 x/bundle.py select --brief a.yml\"}' | jq -e '.decision == \"allow\" and (.permissionOverrides | length == 1)'"
-expect 0 "agy: first edit of a file type returns the rules" bash -c "$(declare -f agy_gate); gate_state='$gate_state'; h='$h'; agy_gate ag1 edit_file '{\"Path\":\"/r/a.yml\"}' | jq -e '.decision == \"deny\" and (.reason | contains(\"IAC\") or contains(\"CLD\"))'"
+expect 0 "agy: first edit delivers guidance before retry" test "$(agy_out ag1 edit_file '{"Path":"\"/r/a.yml\""}')" = deny
+expect 0 "agy: lookup commands remain allowed" test "$(agy_out ag1 run_command '{"CommandLine":"python3 x/bundle.py select --brief a.yml"}')" = allow
+expect 0 "agy: new guidance for a different scope is returned" bash -c "$(declare -f agy_gate); gate_state='$gate_state'; h='$h'; agy_gate ag1 edit_file '{\"Path\":\"/r/a.cs\"}' | jq -e '.decision == \"deny\" and (.reason | contains(\"IAC\") or contains(\"CLD\"))'"
 expect 0 "agy: the same edit then passes" test "$(agy_out ag1 edit_file '{"Path":"/r/a.yml"}')" = allow
 expect 0 "agy: a chained command does not mark the lookup" test "$(agy_out ag2 run_command '{"CommandLine":"python3 bundle.py select a; rm x"}')" = allow -a "$(agy_out ag2 write_file '{"Path":"/r/b.md"}')" = deny
 expect 0 "agy: other tools pass" test "$(agy_out ag3 read_file '{"Path":"/r/a.yml"}')" = allow
@@ -642,7 +649,7 @@ expect 0 "install runs" inst
 expect 0 "legacy ~/.harness links are removed" bash -c "test ! -e '$tmp/home/.harness' && test ! -L '$tmp/home/.harness' && test ! -L '$tmp/home/.harness-feedback'"
 expect 0 "hooks point at the single root" jq -e '[.hooks.PreToolUse[].hooks[].command] | all(contains("/.golden-path-harness/harness/hooks/"))' "$tmp/home/.claude/settings.json"
 expect 0 "~/.golden-path-harness links the bundle and feedback" test "$(readlink "$tmp/home/.golden-path-harness/harness")" = "$here/harness" -a "$(readlink "$tmp/home/.golden-path-harness/feedback")" = "$here/feedback"
-expect 0 "~/.golden-path-harness has the runtime dirs" bash -c "cd '$tmp/home/.golden-path-harness' && test -d config -a -d cache -a -d state -a -d workspaces -a -d logs"
+expect 0 "~/.golden-path-harness has the runtime dirs" bash -c "cd '$tmp/home/.golden-path-harness' && test -d config -a -d cache -a -d state -a -d workspaces -a -d logs -a -d testing"
 echo keep >"$tmp/home/.golden-path-harness/state/marker"
 expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -qF '@$native_here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
 expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 3) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
