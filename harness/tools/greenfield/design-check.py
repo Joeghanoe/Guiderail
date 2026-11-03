@@ -13,6 +13,7 @@ import argparse
 import json
 import pathlib
 import re
+import subprocess
 import sys
 
 SKIP = {"bin", "obj", ".git", ".harness", "node_modules"}
@@ -94,13 +95,35 @@ def repo_agents(root):
                  f"AGENTS.md is {kind}; sections {sorted(topics)}; template prompts left: {left or 'none'}")
 
 
+def project_verify(root):
+    """The project's quick verify, kept outside the repo (tools/code/project-verify.sh)."""
+    script = pathlib.Path(__file__).resolve().parents[1] / "code" / "project-verify.sh"
+    try:
+        out = subprocess.run(["bash", str(script), "path", str(root)], capture_output=True, text=True, timeout=10, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    path = pathlib.Path(out.stdout.strip()) if out.returncode == 0 and out.stdout.strip() else None
+    return path if path and path.is_file() and not path.is_symlink() else None
+
+
 def verify_command(root):
-    path = root / "scripts" / "verify.sh"
-    body = text(path) if path.is_file() and not path.is_symlink() else ""
-    ok = (bool(body) and "dotnet format" in body and "-warnaserror" in body and "dotnet test" in body
-          )
-    return check("D04", "T.1", ok,
-                 f"scripts/verify.sh {'runs format, warnings-as-errors build and tests' if body else 'missing'}")
+    """T.1: format, warnings-as-errors build and tests run somewhere: CI is the authority, the per-project verify is the quick copy."""
+    def runs_all(body):
+        return bool(body) and "dotnet format" in body and "-warnaserror" in body.lower() and "dotnet test" in body
+
+    where = []
+    repo_verify = root / "scripts" / "verify.sh"
+    if repo_verify.is_file() and not repo_verify.is_symlink() and runs_all(text(repo_verify)):
+        where.append("scripts/verify.sh")
+    local = project_verify(root)
+    if local and runs_all(text(local)):
+        where.append("the project verify")
+    ci_files = [*root.glob("azure-pipelines*.yml"), *root.glob(".github/workflows/*.y*ml"), *root.glob("pipelines/**/*.yml")]
+    if any(runs_all(text(f)) for f in ci_files if f.is_file() and not f.is_symlink()):
+        where.append("CI")
+    return check("D04", "T.1", bool(where),
+                 f"format, warnings-as-errors build and tests run in {', '.join(where)}" if where
+                 else "no scripts/verify.sh, project verify or CI pipeline runs format, warnings-as-errors build and tests")
 
 
 def composition_root(root):
@@ -194,7 +217,7 @@ def run(root, profile="service", design_only=False):
     if design_only:  # the gate before src/: the design exists, the code is not judged yet
         failed = [c["id"] for c in checks if c["status"] == "fail"]
         return {"status": "pass" if not failed else "fail", "profile": profile, "failed": failed, "checks": checks,
-                "note": "design files only; the code checks run in scripts/verify.sh"}
+                "note": "design files only; the code checks run in the project verify and CI"}
     checks += [verify_command(root), composition_root(root), concrete_construction(root), test_layers(root)]
     if service:
         checks += [interfaces(root), observability_contract(root)]

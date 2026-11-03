@@ -34,7 +34,7 @@ system where needed; state what may depend on what; name any intentionally share
 
 ## Verifying
 
-`scripts/verify.sh` runs format, analyzers, build and tests; `--fast` skips the integration tests. Integration tests need <Docker / a test tenant>. <Layer 2: how the DEV tests run, and who runs them.>
+CI runs format, analyzers, build and tests. The agent's quick check is the project verify in `~/.golden-path-harness/projects/` (`--fast` skips the integration tests); this repo carries no copy of it. Integration tests need <Docker / a test tenant>. <Layer 2: how the DEV tests run, and who runs them.>
 
 ## When to ask
 

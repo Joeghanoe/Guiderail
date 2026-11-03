@@ -56,14 +56,14 @@ Stop and do the obvious thing instead when:
 
 7. **Add the test and the scenario.** The brief reports a companion affix and where those files live; it does not claim they are tests, so open one. A unit test goes in its layer (T.3) and behaviour the integration suite can reach needs a scenario (T.5). "The brief did not mention a test" is not a waiver.
 
-8. **Verify and report.** Run `scripts/verify.sh` (T.1). In your summary say which statements you followed, which you checked against a cited file, and every `inconsistent` or `stated`-against-the-code dimension you hit, with the decision you made or the question you are leaving to the maintainer.
+8. **Verify and report.** Run the project verify (T.1). In your summary say which statements you followed, which you checked against a cited file, and every `inconsistent` or `stated`-against-the-code dimension you hit, with the decision you made or the question you are leaving to the maintainer.
 
 # The brief waives nothing
 
 It is a proposal about where files go and what they are called. It is not a review, not an approval, and not evidence that the code is right:
 
 - `playbooks/review-change.md` applies to the result exactly as it would without the brief. A finding still needs a rule ID, a `file:line` and your own reading - "the brief said so" is not evidence, and the tool never judges compliance.
-- `scripts/verify.sh` still has to pass (T.1).
+- The project verify still has to pass (T.1).
 - Matching the repo's shape is not the same as following the rules. A repo can consistently do something CODE.5 or T.2 forbids; the brief will report that shape as a convention, because it is one. Judge the convention against the rules, and when the repo's own convention breaks a rule, say so rather than copying it. That is not something to reproduce.
 
 # Where it will mislead you

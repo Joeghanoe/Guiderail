@@ -516,8 +516,40 @@ def select_documents(root, changed, now=None):
             "hints": hints, "stale": stale}
 
 
+def changed_paths(base=None):
+    """Every file this work touches: committed since the base, staged, unstaged and untracked. A new repo has no base, so all of it."""
+    def git(*argv):
+        return subprocess.run(["git", *argv], capture_output=True, text=True, check=False)
+
+    top = git("rev-parse", "--show-toplevel")
+    if top.returncode != 0:
+        raise ValueError("--changed needs a git repository")
+    top = top.stdout.strip()
+
+    def lines(result):
+        return {line for line in result.stdout.splitlines() if line}
+
+    ref = base
+    if not ref:
+        for candidate in ("origin/HEAD", "origin/main", "origin/master", "main", "master"):
+            found = git("-C", top, "merge-base", "HEAD", candidate)
+            if found.returncode == 0 and found.stdout.strip():
+                ref = found.stdout.strip()
+                break
+    names = lines(git("-C", top, "diff", "--name-only", "--diff-filter=d", ref)) if ref else lines(git("-C", top, "ls-files"))
+    names |= lines(git("-C", top, "ls-files", "--others", "--exclude-standard"))
+    return sorted(names)
+
+
 def cmd_select(root, args):
-    changed = list(args.paths) or [line.strip() for line in sys.stdin if line.strip()]
+    if args.changed:
+        try:
+            changed = list(args.paths) + changed_paths(args.base)
+        except ValueError as error:
+            print(f"select: {error}", file=sys.stderr)
+            return 2
+    else:
+        changed = list(args.paths) or [line.strip() for line in sys.stdin if line.strip()]
     try:
         selected = select_documents(root, changed)
     except (ValueError, OSError) as error:
@@ -617,6 +649,8 @@ def main():
     select = sub.add_parser("select")
     select.add_argument("--brief", action="store_true", help="print only 'ID: summary' per rule (for an agent about to edit)")
     select.add_argument("--examples", action="store_true", help="with --brief, list the linked examples under each rule (human-verified first)")
+    select.add_argument("--changed", action="store_true", help="select for every file this work touches: committed since the base, staged, unstaged and untracked (all files in a repo with no base)")
+    select.add_argument("--base", help="with --changed, the ref to compare against; default is the merge base with the default branch")
     select.add_argument("paths", nargs="*", help="changed paths; read from stdin when none are given")
     findings = sub.add_parser("findings")
     findings.add_argument("file")

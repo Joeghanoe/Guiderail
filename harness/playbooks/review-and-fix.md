@@ -18,7 +18,7 @@ The PR pipeline (`infra/pipelines/ai-review.yml`) runs the deterministic gate fi
 
 # Steps
 
-1. **Gate first.** Run the repo's verify command (`scripts/verify.sh`, or the commands in `AGENTS.md`) and, when the repo has `.harness-scenarios.json`, `tools/testing/check-scenarios.py` (T.5). A gate that fails is a blocker and is reported first; do not review around it. Say which checks could not run (for example a feed that does not restore locally).
+1. **Gate first.** Run the repo's verify command (the project verify, or the commands in `AGENTS.md`) and, when the repo has `.harness-scenarios.json`, `tools/testing/check-scenarios.py` (T.5). A gate that fails is a blocker and is reported first; do not review around it. Say which checks could not run (for example a feed that does not restore locally).
 2. **Open PR and Sonar.** Check whether the branch has an open PR (`gh pr list --head <branch> --state open`, or `az repos pr list --source-branch <branch> --status active`). Without a PR, skip this step and say so. With one, Sonar is probably configured in CI, so read what it found before the review, to fix those issues now instead of after the next pipeline run:
    - the project key comes from `sonar-project.properties`, the pipeline YAML, or the repo's `AGENTS.md`; if none names it, say that Sonar was not checked rather than guess;
    - `~/.golden-path-harness/harness/tools/sonar/sonar-read.sh qualitygates/project_status projectKey=<key> pullRequest=<pr>` and `issues/search componentKeys=<key> pullRequest=<pr> resolved=false impactSoftwareQualities=RELIABILITY,SECURITY ps=500` (not `types=BUG`; see E-016). Add `hotspots/search` for security hotspots;

@@ -26,7 +26,7 @@ AI review against T.2; unit tests that must run without a network.
 
 # Failure behaviour
 
-Build error RS0030; `scripts/verify.sh` and the PR fail.
+Build error RS0030; the project verify and the PR fail.
 
 # Exception route
 

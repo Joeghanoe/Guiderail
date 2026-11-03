@@ -15,7 +15,7 @@ status: stable
 
 | Layer | Where | What runs | Who runs it |
 | --- | --- | --- | --- |
-| 0. Local | Developer or agent | `scripts/verify.sh`: unit tests, integration tests against containers (Azurite, MinIO, SQL) | Developer, agent (Stop hook) |
+| 0. Local | Developer or agent | the project verify: unit tests, integration tests against containers (Azurite, MinIO, SQL) | Developer, agent (Stop hook) |
 | 1. PR | CI, no cloud | The same verify command, plus image build, IaC validate, AI review | Pipeline |
 | 2. DEV | After deploy to DEV | Smoke, integration and E2E against real services with test tenants and generated data | Pipeline identity, not the agent (CLD.1) |
 | 3. PRD | Production | Run reports, alerts, periodic restore or synthetic checks | Platform |

@@ -50,13 +50,32 @@ expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test
 expect 0 "provider-neutral backup grader controls" python3 -I "$here/tests/test_backup_eval.py"
 expect 0 "greenfield design checks" python3 -I "$here/tests/test_design_check.py"
 gf="$tmp/greenfield"; mkdir -p "$gf"
+export GOLDEN_PATH_HOME="$tmp/gp-home"
+pv="$h/tools/code/project-verify.sh"
 expect 0 "greenfield-init writes the skeletons" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
 expect 0 "greenfield-init keeps what exists" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
 expect 1 "design gate fails a fresh skeleton" python3 -I "$h/tools/greenfield/design-check.py" "$gf" --profile service
-expect 0 "verify.sh names the service profile" grep -q "^DESIGN_PROFILE=service" "$gf/scripts/verify.sh"
+expect 0 "the repo gets no scripts/verify.sh" test ! -e "$gf/scripts/verify.sh"
+expect 0 "the project verify names the service profile" grep -q "^DESIGN_PROFILE=service" "$(bash "$pv" path "$gf")"
+expect 0 "the project verify lives under GOLDEN_PATH_HOME" test -x "$(bash "$pv" path "$gf")"
+expect 0 "project-verify init keeps what exists" bash "$pv" init --profile generic "$gf"
+expect 0 "the kept project verify still names the service profile" grep -q "^DESIGN_PROFILE=service" "$(bash "$pv" path "$gf")"
+expect 1 "project-verify rejects an unknown profile" bash "$pv" init --profile nope "$gf"
 gw="$tmp/greenfield-web"
 expect 0 "greenfield-init --web-app writes the skeletons" bash "$h/tools/greenfield/greenfield-init.sh" --web-app "$gw"
-expect 0 "verify.sh names the web-app profile" grep -q "^DESIGN_PROFILE=web-app" "$gw/scripts/verify.sh"
+expect 0 "the project verify names the web-app profile" grep -q "^DESIGN_PROFILE=web-app" "$(bash "$pv" path "$gw")"
+expect 0 "two repos get two project verifies" test "$(bash "$pv" path "$gf")" != "$(bash "$pv" path "$gw")"
+# Stop hook: runs the project verify, ignores one committed in the repo
+sv="$tmp/stop-repo"; mkdir -p "$sv/scripts"; git -C "$sv" init -q; git -C "$sv" config user.email t@t; git -C "$sv" config user.name t
+echo base >"$sv/a.txt"; git -C "$sv" add -A; git -C "$sv" commit -qm base; echo change >>"$sv/a.txt"
+stop() { jq -n '{}' | CLAUDE_PROJECT_DIR="$sv" "$h/hooks/stop-verify.sh"; }
+printf '#!/usr/bin/env bash\nexit 1\n' >"$sv/scripts/verify.sh"; chmod +x "$sv/scripts/verify.sh"
+expect 0 "stop hook ignores a verify.sh committed in the repo" stop
+svp="$(bash "$pv" path "$sv")"; mkdir -p "$(dirname "$svp")"; printf '#!/usr/bin/env bash\necho "fast:$*"; test "$HARNESS_REPO_ROOT" = "%s"; exit 1\n' "$sv" >"$svp"; chmod +x "$svp"
+expect 2 "stop hook sends the agent back when the project verify fails" stop
+printf '#!/usr/bin/env bash\ntest "${1:-}" = --fast\n' >"$svp"
+expect 0 "stop hook passes --fast and succeeds" stop
+unset GOLDEN_PATH_HOME
 expect 1 "design gate fails a fresh web-app skeleton" python3 -I "$h/tools/greenfield/design-check.py" "$gw" --profile web-app
 expect 0 "evaluation artifact freeze controls" python3 -I "$here/tests/test_freeze_eval.py"
 expect 0 "candidate runner controls (stand-in adapter, no model)" python3 -I "$here/tests/test_run_candidate.py"
@@ -94,6 +113,30 @@ unset NV_LOG
 expect 0 "agent adapters (stand-in CLIs, no provider)" python3 -I "$here/tests/test_adapters.py"
 expect 0 "overnight evidence: stub, scenario match, verdicts (no model)" python3 -I "$here/tests/test_overnight_evidence.py"
 expect 0 "review usage: tokens, cost, time per run; clean-commit check (no model)" python3 -I "$here/tests/test_usage.py"
+
+echo "== select --changed (a greenfield change)"
+sc="$tmp/select-changed"; mkdir -p "$sc"; git -C "$sc" init -q -b main; git -C "$sc" config user.email t@t; git -C "$sc" config user.name t
+echo base >"$sc/README.md"; git -C "$sc" add -A; git -C "$sc" commit -qm base
+sel_changed() { (cd "$sc" && python3 -I "$h/tools/harness/bundle.py" select --brief --changed); }
+expect 0 "design-only change selects no CODE rule" test -z "$(sel_changed | grep '^CODE\.' || true)"
+mkdir -p "$sc/src"; echo "class A {}" >"$sc/src/A.cs"
+expect 0 "an untracked .cs file selects CODE.5 (git diff alone would miss it)" test -n "$(sel_changed | grep '^CODE.5' || true)"
+git -C "$sc" checkout -q -b feat; git -C "$sc" add -A; git -C "$sc" commit -qm code
+expect 0 "a committed .cs file on a branch selects CODE.5" test -n "$(sel_changed | grep '^CODE.5' || true)"
+nobase="$tmp/select-nobase"; mkdir -p "$nobase/src"; git -C "$nobase" init -q -b work; echo "class B {}" >"$nobase/src/B.cs"
+expect 0 "a repo with no base selects for every file" bash -c "cd '$nobase' && python3 -I '$h/tools/harness/bundle.py' select --brief --changed | grep -q '^CODE.5'"
+expect 2 "--changed outside a git repository fails loudly" bash -c "cd '$tmp' && GIT_CEILING_DIRECTORIES='$tmp' python3 -I '$h/tools/harness/bundle.py' select --changed"
+
+echo "== project verify template (every check runs)"
+vt="$tmp/verify-template"; mkdir -p "$vt/bin" "$vt/repo"; git -C "$vt/repo" init -q -b main
+for c in dotnet; do printf '#!/usr/bin/env bash\necho "dotnet $*" >>"%s/calls"\n' "$vt" >"$vt/bin/$c"; chmod +x "$vt/bin/$c"; done
+: >"$vt/repo/App.slnx"
+GOLDEN_PATH_HOME="$tmp/gp-home" bash "$pv" init --profile service "$vt/repo" >/dev/null
+vfy="$(GOLDEN_PATH_HOME="$tmp/gp-home" bash "$pv" path "$vt/repo")"
+expect 1 "a failing design gate still fails the project verify" bash -c "cd '$vt/repo' && PATH='$vt/bin:'\$PATH HARNESS_CODE5_EXTERNAL=1 '$vfy' --fast"
+expect 0 "a failing design gate does not skip the later build" grep -q "dotnet build" "$vt/calls"
+mkdir -p "$vt/repo/src"; echo "public class A {} public class B {}" >"$vt/repo/src/A.cs"
+expect 0 "CODE.5 reports two types in one file in --fast although the design gate failed" bash -c "cd '$vt/repo' && PATH='$vt/bin:'\$PATH '$vfy' --fast 2>&1 | grep -q 'CODE.5.file-layout'"
 
 echo "== guard-bash"
 expect 0 "dotnet test is allowed" bash_hook "dotnet test Bizure.Backup.slnx -c Release"

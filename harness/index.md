@@ -18,4 +18,4 @@ Source: [Way of Work](https://teamvaluebv.sharepoint.com/:fl:/g/contentstorage/C
 
 - [tools/](tools/) - scripts grouped by domain, see its index: harness, review, testing, cloud, azure-devops, servicenow, sonar, diagrams, orchestration
 - [hooks/](hooks/) - Claude Code guard hooks: bash, read, stop-verify
-- [templates/](templates/) - `example.md` for feedback, `finding.md` for a review finding, `business-testplan.spec.json` for a business test plan, `solution-design.md` for a new service's design, `repo/` for what a project repo owns (AGENTS.md, verify.sh, analyzers)
+- [templates/](templates/) - `example.md` for feedback, `finding.md` for a review finding, `business-testplan.spec.json` for a business test plan, `solution-design.md` for a new service's design, `repo/` for what a project repo owns (AGENTS.md, analyzers)

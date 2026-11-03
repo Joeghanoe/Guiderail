@@ -6,13 +6,13 @@ These rules apply in every TeamValue repo, for every agent (Claude Code, GitHub 
 
 ## Look things up, don't load everything
 
-Keep context small: load only what the task needs, and say so when you skipped something relevant. Before you edit code: open `~/.golden-path-harness/harness/index.md`, run `python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select --brief <the files you will change>`, and open the rule files whose summary applies. The harness is a knowledge bundle (Open Knowledge Format) at `~/.golden-path-harness/harness/` (in CI: `.harness/` in the checkout); open only the folder and files your task touches. For a whole PR, pipe `git diff --name-only origin/main...HEAD` into the same `select` command.
+Keep context small: load only what the task needs, and say so when you skipped something relevant. Before you edit code: open `~/.golden-path-harness/harness/index.md`, run `python3 ~/.golden-path-harness/harness/tools/harness/bundle.py select --brief --changed`, and open the rule files whose summary applies. Rules follow paths: re-run it for each new kind of file (first `.cs`, Bicep), or CODE.* never appears. The harness is a knowledge bundle (Open Knowledge Format) at `~/.golden-path-harness/harness/` (in CI: `.harness/` in the checkout); open only the folder and files your task touches.
 
 Cite rules and principles by ID (`T.2`, `P7`). Never invent one; if nothing applies, say it is a quality note, not a finding.
 
 ## Start new work design-first
 
-New repo or service: your first command, before any file under `src/`, is `bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md` and `scripts/verify.sh` for you to fill in. BannedSymbols/analyzers and scenario mappings require repo opt-in. Fill the design and write an ADR per hard-to-reverse decision; no file under `src/` until `bash scripts/verify.sh --design` passes. Then build (DEL.4, CODE.8, OBS.3). `scripts/verify.sh` fails while the design is unfinished or the code does not follow it, and must pass before you say done. Other work: open `~/.golden-path-harness/harness/index.md`, run the `select` command, open the rules it names. `REPORT.md` or the PR names the rule IDs applied and the ones you did not.
+New repo or service: your first command, before any file under `src/`, is `bash ~/.golden-path-harness/harness/tools/greenfield/greenfield-init.sh --service`. It writes `docs/solution-design.md`, `AGENTS.md` and the project verify for you to fill in. BannedSymbols/analyzers and scenario mappings require repo opt-in. Fill the design and write an ADR per hard-to-reverse decision; no file under `src/` until the project verify passes with `--design`. Then build (DEL.4, CODE.8, OBS.3). It fails while the design is unfinished or the code does not follow it, and must pass before you say done. Other work: open `~/.golden-path-harness/harness/index.md`, run the `select` command, open the rules it names. `REPORT.md` or the PR names the rule IDs applied and the ones you did not.
 
 ## Decompose workloads and tier models
 
@@ -46,7 +46,7 @@ The user's `az` login is already in place; never log in (CLD.1). For a task that
 
 ## Done means verified (T.1)
 
-Run `scripts/verify.sh` (format check, analyzers as errors, build, tests) before you say a change is done. The Stop hook runs `scripts/verify.sh --fast` (incremental build and unit tests, a few seconds); CI runs the full command. Report what ran, what failed with its output, and what you skipped and why.
+CI is the full gate. Before you say a change is done run the project verify (`tools/code/project-verify.sh path`): the Stop hook runs it with `--fast`. Add what CI misses there, and propose a critical check to the repo's CI as a diff for a human. Report what ran, what failed with its output, and what you skipped and why.
 
 Code you write is testable (T.2): I/O, configuration and time come in through DI. Behaviour that the integration suite can reach comes with a scenario (T.5). A defect found in DEV or production gets a layer 0 or 1 test (T.4).
 

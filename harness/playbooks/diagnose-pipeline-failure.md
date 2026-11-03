@@ -23,7 +23,7 @@ verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 
 | Class | Signal | Next step |
 | --- | --- | --- |
-| code | Build, analyzer, format or unit-test error at a file and line | Fix with a test that fails first (T.4), run `scripts/verify.sh` (T.1) |
+| code | Build, analyzer, format or unit-test error at a file and line | Fix with a test that fails first (T.4), run the project verify (T.1) |
 | pipeline definition | YAML, template, variable-name or task-version error | Fix the file in the repo and say which stage it changes |
 | environment | Service connection, variable group, agent pool, quota, expired secret, network | No code change; write the command or portal step down for a human |
 | flaky | The same commit passes on rerun, or the failure is a timeout or a download | Say so; a rerun is a human action (CLD.2) |

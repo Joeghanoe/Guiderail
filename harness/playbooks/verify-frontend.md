@@ -9,7 +9,7 @@ verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 
 # When
 
-You built or changed something users see: a page, component, layout, form or stylesheet (UI.1). Run this before you say it is done, after `scripts/verify.sh` passes. Skip it for work with no UI and say that you skipped it.
+You built or changed something users see: a page, component, layout, form or stylesheet (UI.1). Run this before you say it is done, after the project verify passes. Skip it for work with no UI and say that you skipped it.
 
 # Input
 

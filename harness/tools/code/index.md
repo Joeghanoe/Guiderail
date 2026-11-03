@@ -30,3 +30,7 @@ verdicts exercise the approved scope. They do not change reviewer thresholds. Th
 These fixtures gate checker regressions. Consumer compliance is checked only where the updated verify template or reusable PR pipeline is adopted; see [the gate](../../gates/code-types.md).
 JSON schema version 2 adds `inheritedFindings`, `symbols` and `coverage`. Baseline syntax errors
 return exit 2. Capture the checker commit and SDK version alongside JSON for reproducibility.
+
+## Project verify
+
+`project-verify.sh path [repo-root]` prints, and `project-verify.sh init [--profile generic|service|web-app] [repo-root]` writes, the project's quick verify command in `~/.golden-path-harness/projects/<repo-id>/verify.sh` (the repo-id comes from the origin URL). It is kept outside the repo: CI is the full gate, this is the agent's fast local subset, run by the Stop hook with `--fast` (T.1). A scripts/verify.sh committed in a repo is not used.
