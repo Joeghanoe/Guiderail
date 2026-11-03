@@ -2,6 +2,8 @@
 
 Cases are brownfield: a change task on an existing codebase, with hidden acceptance criteria. Greenfield scenarios stay in `benchmarks/greenfield/`. `harness/tools/testing/run_brownfield.py` runs validation cases (see below).
 
+To register existing projects through symlinks or copies, freeze their sources and document known gaps, follow the [reference project validation workflow](../reference-projects.md). It also explains how the local project registry connects to these executable cases.
+
 | Role | What it is for | Where it lives | May teach the harness |
 | --- | --- | --- | --- |
 | train | source of examples (`harness/examples/`) | no cases | yes |
