@@ -41,6 +41,7 @@ echo "== framework registry, retrieval and receipts"
 expect 0 "verification registry and receipt contracts" python3 -I "$here/tests/test_verification.py"
 expect 0 "selector and edit-context regression contracts" python3 -I "$here/tests/test_context.py"
 expect 0 "review-input change detection matrix" python3 -I "$here/tests/test_review_changed.py"
+expect 0 "RTK rewrites satisfy Codex's permission contract" python3 -I "$here/tests/test_rtk_codex.py"
 
 expect 0 "standard scanner calibration (real tools when configured)" python3 -I "$here/tests/test_standard_checks.py"
 

@@ -12,6 +12,7 @@
 # Removes the legacy ~/.harness and ~/.harness-feedback links (and their hook/allow entries) when it finds them.
 #   ~/.claude/CLAUDE.md         a marked block that imports AGENTS.base.md
 #   ~/.claude/settings.json     the guard hooks, the Stop verify, an allow rule for cloud-read.sh
+#   ~/.codex/hooks.json         adapt an existing RTK hook for Codex's rewrite contract
 #   ~/.claude/skills/tv-review/ /tv-review for Claude Code
 #   ~/.copilot/skills/tv-review/ /tv-review for Copilot (VS Code and CLI)
 #   VS Code user prompts        teamvalue.instructions.md for Copilot
@@ -162,6 +163,22 @@ if json.dumps(settings, indent=2) != before:
     write(settings_path, json.dumps(settings, indent=2) + "\n")
 for a in removed:
     print(f"removed allow rule {a} (CLD.1: use ~/.golden-path-harness/harness/tools/cloud/cloud-read.sh)")
+
+# Adapt only an existing RTK hook in Codex. Claude keeps its native RTK hook.
+codex_hooks = home / ".codex" / "hooks.json"
+if codex_hooks.exists():
+    data = json.loads(codex_hooks.read_text(encoding="utf-8"))
+    before = json.dumps(data, indent=2)
+    for group in data.get("hooks", {}).get("PreToolUse", []):
+        for entry in group.get("hooks", []):
+            command = entry.get("command", "")
+            owned = (str(gp_home / "harness/hooks/rtk-codex.py") in command or
+                     any(mark + "rtk-codex.py" in command for mark in HOOK_MARKS))
+            if entry.get("type") == "command" and (command == "rtk hook claude" or owned):
+                entry["command"] = (f'"{sys.executable}" -I "{gp_home}/harness/hooks/rtk-codex.py"'
+                                    if install else "rtk hook claude")
+    if json.dumps(data, indent=2) != before:
+        write(codex_hooks, json.dumps(data, indent=2) + "\n")
 
 # Claude's own plugin state for the old AI Hub
 for name in ("known_marketplaces.json", "installed_plugins.json"):
