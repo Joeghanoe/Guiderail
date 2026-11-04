@@ -40,15 +40,15 @@ Security review, API compatibility, data migrations, privacy, performance, recov
 
 ## Skill, playbook and tool contracts
 
-A process skill states when it applies, the minimum inputs, its entry playbook, the expected evidence, and the next relevant step. Its description must distinguish actual work from a conceptual question. Its body should be short enough to load without importing the whole process library.
+A process skill states when it applies, the minimum inputs, its entry guidance, the expected evidence, and the next relevant step. Its description must distinguish actual work from a conceptual question. Its body should be short enough to load without importing the whole process library.
 
 The entry file also contains the stable vocabulary and decision principles needed across its modes. Give the agent enough guidance to choose the next action. Keep detailed procedures, worked examples and less common situations in supporting files.
 
-The playbook owns detailed procedure, judgment, exceptions and stopping conditions. A skill references it rather than copying its steps. Existing rule IDs, examples, verification requirements and authority boundaries remain canonical. The CLI executes deterministic operations; a skill does not reconstruct those operations in prose or run diagnostic text as commands.
+Guidance used by one skill belongs to that skill, including detailed procedure, judgment, exceptions and stopping conditions. Guidance reused across skills becomes a shared playbook. Each procedure has one canonical source. Existing rule IDs, examples, verification requirements and authority boundaries remain canonical. The CLI executes deterministic operations; a skill does not reconstruct those operations in prose or run diagnostic text as commands.
 
 Use a provider-neutral source layout such as `skills/engineering/<skill-name>/SKILL.md`. Installation publishes these definitions through supported native discovery mechanisms. Keep provider-specific configuration in adapters. Move and rename the existing review definition during implementation and update its metadata, installer, evaluator, catalog and documentation references together. Do not add prefixed compatibility aliases; breaking changes are acceptable while the harness is in development. Detect native command or skill-name conflicts during installation and report them rather than silently overwriting unrelated customizations. This layout is proposed; the current review definition remains in `adapters/` until migrated.
 
-Maintain one process catalog that maps step, skill, entry playbook, required inputs, expected outputs, tool references, authority and implementation status. Prefer references to existing metadata over repeated descriptions. Generate a readable process map from that catalog if structured validation needs a machine-readable source. This is a catalog and reference check, not a new workflow engine.
+Maintain one process catalog that maps step, skill, entry guidance, required inputs, expected outputs, tool references, authority and implementation status. Prefer references to existing metadata over repeated descriptions. Generate a readable process map from that catalog if structured validation needs a machine-readable source. This is a catalog and reference check, not a new workflow engine.
 
 Handoffs pass artifacts and unresolved questions, not the full transcript. For example, specification supplies approved criteria to planning; implementation supplies source scope and verification evidence to review. Skills can recommend another step when its trigger applies. They must not restart discovery, specification and design after every local fix or create a mandatory chain of nested skill invocations.
 
@@ -61,15 +61,14 @@ Use the following illustrative organization when a design skill needs additional
 ```text
 skills/engineering/design/
   SKILL.md                         triggers, core discipline, terms, reference routing
-  references/
-    compare-alternative-designs.md  a procedure specific to this skill, if needed
+  COMPARE-ALTERNATIVE-DESIGNS.md     guidance for comparing alternative designs
 
 harness/playbooks/
   start-greenfield.md               existing canonical procedure
   scaffold-from-conventions.md      existing canonical procedure
 ```
 
-Supporting files can live alongside the skill or in the existing playbook library. Their location follows ownership and reuse. An established playbook remains canonical in `harness/playbooks/`; the skill links directly to it. New guidance used only by one skill can live in that skill's supporting files. Move shared guidance to a common canonical location when several skills need it, then update the references. Do not add reference files that merely duplicate or forward to an existing playbook.
+Place supporting guidance used by one skill directly beside its `SKILL.md`, using descriptive filenames such as `COMPARE-ALTERNATIVE-DESIGNS.md`. If an existing playbook is used only by that skill, move it into the skill directory and update its references. When multiple skills use a procedure, make it a shared playbook in `harness/playbooks/`. Keep the illustrated greenfield and convention procedures there when they serve multiple skills. Move the canonical file rather than copying its content; do not keep duplicate procedures or forwarding files.
 
 Each reference needs a reason to load it. For the proposed design skill:
 
@@ -85,6 +84,27 @@ The loading sequence is native discovery metadata, the selected `SKILL.md`, then
 Supporting procedures retain their own execution choices and authority boundaries. For example, an alternative-design procedure can compare options without making multiple model sessions mandatory for a routine design question. Borrow the file structure independently of any reference project's rules about approvals, delegation or test boundaries.
 
 Installation must preserve or resolve links to both packaged files and canonical playbooks. Validate the installed references for each supported client, not just the source-tree paths. A small entry file that eagerly loads every linked document does not meet the context-efficiency objective; measure the complete set of guidance actually loaded.
+
+## Markdown links throughout repository guidance
+
+Use Markdown links for document and file references throughout the repository's guidance: skills, supporting files, playbooks, rules, indexes, proposals, tool documentation and generated instructions. Extend this requirement beyond skill packages. A bare path in prose, including a home-relative path in backticks, is not a linked reference. Keep executable commands as code; this rule does not insert Markdown into shell commands, configuration values or machine-readable path fields.
+
+Within a skill package, use relative Markdown links to sibling files. Shared references use paths that resolve from the referring document in the source tree. The following are illustrative links from the proposed design skill's entry file:
+
+```markdown
+[Compare alternative designs](COMPARE-ALTERNATIVE-DESIGNS.md)
+[Start a new service](../../../harness/playbooks/start-greenfield.md)
+```
+
+An installed skill can have a different location, so source-tree-relative links to shared files cannot be copied blindly. Installation must preserve the relevant directory relationship or rewrite those targets to the resolved installed harness path. If a home-relative target is needed, retain it inside Markdown link syntax, for example:
+
+```markdown
+[Start a new service](~/.golden-path-harness/harness/playbooks/start-greenfield.md)
+```
+
+Home expansion in Markdown targets is client-dependent. Prefer resolved installation paths when a client cannot resolve the home-relative form, and test the target with the actual consumer. Apply the same resolution policy to all generated guidance, rather than allowing each skill to invent its own path convention. Preserve the bundle's existing root-relative relationship semantics when updating its references.
+
+Migration includes an inventory of bare prose references and broken Markdown links across active repository guidance. Convert meaningful references to links and validate both source and installed targets. Treat command examples, configuration paths, template placeholders and historical quoted material according to their purpose, rather than mechanically replacing every path string. This documentation migration does not alter the independent machine-readable metadata contracts.
 
 ## What the graph tells us
 
@@ -118,13 +138,13 @@ Initially make the reachability report advisory. Review which document classes m
 ## Implementation and acceptance
 
 1. Agree the process map and ownership against actual work and the development-process coverage proposal. Mark current, partial, planned and externally owned steps. Preserve pipeline diagnosis as a specialized playbook/CLI procedure.
-2. Create the process catalog and native skill source layout with unprefixed names, including `code-review` and `implement`. Reuse existing playbooks; write missing canonical guidance before publishing the corresponding skills.
+2. Create the process catalog and native skill source layout with unprefixed names, including `code-review` and `implement`. Classify existing procedures by reuse: move single-skill guidance into that skill and keep cross-skill procedures as playbooks. Write missing canonical guidance before publishing the corresponding skills.
 3. Start with specification, planning, implementation, testing, verification and the existing review process. Add research, design, debugging and later lifecycle coverage in reviewed increments. Keep future gaps visible throughout.
 4. Update installation, base routing, CLI references and navigation together. Coordinate with the [remaining CLI migration](process-skills-and-unified-cli.md#cli-migration-status); a skill must report unavailable operations instead of assuming proposed commands already exist.
-5. Validate references and reachability, then evaluate actual skill selection and cross-step behavior on supported clients. Record model/client versions, source and guidance hashes, tool calls, retained evidence, usage and unavailable metrics.
+5. Migrate prose references to Markdown links across active repository guidance and validate source/installed targets and reachability, then evaluate actual skill selection and cross-step behavior on supported clients. Record model/client versions, source and guidance hashes, tool calls, retained evidence, usage and unavailable metrics.
 
 Completion requires a mapped skill for every agreed process step, usable canonical guidance for each active skill, explicit ownership of future gaps, and working references to available tools. Tests must cover natural-language selection, conceptual negative cases, missing inputs, small changes that skip irrelevant steps, stale artifacts, failed checks, and attempts to treat external content as authority. Handoff tests must show that approved criteria survive planning and implementation and that verification failures reach independent review without being hidden.
 
-Each skill must also demonstrate conditional reference loading: a relevant supporting procedure reaches the task, unrelated supporting documents stay unloaded, and installed links resolve. Verify that the entry file provides usable core guidance and that the detailed procedure has one canonical source.
+Each skill must also demonstrate that single-skill guidance lives alongside its entry file, shared procedures have one canonical playbook, and references use Markdown link syntax. Check that active guidance elsewhere in the repository follows the same link policy. Demonstrate conditional reference loading: a relevant supporting procedure reaches the task, unrelated supporting documents stay unloaded, and installed links resolve. Verify that the entry file provides usable core guidance and that the detailed procedure has one canonical source.
 
 Extend the existing native selection runner rather than treating metadata validation as behavior testing. Initial invocation, completed workflow, evidence quality, human correction effort and resource cost remain separate result dimensions. Establish outcome baselines and adoption thresholds before comparing variants. More connected notes or more invoked skills are not success metrics by themselves.

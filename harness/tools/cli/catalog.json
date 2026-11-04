@@ -1,0 +1,1660 @@
+{
+  "schema_version": 1,
+  "commands": [
+    {
+      "path": [
+        "bundle",
+        "check"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "check"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "bundle check",
+      "global_root": true
+    },
+    {
+      "path": [
+        "bundle",
+        "index"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "index"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "harness-write"
+      ],
+      "summary": "bundle index",
+      "global_root": true
+    },
+    {
+      "path": [
+        "bundle",
+        "privacy-check"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "privacy-check"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "bundle privacy-check",
+      "global_root": true
+    },
+    {
+      "path": [
+        "bundle",
+        "budget"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "budget"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "bundle budget",
+      "global_root": true
+    },
+    {
+      "path": [
+        "bundle",
+        "check-example"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "check-example"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "bundle check-example",
+      "global_root": true
+    },
+    {
+      "path": [
+        "bundle",
+        "submit-feedback"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "submit-feedback"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "harness-write"
+      ],
+      "summary": "bundle submit-feedback",
+      "global_root": true
+    },
+    {
+      "path": [
+        "findings",
+        "validate"
+      ],
+      "tool": "harness/bundle.py",
+      "native": [
+        "findings"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "findings validate",
+      "reject_dropped": true,
+      "global_root": true
+    },
+    {
+      "path": [
+        "findings",
+        "render"
+      ],
+      "tool": "review/render.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "findings render"
+    },
+    {
+      "path": [
+        "context",
+        "report"
+      ],
+      "tool": "harness/density.py",
+      "native": [
+        "report"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "context report",
+      "global_root": true
+    },
+    {
+      "path": [
+        "context",
+        "duplicates"
+      ],
+      "tool": "harness/density.py",
+      "native": [
+        "duplicates"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "context duplicates",
+      "global_root": true
+    },
+    {
+      "path": [
+        "context",
+        "candidates"
+      ],
+      "tool": "harness/density.py",
+      "native": [
+        "candidates"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "context candidates",
+      "global_root": true
+    },
+    {
+      "path": [
+        "context",
+        "check-adapter"
+      ],
+      "tool": "harness/check-adapter.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "model-call"
+      ],
+      "summary": "context check-adapter"
+    },
+    {
+      "path": [
+        "project",
+        "verify-config",
+        "path"
+      ],
+      "tool": "code/project-verify.sh",
+      "native": [
+        "path"
+      ],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "project verify-config path"
+    },
+    {
+      "path": [
+        "project",
+        "verify-config",
+        "init"
+      ],
+      "tool": "code/project-verify.sh",
+      "native": [
+        "init"
+      ],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-write"
+      ],
+      "summary": "project verify-config init"
+    },
+    {
+      "path": [
+        "servicenow",
+        "get"
+      ],
+      "tool": "servicenow/sn-get.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "network-read",
+        "credential-use"
+      ],
+      "summary": "servicenow get"
+    },
+    {
+      "path": [
+        "servicenow",
+        "access"
+      ],
+      "tool": "servicenow/sn-access-check.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "network-read",
+        "credential-use"
+      ],
+      "summary": "servicenow access"
+    },
+    {
+      "path": [
+        "deps",
+        "read"
+      ],
+      "tool": "deps/dep-read.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read",
+        "optional-network-read"
+      ],
+      "summary": "deps read"
+    },
+    {
+      "path": [
+        "deps",
+        "currency"
+      ],
+      "tool": "deps/check-currency.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "deps currency"
+    },
+    {
+      "path": [
+        "dev",
+        "read"
+      ],
+      "tool": "dev/dev-read.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-service-read",
+        "redacted-output"
+      ],
+      "summary": "dev read"
+    },
+    {
+      "path": [
+        "spec",
+        "new"
+      ],
+      "tool": "spec/spec-note.py",
+      "native": [
+        "new"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "vault-write"
+      ],
+      "summary": "spec new"
+    },
+    {
+      "path": [
+        "spec",
+        "set"
+      ],
+      "tool": "spec/spec-note.py",
+      "native": [
+        "set"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "vault-write"
+      ],
+      "summary": "spec set"
+    },
+    {
+      "path": [
+        "spec",
+        "list"
+      ],
+      "tool": "spec/spec-note.py",
+      "native": [
+        "list"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "spec list"
+    },
+    {
+      "path": [
+        "scaffold",
+        "kinds"
+      ],
+      "tool": "scaffold/read-conventions.py",
+      "native": [
+        "kinds"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "scaffold kinds"
+    },
+    {
+      "path": [
+        "scaffold",
+        "brief"
+      ],
+      "tool": "scaffold/read-conventions.py",
+      "native": [
+        "brief"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "scaffold brief"
+    },
+    {
+      "path": [
+        "orchestrate",
+        "tier"
+      ],
+      "tool": "orchestration/orchestrate.py",
+      "native": [
+        "tier"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "orchestrate tier"
+    },
+    {
+      "path": [
+        "orchestrate",
+        "plan"
+      ],
+      "tool": "orchestration/orchestrate.py",
+      "native": [
+        "plan"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "orchestrate plan"
+    },
+    {
+      "path": [
+        "orchestrate",
+        "layers"
+      ],
+      "tool": "orchestration/orchestrate.py",
+      "native": [
+        "layers"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        3
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "orchestrate layers"
+    },
+    {
+      "path": [
+        "diagram",
+        "build"
+      ],
+      "tool": "diagrams/dk",
+      "native": [
+        "build"
+      ],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "artifact-write",
+        "optional-network-read"
+      ],
+      "summary": "diagram build",
+      "defaults": {
+        "--out": "diagram.drawio"
+      },
+      "flag_aliases": {
+        "--out": [
+          "-o"
+        ]
+      }
+    },
+    {
+      "path": [
+        "diagram",
+        "logo"
+      ],
+      "tool": "diagrams/dk",
+      "native": [
+        "logo"
+      ],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "artifact-write",
+        "optional-network-read"
+      ],
+      "summary": "diagram logo",
+      "defaults": {
+        "--dir": "logos"
+      },
+      "flag_aliases": {
+        "--dir": [
+          "-d"
+        ]
+      },
+      "optional_output": true
+    },
+    {
+      "path": [
+        "diagram",
+        "icons"
+      ],
+      "tool": "diagrams/dk",
+      "native": [
+        "icons"
+      ],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "diagram icons",
+      "defaults": {}
+    },
+    {
+      "path": [
+        "frontend",
+        "contrast"
+      ],
+      "tool": "frontend/contrast.mjs",
+      "native": [],
+      "runtime": "node",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "frontend contrast"
+    },
+    {
+      "path": [
+        "frontend",
+        "auth-msal"
+      ],
+      "tool": "frontend/auth-examples/msal-client-credentials.mjs",
+      "native": [],
+      "runtime": "node",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "credential-use",
+        "token-file-write",
+        "network-read"
+      ],
+      "summary": "frontend auth-msal",
+      "human_only": true
+    },
+    {
+      "path": [
+        "greenfield",
+        "check"
+      ],
+      "tool": "greenfield/design-check.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "greenfield check"
+    },
+    {
+      "path": [
+        "ado",
+        "run",
+        "timing"
+      ],
+      "tool": "azure-devops/ado-run-timing.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "network-read",
+        "credential-use"
+      ],
+      "summary": "ado run timing"
+    },
+    {
+      "path": [
+        "ado",
+        "pr",
+        "threads"
+      ],
+      "tool": "azure-devops/ado-pr-threads.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "network-read",
+        "credential-use"
+      ],
+      "summary": "ado pr threads"
+    },
+    {
+      "path": [
+        "ado",
+        "pr",
+        "post-findings"
+      ],
+      "tool": "azure-devops/ado-post-findings.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "external-write",
+        "pipeline-identity"
+      ],
+      "summary": "ado pr post-findings"
+    },
+    {
+      "path": [
+        "ado",
+        "pr",
+        "mine-comments"
+      ],
+      "tool": "azure-devops/ado-mine-review-comments.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "network-read",
+        "credential-use",
+        "artifact-write"
+      ],
+      "summary": "ado pr mine-comments",
+      "human_only": true,
+      "defaults": {
+        "--out": "review-comments.csv"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "registry"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "check"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "checks registry"
+    },
+    {
+      "path": [
+        "checks",
+        "run"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "run"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "checks run",
+      "defaults": {
+        "--out": "verification"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "code-types"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "code-types"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "checks code-types",
+      "defaults": {
+        "--out": "code-types"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "secrets"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "gitleaks"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "checks secrets",
+      "defaults": {
+        "--out": "secrets"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "keyvault"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "psrule"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "checks keyvault",
+      "defaults": {
+        "--out": "keyvault"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "review-plan"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "review-plan"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read",
+        "artifact-write"
+      ],
+      "summary": "checks review-plan",
+      "defaults": {
+        "--out": "semantic-plan.json"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "report"
+      ],
+      "tool": "verification/verify.py",
+      "native": [
+        "report"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read",
+        "artifact-write"
+      ],
+      "summary": "checks report",
+      "defaults": {
+        "--out": "receipt.json"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "install-tools"
+      ],
+      "tool": "verification/install-tools.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "network-read",
+        "executable-install"
+      ],
+      "summary": "checks install-tools",
+      "defaults": {
+        "--out": "tools"
+      }
+    },
+    {
+      "path": [
+        "checks",
+        "iac"
+      ],
+      "tool": "iac/check-iac.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "checks iac",
+      "requires_input": true
+    },
+    {
+      "path": [
+        "checks",
+        "scenarios"
+      ],
+      "tool": "testing/check-scenarios.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "checks scenarios",
+      "requires_input": true
+    },
+    {
+      "path": [
+        "checks",
+        "test-presence"
+      ],
+      "tool": "code/test-presence.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "checks test-presence",
+      "requires_input": false
+    },
+    {
+      "path": [
+        "checks",
+        "openapi"
+      ],
+      "tool": "code/openapi-drift.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "checks openapi",
+      "requires_input": false
+    },
+    {
+      "path": [
+        "checks",
+        "node"
+      ],
+      "tool": "code/node-verify.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "dependency-install"
+      ],
+      "summary": "checks node",
+      "requires_input": false
+    },
+    {
+      "path": [
+        "code",
+        "types"
+      ],
+      "tool": "code/Program.cs",
+      "native": [],
+      "runtime": "csharp",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "code types"
+    },
+    {
+      "path": [
+        "eval",
+        "reviewer"
+      ],
+      "tool": "review/eval.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "model-call",
+        "artifact-write"
+      ],
+      "summary": "eval reviewer",
+      "defaults": {
+        "--out": "reviewer-eval"
+      }
+    },
+    {
+      "path": [
+        "eval",
+        "queue",
+        "run"
+      ],
+      "tool": "review/eval-queue.py",
+      "native": [
+        "run"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "model-call",
+        "runtime-state-write"
+      ],
+      "summary": "eval queue run"
+    },
+    {
+      "path": [
+        "eval",
+        "queue",
+        "status"
+      ],
+      "tool": "review/eval-queue.py",
+      "native": [
+        "status"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "eval queue status"
+    },
+    {
+      "path": [
+        "eval",
+        "queue",
+        "reset"
+      ],
+      "tool": "review/eval-queue.py",
+      "native": [
+        "reset"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "runtime-state-write"
+      ],
+      "summary": "eval queue reset"
+    },
+    {
+      "path": [
+        "benchmark",
+        "candidate",
+        "freeze"
+      ],
+      "tool": "testing/run_candidate.py",
+      "native": [
+        "freeze"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "artifact-write"
+      ],
+      "summary": "benchmark candidate freeze",
+      "human_only": false,
+      "defaults": {
+        "--out": "candidate-freeze"
+      }
+    },
+    {
+      "path": [
+        "benchmark",
+        "candidate",
+        "run"
+      ],
+      "tool": "testing/run_candidate.py",
+      "native": [
+        "run"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "benchmark candidate run",
+      "human_only": false,
+      "defaults": {
+        "--out": "candidate-run"
+      }
+    },
+    {
+      "path": [
+        "benchmark",
+        "candidate",
+        "rescore"
+      ],
+      "tool": "testing/run_candidate.py",
+      "native": [
+        "rescore"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "benchmark candidate rescore",
+      "human_only": false,
+      "defaults": {}
+    },
+    {
+      "path": [
+        "benchmark",
+        "candidate",
+        "login"
+      ],
+      "tool": "testing/run_candidate.py",
+      "native": [
+        "login"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "interactive-authentication"
+      ],
+      "summary": "benchmark candidate login",
+      "human_only": true,
+      "defaults": {}
+    },
+    {
+      "path": [
+        "benchmark",
+        "artifacts"
+      ],
+      "tool": "testing/freeze_eval.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "artifact-write"
+      ],
+      "summary": "benchmark artifacts",
+      "defaults": {
+        "--out": "frozen"
+      },
+      "optional_output": true
+    },
+    {
+      "path": [
+        "benchmark",
+        "brownfield",
+        "run"
+      ],
+      "tool": "testing/run_brownfield.py",
+      "native": [
+        "run"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "benchmark brownfield run",
+      "defaults": {
+        "--out": "brownfield-run"
+      }
+    },
+    {
+      "path": [
+        "benchmark",
+        "brownfield",
+        "grade"
+      ],
+      "tool": "testing/run_brownfield.py",
+      "native": [
+        "grade"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "benchmark brownfield grade",
+      "defaults": {}
+    },
+    {
+      "path": [
+        "benchmark",
+        "diagnose",
+        "propose"
+      ],
+      "tool": "testing/diagnose_run.py",
+      "native": [
+        "propose"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "runtime-state-write"
+      ],
+      "summary": "benchmark diagnose propose"
+    },
+    {
+      "path": [
+        "benchmark",
+        "diagnose",
+        "record"
+      ],
+      "tool": "testing/diagnose_run.py",
+      "native": [
+        "record"
+      ],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "runtime-state-write"
+      ],
+      "summary": "benchmark diagnose record"
+    },
+    {
+      "path": [
+        "benchmark",
+        "usage"
+      ],
+      "tool": "testing/harness_usage.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read",
+        "optional-artifact-write"
+      ],
+      "summary": "benchmark usage"
+    },
+    {
+      "path": [
+        "benchmark",
+        "grade-backup"
+      ],
+      "tool": "testing/backup_eval.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "local-execution",
+        "artifact-write"
+      ],
+      "summary": "benchmark grade-backup",
+      "defaults": {
+        "--out": "backup-grade"
+      }
+    },
+    {
+      "path": [
+        "benchmark",
+        "image-build"
+      ],
+      "tool": "testing/container/build.sh",
+      "native": [],
+      "runtime": "bash",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "container-build",
+        "network-read"
+      ],
+      "summary": "benchmark image-build"
+    },
+    {
+      "path": [
+        "testing",
+        "coverage"
+      ],
+      "tool": "testing/coverage-impact.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [],
+      "effects": [
+        "local-read"
+      ],
+      "summary": "testing coverage"
+    },
+    {
+      "path": [
+        "testing",
+        "business-plan"
+      ],
+      "tool": "testing/business-testplan.py",
+      "native": [],
+      "runtime": "python",
+      "success": [
+        0
+      ],
+      "failure": [
+        1
+      ],
+      "effects": [
+        "artifact-write"
+      ],
+      "summary": "testing business-plan",
+      "artifact_position": 1,
+      "artifact_name": "business-test-plan.xlsx"
+    }
+  ],
+  "builtins": [
+    {
+      "path": [
+        "doctor"
+      ],
+      "tool": "cli/main.py",
+      "summary": "doctor"
+    },
+    {
+      "path": [
+        "tools"
+      ],
+      "tool": "cli/catalog.py",
+      "summary": "tools"
+    },
+    {
+      "path": [
+        "context",
+        "select"
+      ],
+      "tool": "harness/bundle.py",
+      "summary": "context select"
+    },
+    {
+      "path": [
+        "verify"
+      ],
+      "tool": "code/project-verify.sh",
+      "summary": "verify"
+    },
+    {
+      "path": [
+        "review"
+      ],
+      "tool": "review/review.sh",
+      "summary": "review"
+    },
+    {
+      "path": [
+        "ado",
+        "run",
+        "diagnose"
+      ],
+      "tool": "azure-devops/ado-run-failure.sh",
+      "summary": "ado run diagnose"
+    },
+    {
+      "path": [
+        "ado",
+        "run",
+        "watch"
+      ],
+      "tool": "azure-devops/ado-run-watch.sh",
+      "summary": "ado run watch"
+    },
+    {
+      "path": [
+        "cloud",
+        "read"
+      ],
+      "tool": "cloud/cloud-read.sh",
+      "summary": "cloud read"
+    },
+    {
+      "path": [
+        "sonar",
+        "read"
+      ],
+      "tool": "sonar/sonar-read.sh",
+      "summary": "sonar read"
+    },
+    {
+      "path": [
+        "frontend",
+        "capture"
+      ],
+      "tool": "frontend/screenshot.mjs",
+      "summary": "frontend capture"
+    },
+    {
+      "path": [
+        "frontend",
+        "compare"
+      ],
+      "tool": "frontend/compare-ui.mjs",
+      "summary": "frontend compare"
+    },
+    {
+      "path": [
+        "greenfield",
+        "init"
+      ],
+      "tool": "greenfield/greenfield-init.sh",
+      "summary": "greenfield init"
+    },
+    {
+      "path": [
+        "eval",
+        "skills"
+      ],
+      "tool": "testing/process_skills.py",
+      "summary": "eval skills"
+    }
+  ],
+  "internal": [
+    {
+      "tool": "azure-devops/ado-common.sh",
+      "reason": "Sourced identity and HTTP helpers."
+    },
+    {
+      "tool": "cli/workflows.py",
+      "reason": "Explicit CLI workflow argument and dispatch helpers."
+    },
+    {
+      "tool": "diagrams/drawio_kit/__init__.py",
+      "reason": "Diagram package implementation reached through diagram commands."
+    },
+    {
+      "tool": "diagrams/drawio_kit/__main__.py",
+      "reason": "Diagram package implementation reached through diagram commands."
+    },
+    {
+      "tool": "diagrams/drawio_kit/core.py",
+      "reason": "Diagram package implementation reached through diagram commands."
+    },
+    {
+      "tool": "diagrams/drawio_kit/layouts/__init__.py",
+      "reason": "Diagram package implementation reached through diagram commands."
+    },
+    {
+      "tool": "diagrams/drawio_kit/layouts/lane_matrix.py",
+      "reason": "Diagram package implementation reached through diagram commands."
+    },
+    {
+      "tool": "diagrams/drawio_kit/logos.py",
+      "reason": "Diagram package implementation reached through diagram commands."
+    },
+    {
+      "tool": "frontend/auth-state.mjs",
+      "reason": "Browser authentication-state parsing and seeding library."
+    },
+    {
+      "tool": "harness/context.py",
+      "reason": "Edit-hook protocol adapter."
+    },
+    {
+      "tool": "review/run-agy.py",
+      "reason": "Provider implementation invoked by review and evaluation commands."
+    },
+    {
+      "tool": "review/run-claude.py",
+      "reason": "Provider implementation invoked by review and evaluation commands."
+    },
+    {
+      "tool": "review/run-codex.py",
+      "reason": "Provider implementation invoked by review and evaluation commands."
+    },
+    {
+      "tool": "review/run-copilot.py",
+      "reason": "Provider implementation invoked by review and evaluation commands."
+    },
+    {
+      "tool": "review/usage.py",
+      "reason": "Usage normalization library."
+    },
+    {
+      "tool": "testing/adapters/agy.py",
+      "reason": "Provider or grader adapter invoked through benchmark profiles."
+    },
+    {
+      "tool": "testing/adapters/claude_code.py",
+      "reason": "Provider or grader adapter invoked through benchmark profiles."
+    },
+    {
+      "tool": "testing/adapters/codex.py",
+      "reason": "Provider or grader adapter invoked through benchmark profiles."
+    },
+    {
+      "tool": "testing/adapters/common.py",
+      "reason": "Provider or grader adapter invoked through benchmark profiles."
+    },
+    {
+      "tool": "testing/adapters/grader_agy.py",
+      "reason": "Provider or grader adapter invoked through benchmark profiles."
+    },
+    {
+      "tool": "testing/brownfield-verify.sh",
+      "reason": "Snapshot verification fixture installed by the brownfield runner."
+    },
+    {
+      "tool": "verification/keyvault.ps1",
+      "reason": "PowerShell scanner implementation used by checks keyvault."
+    },
+    {
+      "tool": "verification/standard_checks.py",
+      "reason": "Scanner adapters used by checks commands."
+    }
+  ]
+}

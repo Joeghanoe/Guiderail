@@ -44,6 +44,7 @@ expect 0 "selector and edit-context regression contracts" python3 -I "$here/test
 expect 0 "review-input change detection matrix" python3 -I "$here/tests/test_review_changed.py"
 expect 0 "RTK rewrites satisfy Codex's permission contract" python3 -I "$here/tests/test_rtk_codex.py"
 expect 0 "unified CLI dispatch, restrictions, receipts and installation" python3 -I "$here/tests/test_cli.py"
+expect 0 "complete CLI tool catalog and native command boundaries" python3 -I "$here/tests/test_cli_catalog.py"
 
 expect 0 "standard scanner calibration (real tools when configured)" python3 -I "$here/tests/test_standard_checks.py"
 

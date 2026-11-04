@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Harness CLI pilot. External writes are deliberately absent from the command tree."""
+"""Harness commands with explicit effects and retained execution evidence."""
+import contextlib
 import argparse
 import hashlib
 import importlib.util
@@ -17,8 +18,10 @@ import time
 
 BUNDLE = pathlib.Path(__file__).resolve().parents[2]
 PREVIEW_BYTES = 12000
+sys.dont_write_bytecode = True
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import workflows
+import catalog
 
 
 def parser():
@@ -26,9 +29,11 @@ def parser():
     commands = root.add_subparsers(dest='command', required=True)
 
     def common(p, repo=False):
-        p.add_argument('--json', action='store_true', help='emit a schema-versioned result')
+        output = p.add_mutually_exclusive_group()
+        output.add_argument('--json', action='store_true', help='emit a schema-versioned result')
+        output.add_argument('--raw', action='store_true', help='emit complete native stdout for pipes; retain the result separately')
         p.add_argument('--out', type=pathlib.Path, help='fresh evidence directory outside the repository and harness')
-        p.add_argument('--timeout', type=int, default=240, help='wall-clock limit in seconds, 1..1800')
+        p.add_argument('--timeout', type=int, default=240, help='wall-clock limit in seconds per operation, 1..86400')
         if repo:
             p.add_argument('--repo', type=pathlib.Path, default=pathlib.Path.cwd())
 
@@ -40,6 +45,7 @@ def parser():
     ctx.add_argument('--changed', action='store_true')
     ctx.add_argument('--baseline', help='explicit baseline for --changed')
     ctx.add_argument('--brief', action='store_true')
+    ctx.add_argument('--examples', action='store_true')
     ctx.add_argument('paths', nargs='*')
     verify = commands.add_parser('verify', help='execute the project verify and retain its existing receipt')
     common(verify, repo=True)
@@ -79,6 +85,7 @@ def parser():
                                          'qualitygates/project_status', 'measures/component'))
     read.add_argument('params', nargs='*')
     workflows.add_parsers(commands, common)
+    catalog.add_parsers(root, common)
     return root
 
 
@@ -114,12 +121,13 @@ def harness_identity():
                                         'playbooks/diagnose-pipeline-failure.md')}}
 
 
-def execute(argv, cwd, out, label, timeout, environment=None, stream=False):
+def execute(argv, cwd, out, label, timeout, environment=None, stream=False, stdin_path=None):
     """Spool full output to disk; bound only the displayed preview. Kill descendants on POSIX."""
     stdout, stderr = out / f'{label}.stdout', out / f'{label}.stderr'
     started = time.monotonic()
     timed_out = False
-    with stdout.open('wb') as output, stderr.open('wb') as errors:
+    with (stdin_path.open('rb') if stdin_path else contextlib.nullcontext(subprocess.DEVNULL)) as input_stream, \
+            stdout.open('wb') as output, stderr.open('wb') as errors:
         def pump(pipe):
             displayed = 0
             while chunk := pipe.read1(4096):
@@ -133,7 +141,7 @@ def execute(argv, cwd, out, label, timeout, environment=None, stream=False):
                 print(f'\nPreview limited; full output: {stdout}', flush=True)
 
         with subprocess.Popen(argv, cwd=cwd, stdout=subprocess.PIPE if stream else output,
-                              stderr=errors, stdin=subprocess.DEVNULL,
+                              stderr=errors, stdin=input_stream,
                               env=environment, start_new_session=os.name != 'nt') as child:
             if stream:
                 reader = threading.Thread(target=pump, args=(child.stdout,), daemon=True)
@@ -170,6 +178,8 @@ def run(args, out, result):
     steps = result['steps']
     py = sys.executable
     cwd = args.repo if hasattr(args, 'repo') else pathlib.Path.cwd()
+    if catalog.run(args, out, result, execute):
+        return
 
     def call(argv, label, allowed=(0,), environment=None, stream=False):
         step = execute(argv, cwd, out, label, args.timeout, environment, stream)
@@ -194,6 +204,8 @@ def run(args, out, result):
             raise ValueError('Supply paths or --changed --baseline <ref>')
         if args.brief:
             argv.append('--brief')
+        if args.examples:
+            argv.append('--examples')
         step = call(argv + ['--'] + args.paths, 'selection')
         if not args.brief:
             result['data'] = load_json(pathlib.Path(step['stdout']))
@@ -272,7 +284,7 @@ def run(args, out, result):
             raise ValueError('--interval must be at least 10 seconds and --max-minutes must be 1..30')
         step = call(['bash', str(BUNDLE / 'tools/azure-devops/ado-run-watch.sh'), args.organization,
                      args.project, args.run, str(args.interval), str(args.max_minutes)],
-                    'watch', allowed=(0, 1), stream=not args.json)
+                    'watch', allowed=(0, 1), stream=not (args.json or args.raw))
         result['scope'] = {'organization': args.organization, 'project': args.project, 'run': args.run}
         result['status'] = 'completed' if step['exit_code'] == 0 else 'failed'
         return
@@ -292,20 +304,22 @@ def run(args, out, result):
 
 def main():
     args = parser().parse_args()
-    result = {'schema_version': 1, 'command': args.command, 'status': 'incomplete',
+    command_name = ' '.join(args.catalog_command['path']) if hasattr(args, 'catalog_command') else args.command
+    result = {'schema_version': 1, 'command': command_name, 'status': 'incomplete',
               'scope': {}, 'steps': [], 'artifacts': {}, 'data': None}
     out = None
     try:
-        if not 1 <= args.timeout <= 1800:
-            raise ValueError('--timeout must be 1..1800')
+        if not 1 <= args.timeout <= 86400:
+            raise ValueError('--timeout must be 1..86400')
         if hasattr(args, 'repo'):
-            args.repo = repository(args.repo)
+            args.repo = (args.repo.resolve(strict=True) if args.command == 'context' and not args.changed
+                         else repository(args.repo))
             result['scope']['repo'] = str(args.repo)
         # Even read commands must not write evidence into the caller's source tree.
         source = args.repo if hasattr(args, 'repo') else None
         if source is None and shutil.which('git'):
             try:
-                source = repository(pathlib.Path.cwd())
+                source = repository(getattr(args, 'cwd', pathlib.Path.cwd()))
             except ValueError:
                 pass  # A local diagnostic may also run outside a source repository.
         candidate = args.out.expanduser().resolve() if args.out else pathlib.Path(tempfile.gettempdir()).resolve()
@@ -313,6 +327,9 @@ def main():
             source = args.target.expanduser().resolve()
         if (source is not None and inside(candidate, source)) or inside(candidate, BUNDLE.parent):
             raise ValueError('--out must be outside the source repository and harness checkout')
+        for native_root in catalog.source_roots(args):
+            if inside(candidate, native_root):
+                raise ValueError('--out must be outside the native command source scope')
         if args.out:
             candidate.mkdir(parents=True, exist_ok=False)
             out = candidate
@@ -328,10 +345,21 @@ def main():
     if out:
         result['artifacts']['result'] = str(out / 'result.json')
         (out / 'result.json').write_text(json.dumps(result, indent=2) + '\n', encoding='utf-8')
-    if args.json:
+    if args.raw:
+        if result.get('error'):
+            print(result['error'], file=sys.stderr)
+        if result['steps']:
+            with pathlib.Path(result['steps'][-1]['stdout']).open('rb') as output:
+                shutil.copyfileobj(output, sys.stdout.buffer)
+            for step in result['steps']:
+                with pathlib.Path(step['stderr']).open('rb') as errors:
+                    shutil.copyfileobj(errors, sys.stderr.buffer)
+        elif result['data'] is not None:
+            print(json.dumps(result['data'], indent=2))
+    elif args.json:
         print(json.dumps(result, indent=2))
     else:
-        print(f"tvh {args.command}: {result['status']}")
+        print(f"tvh {result['command']}: {result['status']}")
         if result.get('error'):
             print(result['error'], file=sys.stderr)
         if args.command == 'doctor':
