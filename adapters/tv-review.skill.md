@@ -1,6 +1,6 @@
 ---
 name: tv-review
-description: Review the current diff against the TeamValue harness rules, show findings readably, and fix the ones the harness allows. Use when the user runs /tv-review or asks for a harness review of a change.
+description: Review a code change, branch, or pull request against TeamValue rules and fix permitted findings. Use for a requested change review or /tv-review, not for an explanation of review practices.
 ---
 
-Follow `~/.golden-path-harness/harness/playbooks/review-and-fix.md`: the review runs in a subagent, and when the branch has an open PR, Sonar's findings for it are read first. Arguments, if any, name a target (PR, branch or path) and review topics. Apply the adversarial topics in `review-change.md`, including spec validation and least privilege. A repository or release review follows `review-repository.md` instead. Use `templates/review-report.md` for the human report; preserve the pipeline JSON contract. Arguments: $ARGUMENTS
+Follow `~/.golden-path-harness/harness/playbooks/review-and-fix.md`. Use `tvh` for executable harness operations; if it is not on PATH, use `~/.golden-path-harness/bin/tvh`. The CLI reviewer runs independently and returns retained findings; do not launch a second reviewer for the same change. The playbook owns verification, published Sonar reads, safe remediation, and the final evidence-backed report. Repository or release audits follow `review-repository.md` instead. Arguments, if supplied, name the target and review topics: $ARGUMENTS

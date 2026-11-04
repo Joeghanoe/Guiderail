@@ -1,4 +1,5 @@
 import importlib.util
+import os
 import pathlib
 import subprocess
 import tempfile
@@ -39,7 +40,8 @@ class DesignCheckTests(unittest.TestCase):
                 command = ["bash", str(initializer)]
                 if profile:
                     command.append(profile)
-                subprocess.run(command + [directory], check=True, capture_output=True, text=True)
+                subprocess.run(command + [directory], check=True, capture_output=True, text=True,
+                               env=dict(os.environ, GOLDEN_PATH_HOME=str(self.root / 'runtime')))
                 root = pathlib.Path(directory)
                 for optional in ("BannedSymbols.txt", "Directory.Build.props", ".harness-scenarios.json"):
                     self.assertFalse((root / optional).exists(), optional)

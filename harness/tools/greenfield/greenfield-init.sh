@@ -34,7 +34,6 @@ mkdir -p "$target/docs/adr"
 # The quick verify command is the agent's, not the repo's: it goes to ~/.golden-path-harness/projects/<repo-id>/ (T.1), with the
 # gate profile written into it. CI is the authority; the repo gets no second copy of the pipeline.
 bash "$here/tools/code/project-verify.sh" init --profile "$profile" "$target"
-verify="$(bash "$here/tools/code/project-verify.sh" path "$target")"
 
 cat <<EOF
 
@@ -42,9 +41,9 @@ Next, before any file under src/:
   1. Fill docs/solution-design.md: every heading, no template prompt left (DEL.4).
   2. Write one ADR per hard-to-reverse decision in docs/adr/NNNN-title.md: context, decision, consequences.
   3. Fill AGENTS.md: layout, vocabulary, decisions, change map, verifying, when to ask.
-  4. Run: bash $verify --design
+  4. Initialize Git for a standalone repo if needed, then run: tvh verify --repo "$target" --design
      It must say "pass" before you create any file under src/. Do not write code first and the design after.
-  5. Build, then run $verify. It fails while the design is unfinished or the code does not follow it, and it
+  5. Build, then run tvh verify --repo "$target". It fails while the design is unfinished or the code does not follow it, and it
      must pass before you call the work done (T.1). Gate profile: $profile.
   6. CI is the authority. Propose the design gate (design-check.py) as a step in the repo's pipeline, as a diff for a human (CLD.2).
 EOF

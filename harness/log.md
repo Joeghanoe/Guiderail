@@ -1,5 +1,11 @@
 # Change log
 
+## 2026-11-04
+
+- Extended `tvh` with frontend capture/comparison, bounded streaming pipeline watches, greenfield initialization, and recorded design verification. Added native initial-skill-selection probes with observed tool-call evidence; workflow outcomes remain separate. Pipeline diagnosis stays a playbook and CLI operation, and installation removes the retired harness-owned skill adapter. The verify template now fails when its design gate is unavailable instead of silently passing design-only verification.
+- Approved the [process-skills and unified-CLI proposal](../docs/proposals/process-skills-and-unified-cli.md), allowing breaking changes during development. Added the `tvh` pilot for guidance selection, project verification, independent change review, Azure DevOps diagnosis and restricted cloud/Sonar reads. Installation publishes the review skill for Claude Code and Copilot. At the owner's direction, pipeline diagnosis remains a playbook and CLI operation rather than a skill. Playbooks remain canonical; native findings and verification receipts retain their contracts.
+- Captured [feedback on editor-dependent Sonar diagnostics](../feedback/headless-sonar-analysis-without-open-editor-files.md) and a [proposed local analysis tool](../docs/proposals/headless-sonar-analysis.md). The design uses Sonar Roslyn analyzers and ESLint with explicit scope and evidence. It preserves the server reader and records the proposed departure from E-016's IDE-first workflow. No runner, rule change or consumer adoption is active.
+
 ## 2026-11-03
 
 - Moved audit documents, model comparisons, validation findings and raw execution evidence into the owner's local `$GOLDEN_PATH_HOME/testing/` storage. Preserved reusable checks, regression fixtures and benchmark definitions in Git. Installation creates the persistent testing directory; ignore rules keep run records out of the checkout.

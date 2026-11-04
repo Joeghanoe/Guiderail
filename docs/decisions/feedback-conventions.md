@@ -27,6 +27,7 @@ E-006 preserves precedent for the earlier pipeline-owned naming layout. E-044 re
 
 ## Open work
 
+- [Headless local Sonar analysis](../proposals/headless-sonar-analysis.md) is proposed through [draft feedback](../../feedback/headless-sonar-analysis-without-open-editor-files.md). It would analyze disk contents through C# analyzers and ESLint without opening editor files. E-016 and T.1 remain unchanged pending review; no local runner or consumer dependency has been added.
 - [ADR 0008](../adr/0008-automatic-feedback-classification-and-drafts.md) remains a proposal; implementation is not approved by this record.
 - [Development-process coverage](../proposals/development-process-coverage.md) remains a discussion proposal.
 - [Knowledge-base incident triage](../../feedback/grounded-incident-triage-from-knowledge-base.md) remains an automation idea. Approval of the existing triage playbook does not approve automated ticket intake or external writes.

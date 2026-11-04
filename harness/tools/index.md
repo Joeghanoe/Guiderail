@@ -3,6 +3,8 @@
 Scripts grouped by the system or concern they serve. Open the folder your task touches. Agents reach cloud, Sonar and a locally
 running app only through the read wrappers (CLD.1, SEC.2); the guard hook and the install allow rules name those paths.
 
+* [cli/](cli/index.md) - `tvh` provides guidance selection, verification, change review, Azure DevOps run diagnosis/watching, restricted cloud/Sonar reads, frontend capture/comparison, greenfield initialization, and native skill-selection probes. The review skill loads its canonical playbook; operational tasks use playbooks and commands directly. Native evidence contracts remain intact.
+
 * [harness/](harness/) - `bundle.py` selects rules, checks the bundle and private-artifact boundary, validates findings, builds indexes, and prepares feedback worktrees; `density.py` ranks candidates for compressing the bundle's prose, which the evals then accept or reject (playbook: compress-harness-prose); `check-adapter.sh` verifies the rules reached an agent's context
 * [verification/](verification/index.md) - scoped requirement registry, independent C# change checks, execution receipts and required-result summaries; semantic review remains separate
 * [review/](review/) - `review.sh` runs the AI review for one change; `render.py` shows its findings as a readable summary (playbook: review-and-fix); `eval.py` evaluates the same review flow against examples, with `thresholds.json` as its gate; `eval-queue.py` runs those evals one scenario at a time and checks each off, so a run that stops (quota, login) resumes where it left off

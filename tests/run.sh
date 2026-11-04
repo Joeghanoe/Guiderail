@@ -10,6 +10,7 @@ here="$(cd "$(dirname "$0")/.." && pwd)"
 h="$here/harness"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
+export GOLDEN_PATH_HOME="$tmp/gp-home"
 fail=0
 pass=0
 
@@ -42,6 +43,7 @@ expect 0 "verification registry and receipt contracts" python3 -I "$here/tests/t
 expect 0 "selector and edit-context regression contracts" python3 -I "$here/tests/test_context.py"
 expect 0 "review-input change detection matrix" python3 -I "$here/tests/test_review_changed.py"
 expect 0 "RTK rewrites satisfy Codex's permission contract" python3 -I "$here/tests/test_rtk_codex.py"
+expect 0 "unified CLI dispatch, restrictions, receipts and installation" python3 -I "$here/tests/test_cli.py"
 
 expect 0 "standard scanner calibration (real tools when configured)" python3 -I "$here/tests/test_standard_checks.py"
 
@@ -51,7 +53,6 @@ expect 0 "CODE.5 fixtures" python3 -m unittest discover -s "$here/tests" -p test
 expect 0 "provider-neutral backup grader controls" python3 -I "$here/tests/test_backup_eval.py"
 expect 0 "greenfield design checks" python3 -I "$here/tests/test_design_check.py"
 gf="$tmp/greenfield"; mkdir -p "$gf"
-export GOLDEN_PATH_HOME="$tmp/gp-home"
 pv="$h/tools/code/project-verify.sh"
 expect 0 "greenfield-init writes the skeletons" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
 expect 0 "greenfield-init keeps what exists" bash "$h/tools/greenfield/greenfield-init.sh" --service "$gf"
@@ -130,6 +131,7 @@ expect 2 "--changed outside a git repository fails loudly" bash -c "cd '$tmp' &&
 
 echo "== project verify template (every check runs)"
 vt="$tmp/verify-template"; mkdir -p "$vt/bin" "$vt/repo"; git -C "$vt/repo" init -q -b main
+ln -s "$h" "$vt/repo/.harness"
 for c in dotnet; do printf '#!/usr/bin/env bash\necho "dotnet $*" >>"%s/calls"\n' "$vt" >"$vt/bin/$c"; chmod +x "$vt/bin/$c"; done
 : >"$vt/repo/App.slnx"
 GOLDEN_PATH_HOME="$tmp/gp-home" bash "$pv" init --profile service "$vt/repo" >/dev/null

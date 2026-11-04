@@ -15,6 +15,7 @@
 #   ~/.codex/hooks.json         adapt an existing RTK hook for Codex's rewrite contract
 #   ~/.claude/skills/tv-review/ /tv-review for Claude Code
 #   ~/.copilot/skills/tv-review/ /tv-review for Copilot (VS Code and CLI)
+#   ~/.golden-path-harness/bin/tvh the CLI; add this directory to PATH or use the full path
 #   VS Code user prompts        teamvalue.instructions.md for Copilot
 # Removes the old AI Hub wiring: its CLAUDE.md/AGENTS.md import block, its Claude marketplace and plugin, and
 # its VS Code marketplace entry. Bash(az ...) allow rules are removed too: the guard blocks az outside
@@ -52,6 +53,11 @@ OLD_BLOCK = re.compile(r"\n?# TeamValue AI Hub \(managed by install\.ps1\)\n.*?#
 NEW_BLOCK = re.compile(r"\n?# TeamValue harness \(managed by install\.sh\)\n.*?# end TeamValue harness\n?", re.S)
 HOOK_MARKS = ("/.harness/hooks/", "/.golden-path-harness/harness/hooks/")
 gp_home = pathlib.Path(os.getenv("GOLDEN_PATH_HOME") or home / ".golden-path-harness")
+cli_path = gp_home / "bin" / "tvh"
+cli_mark = "# TeamValue CLI (managed by install.sh)"
+for target in (cli_path, cli_path.with_suffix(".cmd")):
+    if target.exists() and cli_mark not in target.read_text(encoding="utf-8"):
+        sys.exit(f"install.sh: {target} is not harness-managed; move it away first")
 TOOLS = ("cloud/cloud-read.sh *", "sonar/sonar-read.sh *", "servicenow/sn-get.sh *", "servicenow/sn-access-check.sh",
          "greenfield/greenfield-init.sh *")
 CLOUD_READ = [f"Bash({'bash ' if t.startswith('greenfield/') else ''}{base}/harness/tools/{t})"
@@ -110,6 +116,18 @@ for name, target in (("harness", here / "harness"), ("feedback", here / "feedbac
             sys.exit(f"install.sh: {root_link} exists and is not a link; move it away first")
         make_link(root_link, target)
         print(f"linked {root_link} -> {target}")
+# Keep the launcher with this harness installation. Do not edit shell profiles or add broad allow rules.
+if install:
+    write(cli_path, "#!/usr/bin/env python3\n" + cli_mark + "\nimport runpy\n" +
+          f"runpy.run_path({str(gp_home / 'harness/tvh')!r}, run_name='__main__')\n")
+    cli_path.chmod(0o755)
+    if os.name == "nt":
+        write(cli_path.with_suffix(".cmd"), f'@rem {cli_mark}\n@"{sys.executable}" -I "{cli_path}" %*\n')
+else:
+    for target in (cli_path, cli_path.with_suffix(".cmd")):
+        if target.exists():
+            backup(target)
+            target.unlink()
 # Legacy top-level links from before the single root: remove them, never anything that is not a link
 for old in (".harness", ".harness-feedback"):
     if is_link(home / old):
@@ -196,13 +214,26 @@ for name in ("known_marketplaces.json", "installed_plugins.json"):
 
 # Both clients discover native personal skills; VS Code profile instructions do not register a slash command.
 for client in (".claude", ".copilot"):
-    skill = home / client / "skills" / "tv-review" / "SKILL.md"
-    if install:
-        write(skill, (here / "adapters/tv-review.skill.md").read_text(encoding="utf-8"))
-    elif skill.exists():
-        backup(skill)
-        skill.unlink()
-        print(f"removed {skill}")
+    for name in ("tv-review",):
+        skill = home / client / "skills" / name / "SKILL.md"
+        if install:
+            text = (here / f"adapters/{name}.skill.md").read_text(encoding="utf-8")
+            if gp_home != home / ".golden-path-harness":
+                text = text.replace("~/.golden-path-harness", str(gp_home))
+            write(skill, text)
+        elif skill.exists():
+            backup(skill)
+            skill.unlink()
+            print(f"removed {skill}")
+    # Pipeline diagnosis is a playbook/CLI operation, not a native skill. Remove only our retired adapter.
+    retired = home / client / "skills/tv-diagnose-pipeline/SKILL.md"
+    retired_marker = ("name: tv-diagnose-pipeline\ndescription: Investigate an actual failed Azure DevOps "
+                      "pipeline run and identify its cause from run evidence.")
+    retired_text = retired.read_text(encoding="utf-8") if retired.exists() else ""
+    if retired_marker in retired_text and "playbooks/diagnose-pipeline-failure.md" in retired_text:
+        backup(retired)
+        retired.unlink()
+        print(f"removed retired harness skill {retired}")
 # /example was dropped, so remove any Claude copy left by an older install.
 example_skill = home / ".claude" / "skills" / "example" / "SKILL.md"
 if example_skill.exists():
@@ -238,5 +269,11 @@ if vscode.exists():
         if cleaned != text:
             write(user_settings, cleaned)
 
+if install:
+    other = shutil.which("tvh")
+    if other and pathlib.Path(other).resolve() != cli_path.resolve():
+        print(f"install.sh: PATH resolves tvh to {other}; use {cli_path} or put {cli_path.parent} first on PATH")
+    elif not other:
+        print(f"install.sh: add {cli_path.parent} to PATH, or invoke {cli_path} directly")
 print("install.sh: done" if install else "install.sh: uninstalled")
 PY

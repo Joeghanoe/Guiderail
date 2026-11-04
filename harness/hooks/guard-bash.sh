@@ -31,7 +31,13 @@ unquoted() {
 }
 
 via_wrapper() {
-  grep -Eq '^[[:space:]]*(\./|~/|\$HOME/|"?\$HOME/|/[^[:space:]]*/)?(\.harness|\.golden-path-harness/harness)/tools/cloud/cloud-read\.sh"?[[:space:]]' <<<"$cmd" &&
+  local installed_cli bundle_cli
+  installed_cli="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -L)/bin/tvh"
+  bundle_cli="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -L)/tvh"
+  { grep -Eq '^[[:space:]]*(\./|~/|\$HOME/|"?\$HOME/|/[^[:space:]]*/)?(\.harness|\.golden-path-harness/harness)/tools/cloud/cloud-read\.sh"?[[:space:]]' <<<"$cmd" ||
+    grep -Eq '^[[:space:]]*(tvh|(~|\$HOME|/[^[:space:]]+)/\.golden-path-harness/bin/tvh)[[:space:]]+cloud[[:space:]]+read[[:space:]]' <<<"$cmd" ||
+    [[ "$cmd" == "\"$installed_cli\" cloud read "* || "$cmd" == "$installed_cli cloud read "* ||
+       "$cmd" == "\"$bundle_cli\" cloud read "* || "$cmd" == "$bundle_cli cloud read "* ]]; } &&
     ! grep -Eq '[;&|`]|\$\(' <<<"$(unquoted "$cmd")"
 }
 

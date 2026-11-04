@@ -14,7 +14,7 @@ mode="${1:-}"
 # Design gate (DEL.4, CODE.8, OBS.3, T.3): static, takes milliseconds, runs in every mode.
 DESIGN_PROFILE=generic # generic | service | web-app; project-verify.sh init writes this
 harness=""
-for candidate in ./.harness "$HOME/.golden-path-harness/harness"; do
+for candidate in "${HARNESS_BUNDLE_ROOT:-}" ./.harness "${GOLDEN_PATH_HOME:-$HOME/.golden-path-harness}/harness"; do
   [[ -z "$harness" && -f "$candidate/tools/greenfield/design-check.py" ]] && harness="$candidate"
 done
 if [[ -n "$harness" ]]; then
@@ -22,7 +22,8 @@ if [[ -n "$harness" ]]; then
   [[ "$mode" == "--design" ]] && design_only=(--design-only)
   python3 -I "$harness/tools/greenfield/design-check.py" . --profile "$DESIGN_PROFILE" ${design_only[@]+"${design_only[@]}"} || failed=1
 else
-  echo "verify: harness not found; skipping the design gate" >&2
+  echo "verify: harness not found; verification incomplete" >&2
+  failed=1
 fi
 
 [[ "$mode" == "--design" ]] && exit "$failed"

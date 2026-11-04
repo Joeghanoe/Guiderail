@@ -12,6 +12,15 @@ Material changes and approval outcomes are summarized in [harness/log.md](harnes
 
 Executable check usage lives with the [verification tools](harness/tools/verification/index.md). Audits, model comparisons and verification run reports belong in `$GOLDEN_PATH_HOME/testing/`, defaulting to `~/.golden-path-harness/testing/`, outside Git.
 
+The [unified CLI](harness/tools/cli/index.md) provides change review, Azure DevOps run diagnosis/watching, frontend capture/comparison, greenfield initialization, and native skill-selection evaluation. `install.sh` installs `tvh` under `$GOLDEN_PATH_HOME/bin` and the automatically selected review skill for Claude Code and Copilot. Pipeline diagnosis stays a playbook and CLI operation. Add the executable directory to PATH or invoke it directly. The CLI and skill ship with the harness revision. Other tool domains retain their existing entry points during development.
+
+```bash
+./harness/tvh doctor --json
+./harness/tvh context select --repo . --changed --baseline HEAD --brief
+./harness/tvh verify --repo . --json
+./harness/tvh review --repo . --baseline origin/main --engine copilot --json
+```
+
 ## Layers
 
 | Layer | What | Hard or soft |
@@ -71,7 +80,8 @@ The [reference project validation workflow](benchmarks/reference-projects.md) ex
 - removes the old top-level `~/.harness` and `~/.harness-feedback` links if present (run it once after pulling this change; the hooks and allow rules in `~/.claude/settings.json` are rewritten to the new root);
 - imports `AGENTS.base.md` from `~/.claude/CLAUDE.md`;
 - adds the guard hooks and the Stop verify for Claude Code;
-- installs `/tv-review` in `~/.claude/skills/` for Claude Code and `~/.copilot/skills/` for Copilot in VS Code and CLI;
+- installs `tv-review` in `~/.claude/skills/` and `~/.copilot/skills/` for automatic selection or explicit invocation; operational tasks such as pipeline diagnosis remain playbooks and CLI commands;
+- installs `tvh` in `$GOLDEN_PATH_HOME/bin` without editing shell profiles or granting broad command permissions;
 - adds the instructions for Copilot in VS Code;
 - removes the old AI Hub import, marketplace and `Bash(az ...)` allow rules.
 
