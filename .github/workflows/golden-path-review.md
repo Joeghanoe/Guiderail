@@ -21,19 +21,18 @@ permissions:
 
 engine: copilot
 
+checkout:
+  - path: .
+    fetch-depth: 0
+  - repository: Joeghanoe/Guiderail
+    path: .harness
+
 tools:
   github:
     toolsets: [default]
   bash: ["cat", "ls", "grep", "head", "tail", "python3", "git"]
 
-steps:
-  - name: Checkout Golden Path Harness
-    uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    with:
-      repository: Joeghanoe/Guiderail
-      path: .harness
-      persist-credentials: false
-
+pre-agent-steps:
   - name: Run Golden Path Harness Gates and Rule Selection
     env:
       BASE_REF: ${{ github.base_ref }}
