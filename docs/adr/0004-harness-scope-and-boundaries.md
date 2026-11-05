@@ -1,7 +1,7 @@
 # ADR 0004: Harness Scope and Boundaries
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Responsibilities, ownership, interfaces, and intentional exclusions of the Golden Path Harness
 - **Depends on:** ADR 0001, ADR 0002, ADR 0003
@@ -45,8 +45,8 @@ The Golden Path is evolving toward a human-controlled, agent-assisted developmen
 | PR acceptance | Independent human reviewer | Prepare PR and evidence, never approve |
 | TEST/ACC promotion | Pipeline with approved environment gates, **subject to company policy ratification** | Supply evidence; not unilaterally change deployment policy |
 | Production release | Product Owner or authorized delegate | Never authorize approval |
-| Evaluation suite | joeghanoe, independent from the candidate run (ADR 0007) | Execute trusted evaluators |
-| Harness rules, examples, gates and their review | joeghanoe, owner and reviewer; a documented exception to segregation of duties for this repository only (ADR 0007 decision 2) | Apply the versioned harness; never edit it during a run (H.1) |
+| Evaluation suite | teamvaluegroup, independent from the candidate run (ADR 0007) | Execute trusted evaluators |
+| Harness rules, examples, gates and their review | teamvaluegroup, owner and reviewer; a documented exception to segregation of duties for this repository only (ADR 0007 decision 2) | Apply the versioned harness; never edit it during a run (H.1) |
 
 ## Options considered
 

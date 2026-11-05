@@ -6,7 +6,7 @@ example_id: E-016
 rule: /rules/security/sec-2-no-secrets-or-personal-data.md
 verdict: automation-candidate
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [sonar, wrapper, token, read-only]
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-19T00:00:00Z }
 sources:

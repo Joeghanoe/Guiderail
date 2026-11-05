@@ -2,7 +2,7 @@
 
 - **Status:** Accepted; CLI implementation complete
 - **Date:** 2026-11-05
-- **Owner:** joeghanoe
+- **Owner:** teamvaluegroup
 - **Approval:** Architectural direction and implementation approved on 2026-11-04; full public tool coverage requested subsequently
 - **Scope:** Public harness command invocation, evidence and native process integration
 - **Depends on:** [ADR 0004](0004-harness-scope-and-boundaries.md), [ADR 0005](0005-evaluation-and-continuous-improvement.md), [ADR 0006](0006-agent-and-model-independence.md), [ADR 0007](0007-agentic-sdlc-alignment.md)

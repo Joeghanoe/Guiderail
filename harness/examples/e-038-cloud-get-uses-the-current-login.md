@@ -6,11 +6,11 @@ example_id: E-038
 rule: /rules/cloud/cld-1-agents-read-cloud-state.md
 verdict: boundary
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:18:40Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:18:40Z }
 tags: [feedback, regression]
 generated: { by: codex/unknown, at: 2026-11-01T20:00:00Z }
 example_file: scripts/read-pr.sh
-owner: human:joeghanoe
+owner: human:teamvaluegroup
 stale_after: 2027-05-01T00:00:00Z
 sources:
   - id: requirement

@@ -3,7 +3,7 @@ type: Gate
 title: "Private artifact check"
 description: The harness checkout contains no mined private review comments or raw evaluation outputs.
 tool: harness/tools/harness/bundle.py privacy-check
-owner: human:joeghanoe
+owner: human:teamvaluegroup
 status: stable
 tags: [harness, privacy]
 ---

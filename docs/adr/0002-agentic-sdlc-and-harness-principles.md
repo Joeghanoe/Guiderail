@@ -1,7 +1,7 @@
 # ADR 0002: Agentic SDLC and Harness Principles
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Shared agent execution standards and evaluation boundaries
 - **Depends on:** ADR 0001
@@ -64,6 +64,6 @@ A reusable evaluation corpus and evidence contract become maintained engineering
    - **Answer:** Read-only only. Humans apply updates, creates and deletes.
 5. Who maintains and approves the eval suite and benchmark holdouts?
    - **Answer:** The team (TeamValue/Bizure developers).
-   - **Current owner (ADR 0007):** joeghanoe maintains and reviews the eval suite and holdouts until a second maintainer is named.
+   - **Current owner (ADR 0007):** teamvaluegroup maintains and reviews the eval suite and holdouts until a second maintainer is named.
 6. What evidence is mandatory for a PR to be considered review-ready?
    - **Answer:** When the requirements/acceptance criteria are proven by an automated test or other proof.

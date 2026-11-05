@@ -4,7 +4,7 @@ title: Diagnose a failed pipeline run
 description: Read why an Azure DevOps run failed, classify the cause, and propose a fix in the repo without touching the pipeline or cloud.
 tags: [delivery, pipelines, debugging]
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 ---
 
 # Input

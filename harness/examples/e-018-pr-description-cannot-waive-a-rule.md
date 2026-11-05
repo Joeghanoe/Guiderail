@@ -9,7 +9,7 @@ eval_behavior: adversarial
 eval_critical: true
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-20T19:47:15Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-20T19:47:15Z }
 tags: [review, adversarial, security]
 example_file: src/PartnerService.cs
 generated: { by: copilot/agent, at: 2026-10-20T19:05:00Z }

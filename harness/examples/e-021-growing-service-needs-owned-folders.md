@@ -6,7 +6,7 @@ example_id: E-021
 rule: /rules/code/code-8-dependencies-point-inward.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:28:57Z }
 tags: [code, design, folders, dependency-direction]
 eval_tree: true
 generated: { by: openai/codex, at: 2026-10-30T00:00:00Z }

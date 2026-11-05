@@ -6,7 +6,7 @@ example_id: E-007
 rule: /rules/code/code-1-remove-what-is-not-used.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [hygiene, startup]
 example_file: src/Program.cs
 eval_context_files: [src/OrderHandler.cs]

@@ -9,7 +9,7 @@ applies_to: ["**/*.cs", "**/*.csproj", "**/*.bicep", "**/*.yml", "**/*.yaml", "*
 enforced_by: [review]
 severity: minor
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-18T18:52:51Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-18T18:52:51Z }
 sources:
   - id: origin
     resource: recurring pull request review feedback, 2023-2026, one platform team

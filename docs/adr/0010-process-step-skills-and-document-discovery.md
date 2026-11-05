@@ -2,7 +2,7 @@
 
 - **Status:** Accepted; source and packaging implemented; native behavioral evaluation requires separate execution approval
 - **Date:** 2026-11-05
-- **Owner:** joeghanoe
+- **Owner:** teamvaluegroup
 - **Approval:** Owner instructed completion of the identified integration gaps and conversion of both proposals into ADRs
 - **Scope:** Engineering skill ownership, package installation, process coverage, document navigation and evaluation
 - **Depends on:** [ADR 0009](0009-process-skills-and-unified-cli.md), [ADR 0003](0003-knowledge-to-code-boundary.md), [ADR 0007](0007-agentic-sdlc-alignment.md)

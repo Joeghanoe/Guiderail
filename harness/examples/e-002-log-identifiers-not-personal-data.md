@@ -6,7 +6,7 @@ example_id: E-002
 rule: /rules/security/sec-2-no-secrets-or-personal-data.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-20T19:47:15Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-20T19:47:15Z }
 tags: [privacy, logging]
 example_file: src/NotificationService.cs
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-18T23:00:00Z }

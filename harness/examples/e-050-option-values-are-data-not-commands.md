@@ -7,7 +7,7 @@ rule: /rules/cloud/cld-1-agents-read-cloud-state.md
 verdict: boundary
 status: draft
 tags: [cloud, az, wrapper, apim, azure-devops]
-owner: human:joeghanoe
+owner: human:teamvaluegroup
 stale_after: 2027-05-03T00:00:00Z
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-03T00:00:00Z }
 sources:

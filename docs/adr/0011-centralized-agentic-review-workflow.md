@@ -2,7 +2,7 @@
 
 - **Status:** Accepted; implemented and validated against live cross-repo runs
 - **Date:** 2026-11-05
-- **Owner:** joeghanoe
+- **Owner:** teamvaluegroup
 - **Approval:** Owner instructed centralized workflow architecture for org-wide `/golden-path-review`
 - **Scope:** GitHub Agentic Workflows (`github/gh-aw`), cross-repository reusable execution (`workflow_call`), pull request review trigger (`issue_comment`), permissions propagation and safe outputs
 - **Depends on:** [ADR 0001](0001-evolution-of-the-golden-path.md), [ADR 0002](0002-agentic-sdlc-and-harness-principles.md), [ADR 0006](0006-agent-and-model-independence.md), [ADR 0010](0010-process-step-skills-and-document-discovery.md)
@@ -11,11 +11,11 @@
 
 ## Context
 
-The Golden Path Harness (`Guiderail`) is the single source of truth for engineering standards, architectural rules, code smells, and review playbooks across all projects. Duplicating review scripts, prompts, or agent configuration files across dozens of downstream project repositories creates configuration drift, audit blindness, and high maintenance overhead.
+The Golden Path Harness (`TeamValue.GoldenPath`) is the single source of truth for engineering standards, architectural rules, code smells, and review playbooks across all projects. Duplicating review scripts, prompts, or agent configuration files across dozens of downstream project repositories creates configuration drift, audit blindness, and high maintenance overhead.
 
 With the release of [GitHub Agentic Workflows (`github/gh-aw`)](https://github.com/github/gh-aw), repository automation can be defined using Markdown instruction files with YAML frontmatter, compiled deterministically into pinned, firewalled GitHub Actions lockfiles.
 
-We required an organization-wide pull request review mechanism where any developer on any team can comment `/golden-path-review` on a PR to trigger an advisory review against the Golden Path standards, powered by GitHub Copilot and sandboxed through `gh-aw` safe outputs, while keeping 100% of the workflow logic, rules, and prompts centralized in `Guiderail`.
+We required an organization-wide pull request review mechanism where any developer on any team can comment `/golden-path-review` on a PR to trigger an advisory review against the Golden Path standards, powered by GitHub Copilot and sandboxed through `gh-aw` safe outputs, while keeping 100% of the workflow logic, rules, and prompts centralized in `TeamValue.GoldenPath`.
 
 ---
 
@@ -23,7 +23,7 @@ We required an organization-wide pull request review mechanism where any develop
 
 ### 1. Central Control Plane Architecture
 
-Maintain the canonical agentic workflow definition in `Guiderail` at `.github/workflows/golden-path-review.md`. 
+Maintain the canonical agentic workflow definition in `TeamValue.GoldenPath` at `.github/workflows/golden-path-review.md`.
 Compile it deterministically with `gh aw compile` to generate `.github/workflows/golden-path-review.lock.yml`.
 
 Downstream project repositories do not store the prompt, harness rules, or lockfiles. Instead, they implement a lightweight **caller relay** (`.github/workflows/review.yml`) that forwards `/golden-path-review` PR comment events to the central reusable workflow via `workflow_call`.
@@ -35,7 +35,7 @@ flowchart TD
         Trigger --> Caller["workflow_call relay with declared permissions"]
     end
 
-    subgraph Central["Central Repository (Guiderail)"]
+    subgraph Central["Central Repository (TeamValue.GoldenPath)"]
         Caller --> CentralLock["golden-path-review.lock.yml@main"]
         CentralLock --> PreAct["pre_activation: verify context"]
         PreAct --> Act["activation: inlined prompt resolution"]
@@ -104,7 +104,7 @@ The caller relay file (`review.yml`) must be merged into `main` of the consuming
 ### 6. Deterministic Harness Execution & Dynamic Rule Selection
 
 A static prompt alone cannot evaluate code changes reliably across diverse repositories. To achieve parity with `tv-review` and `infra/pipelines/ai-review.yml`:
-1. **Harness Checkout in `steps:`**: The central workflow runs a checkout step to mount `Joeghanoe/Guiderail` into `.harness` inside the runner workspace.
+1. **Harness Checkout in `steps:`**: The central workflow runs a checkout step to mount `teamvaluegroup/TeamValue.GoldenPath` into `.harness` inside the runner workspace.
 2. **Deterministic Pre-flight Gate**: If the downstream repository defines `./scripts/verify.sh`, it is executed prior to AI agent invocation. If this gate fails, review is blocked under rule `T.1`.
 3. **Dynamic Rule & Precedent Selection**: `bundle.py select` runs against the changed files (`changed.txt`) to produce `/tmp/gh-aw/harness/selected.json`, containing only the applicable rules, summaries, and human-verified precedent examples.
 4. **Agent Inspection via Bash Tools**: The agent is provided with bash tools (`cat`, `ls`, `grep`, `python3`) and instructed to inspect `/tmp/gh-aw/harness/selected.json`, adhere to `.harness/skills/engineering/code-review/REVIEW-CHANGE.md`, and report findings across the two independent axes (Standards vs. Spec).
@@ -113,7 +113,7 @@ A static prompt alone cannot evaluate code changes reliably across diverse repos
 
 ## Examples
 
-### Central Workflow Source (`Guiderail/.github/workflows/golden-path-review.md`)
+### Central Workflow Source (`TeamValue.GoldenPath/.github/workflows/golden-path-review.md`)
 
 ```markdown
 ---
@@ -191,7 +191,7 @@ permissions:
 jobs:
   review:
     if: github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/golden-path-review')
-    uses: Joeghanoe/Guiderail/.github/workflows/golden-path-review.lock.yml@main
+    uses: teamvaluegroup/TeamValue.GoldenPath/.github/workflows/golden-path-review.lock.yml@main
     secrets: inherit
 ```
 
@@ -200,13 +200,13 @@ jobs:
 ## Consequences & Trade-offs
 
 ### Positive
-- **Single Source of Truth**: All rule updates, prompt improvements, and model/engine adjustments happen in `Guiderail`. No downstream repositories need updates when rules evolve.
+- **Single Source of Truth**: All rule updates, prompt improvements, and model/engine adjustments happen in `TeamValue.GoldenPath`. No downstream repositories need updates when rules evolve.
 - **Zero Drift**: Downstream repositories only maintain a static 19-line caller workflow.
 - **Strong Isolation**: The review executes with read-only tokens, an isolated network firewall (`ghcr.io/github/gh-aw-firewall`), and strict safe-output validation.
 - **Advisory Model**: Automated agents never execute unsupervised merges or approvals (CLD.2).
 
 ### Negative / Trade-offs
-- **Public Visibility Dependency**: Public downstream repositories require `Guiderail` to remain public to satisfy GitHub Actions reusable workflow boundary checks.
+- **Public Visibility Dependency**: Public downstream repositories require `TeamValue.GoldenPath` to remain public to satisfy GitHub Actions reusable workflow boundary checks.
 - **Permission Declarations**: Downstream callers must explicitly enumerate all required token scopes to avoid nested elevation rejections.
 - **Compile-Time Inlining**: Because prompts are inlined into the lockfile (`inlined-imports: true`), changes to the markdown prompt require running `gh aw compile` and committing the lockfile.
 
@@ -214,9 +214,9 @@ jobs:
 
 ## Validation
 
-The implementation was validated end-to-end against [`Joeghanoe/BrewBook`](https://github.com/Joeghanoe/BrewBook) on Pull Request [#10](https://github.com/Joeghanoe/BrewBook/pull/10):
+The implementation was validated end-to-end against [`teamvaluegroup/BrewBook`](https://github.com/teamvaluegroup/BrewBook) on Pull Request [#10](https://github.com/teamvaluegroup/BrewBook/pull/10):
 1. User commented `/golden-path-review` on PR #10.
-2. The caller workflow in `BrewBook` triggered and dispatched to `Joeghanoe/Guiderail/.github/workflows/golden-path-review.lock.yml@main`.
+2. The caller workflow in `BrewBook` triggered and dispatched to `teamvaluegroup/TeamValue.GoldenPath/.github/workflows/golden-path-review.lock.yml@main`.
 3. `pre_activation` and `activation` completed successfully with inlined prompt resolution.
 4. The GitHub Copilot CLI agent initialized inside the firewall container, analyzed the PR diff, and executed verification.
 5. `detection` and `safe_outputs` validated outputs and posted the review to GitHub.

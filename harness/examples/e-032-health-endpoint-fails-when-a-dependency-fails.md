@@ -6,7 +6,7 @@ example_id: E-032
 rule: /rules/observability/obs-1-health-reflects-reality.md
 verdict: compliant
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:28:57Z }
 tags: [health, observability, azure-functions]
 example_file: src/StoreHealthCheck.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }

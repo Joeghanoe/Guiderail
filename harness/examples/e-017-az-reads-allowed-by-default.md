@@ -6,9 +6,9 @@ example_id: E-017
 rule: /rules/cloud/cld-1-agents-read-cloud-state.md
 verdict: boundary
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [cloud, az, wrapper, monitoring]
-owner: human:joeghanoe
+owner: human:teamvaluegroup
 stale_after: 2027-04-20T00:00:00Z
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-20T00:00:00Z }
 sources:

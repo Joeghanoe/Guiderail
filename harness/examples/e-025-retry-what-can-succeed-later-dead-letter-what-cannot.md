@@ -6,7 +6,7 @@ example_id: E-025
 rule: /rules/code/code-2-fail-loudly.md
 verdict: compliant
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:28:57Z }
 tags: [errors, messaging, retry, dead-letter]
 example_file: src/MessageHandler.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T10:00:00Z }

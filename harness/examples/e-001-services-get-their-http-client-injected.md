@@ -6,7 +6,7 @@ example_id: E-001
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-18T18:52:51Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-18T18:52:51Z }
 tags: [testability, http]
 example_file: src/PartnerService.cs
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-18T23:00:00Z }

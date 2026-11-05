@@ -6,7 +6,7 @@ example_id: E-006
 rule: /rules/iac/iac-7-configuration-placement.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [pipelines, configuration]
 example_file: pipelines/build-and-deploy.yml
 eval_context_files: [variables/variables.dev.yml, variables/variables.prd.yml]

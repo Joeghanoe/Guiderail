@@ -6,7 +6,7 @@ example_id: E-005
 rule: /rules/iac/iac-6-naming-convention.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [naming, pipelines]
 example_file: pipelines/build-and-deploy.yml
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-19T00:00:00Z }

@@ -1,7 +1,7 @@
 # ADR 0001: Evolution of the Golden Path
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Decision owners:** Engineering leadership / Golden Path maintainers (to confirm)
 - **Amended by:** ADR 0007 (prototype work, harness-repository review exception, local isolation)

@@ -24,7 +24,7 @@ engine: copilot
 checkout:
   - path: .
     fetch-depth: 0
-  - repository: Joeghanoe/Guiderail
+  - repository: teamvaluegroup/TeamValue.GoldenPath
     path: .harness
 
 tools:

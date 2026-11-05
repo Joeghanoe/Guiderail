@@ -1,7 +1,7 @@
 # ADR 0005: Evaluation and Continuous Improvement
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Benchmark lifecycle, evaluation ownership, continuous improvement and evidence
 - **Depends on:** ADR 0001, ADR 0002, ADR 0004
@@ -68,7 +68,7 @@ The harness must make company engineering principles measurable, rather than rel
 
 1. Who can approve a new rule or change an existing rule's severity?
    - **Answer:** Anyone can propose. The team must agree and the behaviour (eval) must be validated.
-   - **Until a second maintainer is named (ADR 0007):** joeghanoe decides. A change to a gate, threshold or hard rule needs a passing clean-commit eval run before it merges.
+   - **Until a second maintainer is named (ADR 0007):** teamvaluegroup decides. A change to a gate, threshold or hard rule needs a passing clean-commit eval run before it merges.
 2. What minimum evidence constitutes a review-ready PR?
    - **Answer:** That it works or is measurably better. (Recorded against this question; confirm it was not meant for Q5.)
 3. Which scenarios form calibration, regression and holdout sets?

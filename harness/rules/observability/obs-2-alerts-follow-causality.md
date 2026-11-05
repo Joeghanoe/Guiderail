@@ -9,7 +9,7 @@ applies_to: ["**/*.bicep", "**/*.tf", "**/*.kql", "**/*.yml", "**/*.cs"]
 enforced_by: [review]
 severity: major
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 sources:
   - id: origin
     resource: feedback/c-draft-alert-on-absence-of-signal.md

@@ -9,7 +9,7 @@ applies_to: ["**/*.cs", "**/*.ts", "**/*.py"]
 enforced_by: [review]
 severity: major
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 sources:
   - id: origin
     resource: FoodApp comparison (2026-10-31): the same menu solver built design-first with the harness (71 tests, all at 7 to 8 recipes per meal type) took 31 s and wrongly answered "not enough distinct days" at 30 recipes per type, where the iterative build planned the week in 60 ms. The cause was two choices that no rule asked anyone to make explicit.

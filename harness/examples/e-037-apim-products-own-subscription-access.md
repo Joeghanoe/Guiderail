@@ -6,7 +6,7 @@ example_id: E-037
 rule: /rules/code/code-6-use-what-the-platform-does.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:18:40Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:18:40Z }
 tags: [feedback, regression]
 generated: { by: codex/unknown, at: 2026-11-01T20:00:00Z }
 example_file: infra/access.bicep

@@ -1,6 +1,6 @@
 # Centralized Agentic Workflows with `gh-aw` & GitHub Actions
 
-> **Summary**: Lessons learned while setting up an organization-wide `/golden-path-review` pull request review workflow using GitHub Agentic Workflows (`github/gh-aw`), centralized in a single repository (`Guiderail`) and consumed across downstream repositories (`BrewBook`, etc.).
+> **Summary**: Lessons learned while setting up an organization-wide `/golden-path-review` pull request review workflow using GitHub Agentic Workflows (`github/gh-aw`), centralized in a single repository (`TeamValue.GoldenPath`) and consumed across downstream repositories (`BrewBook`, etc.).
 
 ---
 
@@ -10,7 +10,7 @@ The goal was to establish a single source of truth for engineering standards and
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│ Central Repository: Joeghanoe/Guiderail (Public)       │
+│ Central Repository: teamvaluegroup/TeamValue.GoldenPath (Public)       │
 │                                                        │
 │  .github/workflows/golden-path-review.md               │
 │         │ (compiled via `gh aw compile`)               │
@@ -21,16 +21,16 @@ The goal was to establish a single source of truth for engineering standards and
 │  - Safe outputs: line comments, reviews, reactions     │
 └──────────────────────────┬─────────────────────────────┘
                            │
-                           │ uses: Joeghanoe/Guiderail/...@main
+                           │ uses: teamvaluegroup/TeamValue.GoldenPath/...@main
                            │ (Reusable Workflow / workflow_call)
                            │
 ┌──────────────────────────▼─────────────────────────────┐
-│ Downstream Repository: Joeghanoe/BrewBook              │
+│ Downstream Repository: teamvaluegroup/BrewBook              │
 │                                                        │
 │  .github/workflows/review.yml (19-line caller relay)   │
 │  - Triggers on: `issue_comment: [created]`             │
 │  - Filters for: `/golden-path-review` on PRs           │
-│  - Forwards execution to central Guiderail lockfile    │
+│  - Forwards execution to central TeamValue.GoldenPath lockfile    │
 └────────────────────────────────────────────────────────┘
 ```
 
@@ -41,7 +41,7 @@ The goal was to establish a single source of truth for engineering standards and
 ### Pitfall 1: Public vs. Private Repository Visibility Mismatch
 * **Symptom**: `error parsing called workflow ... : workflow was not found`.
 * **Root Cause**: In GitHub Actions security architecture, a **Public repository can NEVER call a reusable workflow in a Private repository** (to prevent private workflow source code from leaking into public action logs). Even when repository Settings → Actions → General → Access is set to allow access across the account, this restriction is hard-enforced.
-* **Resolution**: The central repository hosting the reusable workflow must match or exceed the caller's visibility. For public downstream repositories (like `BrewBook`), `Guiderail` must be set to **Public**.
+* **Resolution**: The central repository hosting the reusable workflow must match or exceed the caller's visibility. For public downstream repositories (like `BrewBook`), `TeamValue.GoldenPath` must be set to **Public**.
 
 ---
 
@@ -100,7 +100,7 @@ The goal was to establish a single source of truth for engineering standards and
   ```yaml
   jobs:
     review:
-      uses: Joeghanoe/Guiderail/.github/workflows/golden-path-review.lock.yml@main
+      uses: teamvaluegroup/TeamValue.GoldenPath/.github/workflows/golden-path-review.lock.yml@main
       secrets: inherit
   ```
 
@@ -129,7 +129,7 @@ permissions:
 jobs:
   review:
     if: github.event.issue.pull_request != null && startsWith(github.event.comment.body, '/golden-path-review')
-    uses: Joeghanoe/Guiderail/.github/workflows/golden-path-review.lock.yml@main
+    uses: teamvaluegroup/TeamValue.GoldenPath/.github/workflows/golden-path-review.lock.yml@main
     secrets: inherit
 ```
 
@@ -137,7 +137,7 @@ jobs:
 
 ## 4. Operational Checklist for Central Repo Maintenance
 
-When modifying review rules, playbooks, or instructions in `Guiderail`:
+When modifying review rules, playbooks, or instructions in `TeamValue.GoldenPath`:
 
 1. Edit `.github/workflows/golden-path-review.md`.
 2. Ensure `inlined-imports: true` is preserved in the frontmatter.
@@ -156,7 +156,7 @@ When modifying review rules, playbooks, or instructions in `Guiderail`:
 A review agent requires more than just high-level prose; it needs the exact rules and precedent examples that apply to the changed files, plus execution evidence from deterministic repository checks:
 
 1. **Mounting the Harness via `steps:`**:
-   Using `actions/checkout`, the central workflow checks out `Joeghanoe/Guiderail` into `.harness` inside the runner workspace before the agent runs.
+   Using `actions/checkout`, the central workflow checks out `teamvaluegroup/TeamValue.GoldenPath` into `.harness` inside the runner workspace before the agent runs.
 
 2. **Pre-flight Deterministic Gates (`T.1`)**:
    If the repository has a `./scripts/verify.sh` test script, it is run first. If it fails, the agent reports this as a blocker finding under rule `T.1` without approving.

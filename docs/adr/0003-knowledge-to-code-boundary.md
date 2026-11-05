@@ -1,7 +1,7 @@
 # ADR 0003: Knowledge-to-Code Boundary (Vegviser and Harness)
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Responsibility boundaries between backlog, Vegviser, human approvers, and the harness
 - **Depends on:** ADR 0001, ADR 0002

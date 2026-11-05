@@ -6,7 +6,7 @@ example_id: E-041
 rule: /rules/code/code-11-return-early.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:18:40Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:18:40Z }
 tags: [feedback, regression]
 generated: { by: codex/unknown, at: 2026-11-01T20:00:00Z }
 example_file: src/ImportStatus.cs

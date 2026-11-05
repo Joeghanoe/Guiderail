@@ -4,7 +4,7 @@ title: Review a change and fix what is safe to fix
 description: Run the deterministic gate, review the local diff with the review playbook, fix the findings an agent may fix, and hand the human the end result with a receipt.
 tags: [review, fix]
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 ---
 
 # Why

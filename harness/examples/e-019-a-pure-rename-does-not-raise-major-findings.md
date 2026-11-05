@@ -8,7 +8,7 @@ eval_rule_id: CODE.3
 eval_behavior: rename
 verdict: compliant
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-20T19:47:15Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-20T19:47:15Z }
 tags: [review, abstention, rename]
 example_file: src/TaskProcessor.cs
 eval_before_file: src/TaskProcessorOld.cs

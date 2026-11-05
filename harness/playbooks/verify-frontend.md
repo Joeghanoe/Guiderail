@@ -4,7 +4,7 @@ title: Verify a frontend change by looking at it
 description: Screenshot what was built at phone, tablet and desktop widths, run the automated WCAG and responsive checks, and judge the result against the people who will use it.
 tags: [frontend, accessibility, responsive, wcag, ux, verification]
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 ---
 
 # When

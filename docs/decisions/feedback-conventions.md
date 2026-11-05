@@ -1,6 +1,6 @@
 # Feedback conventions
 
-Last reviewed: 2026-11-01. Owner: joeghanoe.
+Last reviewed: 2026-11-01. Owner: teamvaluegroup.
 
 This is the editable record of current conventions. Change it when experience changes the decision, and update the affected rules, examples and checks. Summaries of what changed and why belong in [the change log](../../harness/log.md). Git remains the authoritative history; [processed source feedback](../feedback/processed/) preserves the original context.
 

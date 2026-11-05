@@ -6,7 +6,7 @@ example_id: E-035
 rule: /rules/testing/t-2-services-do-not-create-io.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:28:57Z }
 tags: [testability, time]
 example_file: src/RateLimiter.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T12:00:00Z }

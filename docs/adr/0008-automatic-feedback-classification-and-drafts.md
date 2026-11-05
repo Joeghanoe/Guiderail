@@ -2,7 +2,7 @@
 
 - **Status:** Draft; owner direction recorded, implementation pending
 - **Date:** 2026-10-31
-- **Owner:** joeghanoe, under ADR 0007 decision 2
+- **Owner:** teamvaluegroup, under ADR 0007 decision 2
 - **Scope:** Capture, classify and route corrections, including new conventions and missing requirements
 - **Depends on:** ADR 0002, ADR 0003, ADR 0004, ADR 0005, ADR 0007
 - **Extends:** H.1 and the process-feedback playbook; their implementation must be updated separately

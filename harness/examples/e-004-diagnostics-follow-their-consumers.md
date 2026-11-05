@@ -6,7 +6,7 @@ example_id: E-004
 rule: /rules/iac/iac-1-proportionate-diagnostics.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [iac, monitoring, cost]
 example_file: infra/storage.bicep
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-19T00:30:00Z }

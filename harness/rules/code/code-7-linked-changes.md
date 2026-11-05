@@ -9,7 +9,7 @@ applies_to: ["**/*.cs", "**/*.md", "**/*.bicep", "**/*.tf", "**/*.kql", "**/*.ym
 enforced_by: [review]
 severity: major
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 sources:
   - id: origin
     resource: a repo AGENTS.md section "Follow a change across boundaries", with tests that pin docs and data files to the code

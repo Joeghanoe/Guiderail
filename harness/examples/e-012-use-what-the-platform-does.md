@@ -6,7 +6,7 @@ example_id: E-012
 rule: /rules/code/code-6-use-what-the-platform-does.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [apim, api, validation]
 example_file: infra/api.bicep
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-18T21:00:00Z }

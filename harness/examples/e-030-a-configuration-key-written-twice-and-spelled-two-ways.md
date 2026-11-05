@@ -6,7 +6,7 @@ example_id: E-030
 rule: /rules/code/code-4-write-a-name-once.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T19:28:57Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T19:28:57Z }
 tags: [configuration, naming, defect]
 example_file: src/Services/TokenProvider.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-30T09:00:00Z }

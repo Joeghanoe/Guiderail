@@ -6,7 +6,7 @@ example_id: E-013
 rule: /rules/iac/iac-8-pipelines-call-scripts.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [pipelines, scripts]
 example_file: pipelines/deploy.yml
 eval_context_files: [scripts/Register-Deployment.ps1]

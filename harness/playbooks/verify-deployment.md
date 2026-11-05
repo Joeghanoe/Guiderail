@@ -4,7 +4,7 @@ title: Verify a deployment to DEV, TST, ACC or PRD
 description: After a pipeline finishes, confirm the right version is running, the health endpoint responds, and App Insights shows no new errors — read-only, through the harness wrappers.
 tags: [delivery, deployment, verification]
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 ---
 
 # Input

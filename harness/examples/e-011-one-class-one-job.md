@@ -6,7 +6,7 @@ example_id: E-011
 rule: /rules/code/code-5-one-responsibility.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [design, health]
 example_file: src/PartnerService.cs
 eval_context_files: [src/HealthFunctions.cs]

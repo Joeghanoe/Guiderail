@@ -1,7 +1,7 @@
 # ADR 0006: Agent and Model Independence
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-29
 - **Scope:** Provider-neutral harness contracts, adapters, benchmarking and authentication boundaries
 - **Amended by:** ADR 0007 (per-run resource fields)

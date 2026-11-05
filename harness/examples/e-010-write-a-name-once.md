@@ -6,7 +6,7 @@ example_id: E-010
 rule: /rules/code/code-4-write-a-name-once.md
 verdict: violation
 status: stable
-verified: { by: human:joeghanoe, at: 2026-10-27T20:07:13Z }
+verified: { by: human:teamvaluegroup, at: 2026-10-27T20:07:13Z }
 tags: [duplication, configuration, dotnet]
 example_file: src/OrderFunctions.cs
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-10-18T21:00:00Z }

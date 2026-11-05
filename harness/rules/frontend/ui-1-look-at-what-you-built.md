@@ -9,7 +9,7 @@ applies_to: ["**/*.tsx", "**/*.jsx", "**/*.vue", "**/*.svelte", "**/*.razor", "*
 enforced_by: [review]
 severity: major
 status: stable
-verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
+verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 sources:
   - id: origin
     resource: FoodApp prototype, "Frontend Visual Verification Rule" in its AGENTS.md, generalized

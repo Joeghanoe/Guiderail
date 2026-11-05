@@ -7,7 +7,7 @@ rule: /rules/testing/t-5-behaviour-has-a-scenario.md
 verdict: boundary
 status: processed
 tags: [testing, scenarios, consumer-repos]
-owner: human:joeghanoe
+owner: human:teamvaluegroup
 stale_after: 2027-05-01T00:00:00Z
 generated: { by: claude-code/claude-sonnet-5-5, at: 2026-11-01T18:00:00Z }
 sources:

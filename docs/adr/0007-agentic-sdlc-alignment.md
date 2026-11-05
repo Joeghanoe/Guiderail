@@ -1,9 +1,9 @@
 # ADR 0007: Agentic SDLC Alignment — Evidence, Behaviour and Working Modes
 
 - **Status:** Approved
-- **Approved by:** joeghanoe, 2026-11-01T20:15:44Z
+- **Approved by:** teamvaluegroup, 2026-11-01T20:15:44Z
 - **Date:** 2026-10-31
-- **Owner and reviewer:** joeghanoe (sole maintainer; see decision 2)
+- **Owner and reviewer:** teamvaluegroup (sole maintainer; see decision 2)
 - **Scope:** How the harness measures agent behaviour, scores benchmarks, treats prototype work, and who maintains it
 - **Depends on:** ADR 0002, ADR 0004, ADR 0005, ADR 0006
 - **Amends:** ADR 0001 (implementation implications), ADR 0002 (Q1 scope, Q5 owner), ADR 0004 (ownership, scope, accepted risk), ADR 0005 (scoring, evidence, rule approval), ADR 0006 (resource fields)
@@ -47,8 +47,8 @@ After the current feature branch merges, the owner runs `python3 -I harness/tool
 
 ### 2. Ownership and review of the harness
 
-- joeghanoe owns and maintains the harness: rules, examples, playbooks, gates, benchmarks and the eval suite.
-- joeghanoe is also the reviewer of harness changes.
+- teamvaluegroup owns and maintains the harness: rules, examples, playbooks, gates, benchmarks and the eval suite.
+- teamvaluegroup is also the reviewer of harness changes.
 - **This is a documented exception to segregation of duties** (CLD.2, ADR 0001 item 5). It is allowed under ADR 0002 Q2: the smallest owning authority decides, as long as the decision is written down.
 - The exception covers this harness repository only. Product repositories keep an independent reviewer.
 
@@ -56,7 +56,7 @@ Compensating controls:
 
 - Harness changes pass the deterministic checks in CI: `bundle.py check`, [run.sh](../../tests/run.sh), shellcheck, and [eval.py](../../harness/tools/review/eval.py) when the review changed. That gives a check the author cannot overrule by judgment.
 - A change to a gate, threshold or hard rule needs a passing clean-commit eval run (decision 1) before it is merged.
-- `CODEOWNERS` names joeghanoe for `harness/`, [AGENTS.base.md](../../AGENTS.base.md), `benchmarks/` and `docs/adr/`. It records who owns what, and is not a required-review policy, because GitHub does not let an author approve their own PR.
+- `CODEOWNERS` names teamvaluegroup for `harness/`, [AGENTS.base.md](../../AGENTS.base.md), `benchmarks/` and `docs/adr/`. It records who owns what, and is not a required-review policy, because GitHub does not let an author approve their own PR.
 
 Review trigger: end this exception when a second person maintains or depends on the harness, or when the company adopts it as the Golden Path harness (ADR 0001). Whichever comes first.
 
@@ -168,7 +168,7 @@ A already includes C in practice. B is the fallback if exploration in product re
 ## Open questions
 
 1. Who reviews harness changes?
-   - **Answer:** joeghanoe, as a documented exception (decision 2).
+   - **Answer:** teamvaluegroup, as a documented exception (decision 2).
 2. Prototype mode: A, B, C or D?
    - **Answer:** A. Agents always write production code (decision 7).
 3. Should the truthful-report check gate from the start?
