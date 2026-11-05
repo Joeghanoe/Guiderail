@@ -1,6 +1,6 @@
 # Evaluation cases and the train / validation / holdout split
 
-Cases are brownfield: a change task on an existing codebase, with hidden acceptance criteria. Greenfield scenarios stay in `benchmarks/greenfield/`. [run_brownfield.py](../../harness/tools/testing/run_brownfield.py) runs validation cases (see below).
+Cases are brownfield: a change task on an existing codebase, with hidden acceptance criteria. Greenfield scenarios have a [separate index](../greenfield/README.md). [run_brownfield.py](../../harness/tools/testing/run_brownfield.py) runs validation cases (see below).
 
 To register existing projects through symlinks or copies, freeze their sources and document known gaps, follow the [reference project validation workflow](../reference-projects.md). It also explains how the local project registry connects to these executable cases.
 
@@ -14,6 +14,25 @@ To register existing projects through symlinks or copies, freeze their sources a
 - A case holds `task.md` (what the agent is asked), `criteria.md` (hidden checks and rule IDs), `case.json`, and `snapshot.json` (neutral file paths plus sha256, because the sources have no Git metadata).
 - The map from neutral aliases to real paths is private (`~/.harness-evaluation/private/`) and is the only place real names appear. Repo content carries none ([project-terms.txt](../../harness/templates/project-terms.txt)).
 - Boundary examples need a human owner. Candidates without one are parked in `~/.harness-evaluation/pending-boundary/` until a person accepts the deviation.
+
+## Validation case index
+
+Evaluator navigation for the cases below. The runner copies the task and pinned source files into the candidate workspace alongside the harness. This index and hidden criteria remain outside that workspace.
+
+| Case | Assignment | Candidate input | Evaluator input | Configuration |
+| --- | --- | --- | --- | --- |
+| v-aq-back-v-01 | Add a dataset: advisor recommendations | [Task](validation/v-aq-back-v-01/task.md) | [Hidden criteria](validation/v-aq-back-v-01/criteria.md) | [Case](validation/v-aq-back-v-01/case.json), [snapshot](validation/v-aq-back-v-01/snapshot.json) |
+| v-aq-back-v-02 | Resource health is missing for some subscriptions and nothing was red | [Task](validation/v-aq-back-v-02/task.md) | [Hidden criteria](validation/v-aq-back-v-02/criteria.md) | [Case](validation/v-aq-back-v-02/case.json), [snapshot](validation/v-aq-back-v-02/snapshot.json) |
+| v-aq-back-v-03 | Make the throttle window testable | [Task](validation/v-aq-back-v-03/task.md) | [Hidden criteria](validation/v-aq-back-v-03/criteria.md) | [Case](validation/v-aq-back-v-03/case.json), [snapshot](validation/v-aq-back-v-03/snapshot.json) |
+| v-aq-back-v-04 | Wrong identity for the data lake after a settings change | [Task](validation/v-aq-back-v-04/task.md) | [Hidden criteria](validation/v-aq-back-v-04/criteria.md) | [Case](validation/v-aq-back-v-04/case.json), [snapshot](validation/v-aq-back-v-04/snapshot.json) |
+| v-aq-front-01 | The customer list stops at 50 | [Task](validation/v-aq-front-01/task.md) | [Hidden criteria](validation/v-aq-front-01/criteria.md) | [Case](validation/v-aq-front-01/case.json), [snapshot](validation/v-aq-front-01/snapshot.json) |
+| v-aq-front-02 | Stop reading status codes out of error messages | [Task](validation/v-aq-front-02/task.md) | [Hidden criteria](validation/v-aq-front-02/criteria.md) | [Case](validation/v-aq-front-02/case.json), [snapshot](validation/v-aq-front-02/snapshot.json) |
+| v-aq-front-03 | Show when the health picture is incomplete | [Task](validation/v-aq-front-03/task.md) | [Hidden criteria](validation/v-aq-front-03/criteria.md) | [Case](validation/v-aq-front-03/case.json), [snapshot](validation/v-aq-front-03/snapshot.json) |
+| v-aq-front-04 | The configure page is one 1000-line file | [Task](validation/v-aq-front-04/task.md) | [Hidden criteria](validation/v-aq-front-04/criteria.md) | [Case](validation/v-aq-front-04/case.json), [snapshot](validation/v-aq-front-04/snapshot.json) |
+| v-b2b-ing-01 | Accept CSV submissions without changing other limits | [Task](validation/v-b2b-ing-01/task.md) | [Hidden criteria](validation/v-b2b-ing-01/criteria.md) | [Case](validation/v-b2b-ing-01/case.json), [snapshot](validation/v-b2b-ing-01/snapshot.json) |
+| v-hub-plat-01 | Remove sensitive content from dead letters and telemetry | [Task](validation/v-hub-plat-01/task.md) | [Hidden criteria](validation/v-hub-plat-01/criteria.md) | [Case](validation/v-hub-plat-01/case.json), [snapshot](validation/v-hub-plat-01/snapshot.json) |
+| v-hub-plat-02 | Extend employee fields and assess the contract-end-date request | [Task](validation/v-hub-plat-02/task.md) | [Hidden criteria](validation/v-hub-plat-02/criteria.md) | [Case](validation/v-hub-plat-02/case.json), [snapshot](validation/v-hub-plat-02/snapshot.json) |
+| v-hub-plat-03 | Configure delivery attempts for one connector | [Task](validation/v-hub-plat-03/task.md) | [Hidden criteria](validation/v-hub-plat-03/criteria.md) | [Case](validation/v-hub-plat-03/case.json), [snapshot](validation/v-hub-plat-03/snapshot.json) |
 
 ## Running a validation case
 

@@ -68,7 +68,7 @@ Use `~/.golden-path-harness/testing/` for audit documents, experiment scripts, c
 
 Reusable checks, deterministic test fixtures and benchmark task definitions remain versioned with their code. One-off findings and machine-specific run results do not belong in the checkout.
 
-The [reference project validation workflow](benchmarks/reference-projects.md) explains how to register existing projects under the local testing directory, pin their sources and record expected improvements for repeatable harness evaluations.
+The [benchmark index](benchmarks/README.md) links evaluation tasks, acceptance criteria and case configurations. The [reference project validation workflow](benchmarks/reference-projects.md) explains how to register existing projects under the local testing directory, pin their sources and record expected improvements for repeatable harness evaluations.
 
 ## Install (once per machine)
 
