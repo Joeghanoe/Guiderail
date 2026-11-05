@@ -17,7 +17,7 @@ sources:
 
 # Situation
 
-A project has an integration suite whose tests are named after the behaviour they check and run in CI. A review finding asked the project to add `.harness-scenarios.json`, intent traits on every test and a CI step for `check-scenarios.py`, because the scenario-presence gate cannot run without them.
+A project has an integration suite whose tests are named after the behaviour they check and run in CI. A review finding asked the project to add `.harness-scenarios.json`, intent traits on every test and a CI step for [check-scenarios.py](../../../harness/tools/testing/check-scenarios.py), because the scenario-presence gate cannot run without them.
 
 # Why (boundary)
 

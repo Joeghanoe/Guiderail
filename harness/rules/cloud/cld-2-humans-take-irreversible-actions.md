@@ -45,4 +45,4 @@ When proposing deployments or reviews, respect the Way-of-Work role separation:
 
 # Enforcement
 
-`hooks/guard-bash.sh` lets a push through only when it names a feature branch; it blocks a push to the default or a release branch, a push without a named target, force pushes, deletions, tags and `--all`. It also blocks `gh pr merge`, `gh workflow run`, `az pipelines run` and the cloud CLIs. The rest relies on the identity (CLD.1), branch protection and this rule.
+[guard-bash.sh](../../hooks/guard-bash.sh) lets a push through only when it names a feature branch; it blocks a push to the default or a release branch, a push without a named target, force pushes, deletions, tags and `--all`. It also blocks `gh pr merge`, `gh workflow run`, `az pipelines run` and the cloud CLIs. The rest relies on the identity (CLD.1), branch protection and this rule.

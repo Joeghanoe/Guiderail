@@ -52,7 +52,7 @@ For each subagent, select the model tier that minimizes token spend while satisf
 
 Assign the tier, never a vendor's model name: the tier is the decision, the name is a lookup that differs per platform and goes stale. Take the tier to whatever model your platform offers for it, the cheapest one that reliably passes the work package's verification command. If the platform offers one model, the tier still decides how much context and review the work gets.
 
-To resolve tiers to names for a provider, pass `--provider <name>` (or set `HARNESS_MODEL_PROVIDER`). `tvh orchestrate tier` reads `models.json` beside it, then `~/.config/harness/models.json`, then `--models FILE`; add any vendor there, with the date you checked its names. No provider is the default, a provider that is not configured is an error, and a name older than 120 days is flagged as stale.
+To resolve tiers to names for a provider, pass `--provider <name>` (or set `HARNESS_MODEL_PROVIDER`). `tvh orchestrate tier` reads [models.json](../tools/orchestration/models.json) beside it, then `~/.config/harness/models.json`, then `--models FILE`; add any vendor there, with the date you checked its names. No provider is the default, a provider that is not configured is an error, and a name older than 120 days is flagged as stale.
 
 Use `tvh orchestrate tier --raw -- --task "<subtask>"` to verify the recommended tier.
 
@@ -89,7 +89,7 @@ Without the scope line a returned unit grows into an unreviewed multi-file diff.
 
 ### 3c. Learning edge
 
-When the lead accepts a result, write the general constraint it implies (a principle, not the incident; it must make sense to someone who was not there) into the brief that step 1 reads for later packages. A confirmed cause becomes a rule, so the next failure starts where this one ended. If a tool could decide it, take it to `process-feedback.md` (H.2).
+When the lead accepts a result, write the general constraint it implies (a principle, not the incident; it must make sense to someone who was not there) into the brief that step 1 reads for later packages. A confirmed cause becomes a rule, so the next failure starts where this one ended. If a tool could decide it, take it to [process-feedback.md](process-feedback.md) (H.2).
 
 ### 4. Lead Agent Review & Quality Gate
 

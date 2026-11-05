@@ -13,7 +13,7 @@ These describe different things. A verdict classifies an example's situation, st
 | `rejected` | The feedback or proposed exception was rejected, for example because it contradicts a principle or hard rule. | No reviewer scenarios. Keep the rejection reason if the record is retained. |
 | `automation-candidate` | The lesson should become a tool, check or workflow rather than just a review instruction. | No reviewer scenarios. Test the resulting automation directly. |
 
-Verdict does not track implementation progress. E-016 is a concrete example: it records the original Sonar automation proposal, but `harness/tools/sonar/sonar-read.sh` and its deterministic tests now implement it. Record that implementation in the editable decisions; do not change it to a violation just to create an LLM eval.
+Verdict does not track implementation progress. E-016 is a concrete example: it records the original Sonar automation proposal, but [sonar-read.sh](../harness/tools/sonar/sonar-read.sh) and its deterministic tests now implement it. Record that implementation in the editable decisions; do not change it to a violation just to create an LLM eval.
 
 ## Status and human verification
 

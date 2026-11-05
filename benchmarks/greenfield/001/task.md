@@ -9,7 +9,7 @@ Choose your architecture. No particular storage vendor, object-lock mechanism or
 ## Deliverables
 
 - The application, with automated tests you run yourself.
-- `CONTRACT.md` defines the JSON request/response entrypoint the evaluator will call. Implement it, or a thin adapter that invokes your application. `CRITERIA.md` lists what is checked.
+- `CONTRACT.md` defines the JSON request/response entrypoint the evaluator will call. Implement it, or a thin adapter that invokes your application. [CRITERIA.md](criteria.md) lists what is checked.
 - `EVAL.json` at the repository root, so the evaluator can build and bind to your work:
 
   ```json

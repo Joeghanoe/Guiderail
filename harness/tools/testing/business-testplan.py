@@ -4,7 +4,7 @@
 For a project manager or business owner who runs or signs off an end-to-end test. One sheet, laid out like a
 process walk-through: scenarios, each split into stages, each stage a few steps. Per step: the status in two
 systems, who acts, a time target, what must be seen, and cells for the tester (time, result, remarks).
-The playbook playbooks/write-business-test-plan.md says what to put in the spec.
+The playbook skills/engineering/acceptance/WRITE-BUSINESS-TEST-PLAN.md says what to put in the spec.
 
 Input:  a spec (see templates/business-testplan.spec.json)
           title, process (one line), systems [header A, header B], reference and example (optional lines),

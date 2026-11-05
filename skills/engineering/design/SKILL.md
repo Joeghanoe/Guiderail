@@ -1,31 +1,22 @@
 ---
 name: design
-description: Design system architecture, service structure, component interfaces, and boundaries. Use when starting a greenfield project, introducing architectural patterns, or evaluating consequential technical decisions.
+description: Design a new service, consequential architectural change, or component boundary. Use for greenfield work or a design decision; routine additions within established conventions do not need a new design process.
 ---
 
-# Codebase & System Design Discipline
+# Design from constraints
 
-Design deep modules with minimal interface surface and high caller leverage.
+Inputs are the requested outcome, approved criteria, current architecture and constraints. A deep module hides substantial implementation behind a small useful interface. A boundary earns its cost through responsibility, substitution or testability; do not invent abstractions for hypothetical future features. Required I/O, time and configuration seams still follow [testing rules](../../../harness/rules/testing/index.md) and [inward dependencies](../../../harness/rules/code/code-8-dependencies-point-inward.md), even with one production adapter.
 
-## Triggers & Scope
-- **Use when**: Initializing a repository/service, introducing new architectural boundaries, or designing modules/interfaces.
-- **Skip when**: Adding routine endpoints or components within established conventions.
+Load only the route that applies:
 
-## Core Rules
-1. **Deep Modules**: Strive for interfaces that are small and simple relative to the power and complexity hidden behind them.
-2. **The Deletion Test**: A module earns its keep only if deleting it would cause significant complexity to reappear across multiple callers.
-3. **Seam Discipline**: Do not create speculative abstractions or adapters. *One adapter means a hypothetical seam; two concrete adapters mean a real one.*
-4. **Inward Dependencies (CODE.8)**: Domain logic depends strictly on abstractions; persistence, cloud, and transport layers point inward.
-5. **Testability by Design**: Accept dependencies (DI), return results instead of emitting side effects, and keep the public test seam focused.
+- New repository or service: [start greenfield](../../../harness/playbooks/start-greenfield.md). Create and complete the design before source implementation.
+- Existing codebase: [discover conventions](../../../harness/playbooks/scaffold-from-conventions.md), then read the affected interfaces, design and accepted ADRs. Extend existing boundaries when they fit.
+- Consequential options: [compare alternative designs](COMPARE-ALTERNATIVE-DESIGNS.md). Record trade-offs through the existing architecture decision authority; this skill defines no new ADR format or approval authority.
 
-## Process & Tooling
-Follow canonical playbooks:
-- **Starting greenfield**: [start-greenfield.md](~/.golden-path-harness/harness/playbooks/start-greenfield.md)
-  `tvh greenfield init --template dotnet-react --out <dir>`
-- **Extending existing codebase**: [scaffold-from-conventions.md](~/.golden-path-harness/harness/playbooks/scaffold-from-conventions.md)
-  `tvh scaffold conventions --raw -- --root <repo>`
-- **Validate type & architecture boundaries**:
-  `tvh checks code-types --json -- --repo <repo>`
+```bash
+tvh greenfield init --target <directory> --profile service
+tvh scaffold brief --raw -- --repo <repository> --kind service
+tvh verify --repo <repository> --design
+```
 
-## Expected Evidence
-A recorded design decision (ADR or specification design section), passing design gates, and explicit interface boundaries.
+Output the selected design, constraints, alternatives rejected and remaining decisions. Pass stable interfaces and approved criteria to planning or implementation. A local correction within an established design can proceed without a new ADR.

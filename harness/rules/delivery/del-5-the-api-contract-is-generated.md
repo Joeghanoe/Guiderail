@@ -27,7 +27,7 @@ An API is any service that other code or other people call over HTTP: an app, a 
 4. **One place for metadata.** Title, version, description and servers come from one class or file, not from a copy per environment.
 5. **Operations are complete enough to call.** Every operation has a stable `operationId`, a summary, the response type for each status it returns, and the error body (the OBS.3 error-code catalogue). Examples where a value is not obvious (AI agents call APIs from this document).
 6. **Consumers read the generated file.** Frontend types or clients, API management imports, contract tests and agents are generated from it, not retyped.
-7. **A drift check where a copy is committed.** When a snapshot is committed (a frontend in the same repo generates its client from it, or reviewers want to see contract changes in the diff), CI regenerates the document and fails when it differs from the committed copy (`tools/code/openapi-drift.py`). A breaking change (a removed operation or a changed required field) is then visible in review.
+7. **A drift check where a copy is committed.** When a snapshot is committed (a frontend in the same repo generates its client from it, or reviewers want to see contract changes in the diff), CI regenerates the document and fails when it differs from the committed copy ([openapi-drift.py](../../tools/code/openapi-drift.py)). A breaking change (a removed operation or a changed required field) is then visible in review.
 
 # Stack notes
 

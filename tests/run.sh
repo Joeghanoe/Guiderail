@@ -407,6 +407,7 @@ python3 -I "$h/tools/harness/bundle.py" select src/Orders.cs >"$tmp/select-args.
 expect 0 "select takes paths as arguments, not only on stdin" jq -e '.rules | to_entries | map(.value) | index("T.2") != null' "$tmp/select-args.json"
 expect 0 "select prints a summary for every rule it picks" jq -e '(.rules | length) > 0 and (.summary | length) == (.rules | length)' "$tmp/select-args.json"
 cp -R "$h" "$tmp/withexample"
+cp -R "$here/skills" "$tmp/skills"
 find "$tmp/withexample/examples" -name "e-*.md" -delete   # fixtures start without the real examples
 cat >"$tmp/example.md" <<'CASE'
 ---
@@ -705,6 +706,8 @@ expect 0 "layers: one layer needs no plan" python3 -I "$orch" layers --spec "Add
 expect 3 "layers: paths count too" python3 -I "$orch" layers --paths src/api/A.cs src/frontend/App.tsx infra/api.Dockerfile --report "$tmp/report-empty.md"
 expect 0 "layers: without --report it only informs" python3 -I "$orch" layers --spec "$three"
 
+expect 0 "skill packaging and document discovery" python3 -I "$here/tests/test_guidance.py"
+
 echo "== install (throwaway home)"
 mkdir -p "$tmp/home/.claude" "$tmp/home/vscode"
 printf '@RTK.md\n\n# TeamValue AI Hub (managed by install.ps1)\n@import /old/global.instructions.md\n# end TeamValue AI Hub\n' >"$tmp/home/.claude/CLAUDE.md"
@@ -720,16 +723,18 @@ expect 0 "~/.golden-path-harness has the runtime dirs" bash -c "cd '$tmp/home/.g
 echo keep >"$tmp/home/.golden-path-harness/state/marker"
 expect 0 "CLAUDE.md imports AGENTS.base.md, old AI Hub block removed" bash -c "grep -qF '@$native_here/AGENTS.base.md' '$tmp/home/.claude/CLAUDE.md' && ! grep -q 'AI Hub' '$tmp/home/.claude/CLAUDE.md'"
 expect 0 "hooks installed, az allow rules removed, others kept" jq -e '(.hooks.PreToolUse | length == 3) and (.permissions.allow | index("Bash(git status)") != null) and (.permissions.allow | map(select(startswith("Bash(az "))) | length == 0)' "$tmp/home/.claude/settings.json"
-expect 0 "/tv-review for Claude" test -f "$tmp/home/.claude/skills/tv-review/SKILL.md" 
-expect 0 "/tv-review for Copilot uses the same adapter" cmp "$here/skills/engineering/tv-review/SKILL.md" "$tmp/home/.copilot/skills/tv-review/SKILL.md"
+expect 0 "/code-review for Claude" test -f "$tmp/home/.claude/skills/code-review/SKILL.md"
+expect 0 "/code-review for Copilot uses the same adapter" cmp "$here/skills/engineering/code-review/SKILL.md" "$tmp/home/.copilot/skills/code-review/SKILL.md"
 mkdir -p "$tmp/home/.copilot/skills/unrelated"
 echo keep >"$tmp/home/.copilot/skills/unrelated/SKILL.md"
 expect 0 "install is idempotent" bash -c "HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' | grep -vq updated"
-printf '\nold adapter\n' >>"$tmp/home/.copilot/skills/tv-review/SKILL.md"
-expect 0 "install updates a stale Copilot adapter" inst
-expect 0 "updated Copilot adapter matches source" cmp "$here/skills/engineering/tv-review/SKILL.md" "$tmp/home/.copilot/skills/tv-review/SKILL.md"
+printf '\nold adapter\n' >>"$tmp/home/.copilot/skills/code-review/SKILL.md"
+expect 1 "install preserves a locally edited skill" inst
+expect 0 "restore owned entry for update" cp "$here/skills/engineering/code-review/SKILL.md" "$tmp/home/.copilot/skills/code-review/SKILL.md"
+expect 0 "install refreshes unchanged owned packages" inst
+expect 0 "updated Copilot adapter matches source" cmp "$here/skills/engineering/code-review/SKILL.md" "$tmp/home/.copilot/skills/code-review/SKILL.md"
 expect 0 "uninstall runs" inst --uninstall
-expect 0 "uninstall removes Copilot review but keeps unrelated skills" bash -c "test ! -f '$tmp/home/.copilot/skills/tv-review/SKILL.md' && test -f '$tmp/home/.copilot/skills/unrelated/SKILL.md'"
+expect 0 "uninstall removes Copilot review but keeps unrelated skills" bash -c "test ! -f '$tmp/home/.copilot/skills/code-review/SKILL.md' && test -f '$tmp/home/.copilot/skills/unrelated/SKILL.md'"
 expect 0 "uninstall keeps runtime state, removes links" bash -c "test -f '$tmp/home/.golden-path-harness/state/marker' && test ! -e '$tmp/home/.golden-path-harness/harness' && test ! -e '$tmp/home/.golden-path-harness/feedback'"
 expect 0 "GOLDEN_PATH_HOME relocates the root" bash -c "GOLDEN_PATH_HOME='$tmp/gp' HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' >/dev/null && test -d '$tmp/gp/state' && test -L '$tmp/gp/harness' && GOLDEN_PATH_HOME='$tmp/gp' HOME='$tmp/home' HARNESS_VSCODE_USER_DIR='$tmp/home/vscode' '$here/install.sh' --uninstall >/dev/null"
 expect 0 "uninstall removes the import" bash -c "! grep -q 'TeamValue harness' '$tmp/home/.claude/CLAUDE.md'"

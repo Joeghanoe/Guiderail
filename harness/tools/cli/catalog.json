@@ -1664,6 +1664,10 @@
     {
       "tool": "verification/standard_checks.py",
       "reason": "Scanner adapters used by checks commands."
+    },
+    {
+      "tool": "harness/guidance.py",
+      "reason": "Guidance link validation and native skill packaging used by bundle check, installation and eval skills."
     }
   ]
 }

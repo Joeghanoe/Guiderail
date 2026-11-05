@@ -6,7 +6,7 @@ Playbook: [orchestrate-workload.md](../../playbooks/orchestrate-workload.md).
 
 ## Tools
 
-* `orchestrate.py` - Evaluates task complexity, recommends cost-effective model tiers (`economy`, `builder`, `reasoner`), and generates multi-agent work package decomposition plans; `tvh orchestrate layers --raw --` counts the layers a task or a change touches and exits 3 when three or more need a plan and the report holds neither the plan nor a stated reason for one thread.
+* [orchestrate.py](orchestrate.py) - Evaluates task complexity, recommends cost-effective model tiers (`economy`, `builder`, `reasoner`), and generates multi-agent work package decomposition plans; `tvh orchestrate layers --raw --` counts the layers a task or a change touches and exits 3 when three or more need a plan and the report holds neither the plan nor a stated reason for one thread.
 
 ## Model Tiers
 
@@ -20,7 +20,7 @@ Playbook: [orchestrate-workload.md](../../playbooks/orchestrate-workload.md).
 
 The tool is vendor-neutral: it speaks in tiers and takes names from configuration, with no provider as the default.
 
-* `models.json` (this folder) - the names the harness can vouch for, each provider with the date they were checked.
+* [models.json](models.json) (this folder) - the names the harness can vouch for, each provider with the date they were checked.
 * `~/.config/harness/models.json` - yours; add any vendor. A provider here replaces the same provider above, whole.
 * `--models FILE` - one-off, same format.
 

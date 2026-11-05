@@ -35,4 +35,4 @@ Code that loops over a fixed small set (the four meal types, the seven days, a l
 
 # Check
 
-Review reads the design for the size statement, reads each loop over a stated-large collection for the three shapes in point 2, reads each limit for what it returns when hit, and finds the scale test. Missing size statement, a limit that returns a negative verdict, or no scale test at a stated size is a major finding that cites CODE.9. A design-gate check for the size heading is a candidate (`design-check.py`) once the heading has been in use for a few runs.
+Review reads the design for the size statement, reads each loop over a stated-large collection for the three shapes in point 2, reads each limit for what it returns when hit, and finds the scale test. Missing size statement, a limit that returns a negative verdict, or no scale test at a stated size is a major finding that cites CODE.9. A design-gate check for the size heading is a candidate ([design-check.py](../../tools/greenfield/design-check.py)) once the heading has been in use for a few runs.

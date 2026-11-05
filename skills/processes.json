@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "authority": "Skills guide work; existing rules and human approval boundaries remain authoritative. Planned entries are not installed.",
+  "steps": [
+    {
+      "step": "understand-work",
+      "skill": null,
+      "status": "planned",
+      "owner": "Business/process owner with Vegviser",
+      "inputs": "request and affected process",
+      "outputs": "agreed outcome, rules and accountable owner",
+      "gap": "Agree analysis procedure with the process owner"
+    },
+    {
+      "step": "research",
+      "skill": null,
+      "status": "planned",
+      "owner": "Architecture owner",
+      "inputs": "bounded question and source constraints",
+      "outputs": "source-grounded conclusion and uncertainty",
+      "gap": "Define research evidence and stopping conditions"
+    },
+    {
+      "step": "specify",
+      "skill": "specify",
+      "status": "active",
+      "owner": "Requester / product owner",
+      "inputs": "request, source work item and existing criteria",
+      "outputs": "provenance, criteria, questions and agreement status",
+      "gap": ""
+    },
+    {
+      "step": "design",
+      "skill": "design",
+      "status": "active",
+      "owner": "Architecture owner / existing ADR authority",
+      "inputs": "criteria, current architecture and constraints",
+      "outputs": "design, trade-offs, interfaces and open decisions",
+      "gap": ""
+    },
+    {
+      "step": "plan",
+      "skill": "plan",
+      "status": "active",
+      "owner": "Engineering lead",
+      "inputs": "approved criteria, design and source scope",
+      "outputs": "bounded packages, dependencies and verification commands",
+      "gap": ""
+    },
+    {
+      "step": "implement",
+      "skill": "implement",
+      "status": "active",
+      "owner": "Change author",
+      "inputs": "approved criteria, source scope and plan when needed",
+      "outputs": "focused diff and criteria-to-evidence mapping",
+      "gap": ""
+    },
+    {
+      "step": "test",
+      "skill": "test",
+      "status": "active",
+      "owner": "Change author / test owner",
+      "inputs": "criteria or reproduced defect and public test boundary",
+      "outputs": "tests, scenario mapping, results and gaps",
+      "gap": ""
+    },
+    {
+      "step": "debug",
+      "skill": "debug",
+      "status": "active",
+      "owner": "Engineering / incident owner",
+      "inputs": "observed failure, version, environment and logs",
+      "outputs": "diagnosis, confidence, reproduction and bounded next action",
+      "gap": ""
+    },
+    {
+      "step": "verify",
+      "skill": "verify",
+      "status": "active",
+      "owner": "Engineering / environment owner",
+      "inputs": "source or deployed version and required checks",
+      "outputs": "receipts, failures, skips and residual judgment",
+      "gap": ""
+    },
+    {
+      "step": "code-review",
+      "skill": "code-review",
+      "status": "active",
+      "owner": "Independent reviewer; human merge authority",
+      "inputs": "baseline, source scope, criteria and check evidence",
+      "outputs": "standards and spec assessment, validated findings and unresolved decisions",
+      "gap": ""
+    },
+    {
+      "step": "acceptance",
+      "skill": "acceptance",
+      "status": "active",
+      "owner": "Business owner",
+      "inputs": "approved criteria, environment and business process",
+      "outputs": "runnable test plan and recorded evidence for human acceptance",
+      "gap": ""
+    },
+    {
+      "step": "prepare-delivery",
+      "skill": null,
+      "status": "planned",
+      "owner": "Release owner / product owner",
+      "inputs": "review, current receipts and compatibility scope",
+      "outputs": "readiness, rollout and recovery plan",
+      "gap": "Agree release-readiness procedure; no publishing authority is granted"
+    },
+    {
+      "step": "verify-operation",
+      "skill": "verify",
+      "status": "active",
+      "owner": "Environment / service owner",
+      "inputs": "deployed version, environment and observation window",
+      "outputs": "version, health and telemetry observations",
+      "gap": ""
+    },
+    {
+      "step": "learn",
+      "skill": null,
+      "status": "planned",
+      "owner": "Incident owner / harness maintainer",
+      "inputs": "incident evidence and feedback",
+      "outputs": "postmortem, follow-up actions and revalidation",
+      "gap": "Shared feedback exists; agree incident-learning ownership and procedure"
+    },
+    {
+      "step": "improve",
+      "skill": null,
+      "status": "planned",
+      "owner": "Architecture / process owner",
+      "inputs": "observed outcomes and maintenance costs",
+      "outputs": "bounded improvement decision and evaluation",
+      "gap": "Agree effectiveness measures before mandatory process changes"
+    }
+  ]
+}

@@ -20,7 +20,7 @@ sources:
 
 # Situation
 
-An agent needs to inspect dev gateway logs to troubleshoot a failed load test. The developer already ran `az login` and authorized the read, but `cloud-read.sh` failed because a dedicated reader config directory was not configured, forcing manual copy-pasting.[^evidence]
+An agent needs to inspect dev gateway logs to troubleshoot a failed load test. The developer already ran `az login` and authorized the read, but [cloud-read.sh](../tools/cloud/cloud-read.sh) failed because a dedicated reader config directory was not configured, forcing manual copy-pasting.[^evidence]
 
 # Why (verdict)
 

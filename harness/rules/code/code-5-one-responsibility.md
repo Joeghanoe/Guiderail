@@ -32,6 +32,6 @@ On a touched mixed file, split out the types the change adds or changes; do not 
 
 # Executable scope
 
-The C# checker is authoritative for generated-file detection, partial filenames, nested visibility and declaration comparison. Its regression fixtures live in `tests/test_code_types.py` in the harness repository. Do not maintain a second list of those mechanics here or infer responsibility from a structural pass.
+The C# checker is authoritative for generated-file detection, partial filenames, nested visibility and declaration comparison. Its regression fixtures live in [test_code_types.py](../../../tests/test_code_types.py) in the harness repository. Do not maintain a second list of those mechanics here or infer responsibility from a structural pass.
 
 The scope was approved on 2026-10-29. Semantic ownership, responsibility and the single-user condition on private helpers remain review concerns.

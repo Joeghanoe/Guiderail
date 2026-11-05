@@ -43,6 +43,6 @@ The verb is the command, not the name of the thing it acts on. The wrapper keeps
 
 # Not verified
 
-Tested with stubs only (`tests/run.sh`, cloud-read section), not against a real `az` login.
+Tested with stubs only ([run.sh](../../tests/run.sh), cloud-read section), not against a real `az` login.
 
 [^evidence]: wrapper refusal, exit code 3

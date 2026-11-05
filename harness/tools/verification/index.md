@@ -1,6 +1,6 @@
 # Verification contracts and evidence
 
-`requirements.json` is a versioned registry of scoped requirements, their methods, available tools and residual judgment. It travels with the bundle under tools, outside OKF concept discovery. Existing concept types, rule IDs, verdicts and routing remain compatible.
+[requirements.json](requirements.json) is a versioned registry of scoped requirements, their methods, available tools and residual judgment. It travels with the bundle under tools, outside OKF concept discovery. Existing concept types, rule IDs, verdicts and routing remain compatible.
 
 ```bash
 tvh checks registry --raw --
@@ -50,15 +50,15 @@ Receipts distinguish source revision/dirty state, stage, exact argv, timeout, ex
 
 ## Review and retrieval
 
-`review.sh` supplies `semantic-plan.json` with applicable registry scopes and rubric references to the separate reviewer. Findings keep existing public rule IDs and JSON shape. The registry does not create an automatic numeric semantic gate. Calibrate the rubric before making scores blocking; human review remains authoritative.
+[review.sh](../review/review.sh) supplies `semantic-plan.json` with applicable registry scopes and rubric references to the separate reviewer. Findings keep existing public rule IDs and JSON shape. The registry does not create an automatic numeric semantic gate. Calibrate the rubric before making scores blocking; human review remains authoritative.
 
-Claude and agy edit hooks call `tools/harness/context.py`. A successful lookup plus document hashes produces a temporary session receipt before edit guidance is cached. Newly relevant content is delivered even for an already-seen extension. Failed selection blocks the edit and writes no success marker. Without a session ID, context is delivered uncached. A selection receipt records references, not a claim that the agent opened the documents.
+Claude and agy edit hooks call [context.py](../harness/context.py). A successful lookup plus document hashes produces a temporary session receipt before edit guidance is cached. Newly relevant content is delivered even for an already-seen extension. Failed selection blocks the edit and writes no success marker. Without a session ID, context is delivered uncached. A selection receipt records references, not a claim that the agent opened the documents.
 
 ## Adoption and maintenance
 
 The full verify template runs CODE.5 locally. The reusable PR pipeline runs CODE.5 once as an independent step, records the configured verify command, summarizes results and publishes failure evidence. `HARNESS_CODE5_EXTERNAL=1` avoids a duplicate run inside the updated template. Required branch policies and consumer adoption still belong to the repository owner. Other analyzers and scenario mappings retain their existing opt-in status.
 
-Gitleaks scanning and the selected PSRule Key Vault profile now have pinned adapters and real-engine fixtures. Installation is explicit through `install-tools.py`. Keep audit and calibration reports under `$GOLDEN_PATH_HOME/testing/`, outside the source checkout. Existing reviewer scenarios and task benchmarks remain the outcome evaluators; no performance improvement is asserted without running the experiment.
+Gitleaks scanning and the selected PSRule Key Vault profile now have pinned adapters and real-engine fixtures. Installation is explicit through [install-tools.py](install-tools.py). Keep audit and calibration reports under `$GOLDEN_PATH_HOME/testing/`, outside the source checkout. Existing reviewer scenarios and task benchmarks remain the outcome evaluators; no performance improvement is asserted without running the experiment.
 
 ## Install pinned scanners
 
@@ -77,4 +77,4 @@ tvh checks keyvault --raw -- \
   --parameters infra/vault.dev.parameters.json --out "$run_dir/vault"
 ```
 
-Use a fresh output directory for each invocation. `tool-lock.json` pins versions, download hashes and the adopted Key Vault rules. The pilot accepts Bicep or ARM templates with optional ARM deployment-parameter JSON. Repository owners choose whether these checks are required. Secret scanning covers recognizable patterns, and Key Vault results cover only the supplied deployment inputs. Retain run evidence in local testing storage or CI artifacts rather than committing it.
+Use a fresh output directory for each invocation. [tool-lock.json](tool-lock.json) pins versions, download hashes and the adopted Key Vault rules. The pilot accepts Bicep or ARM templates with optional ARM deployment-parameter JSON. Repository owners choose whether these checks are required. Secret scanning covers recognizable patterns, and Key Vault results cover only the supplied deployment inputs. Retain run evidence in local testing storage or CI artifacts rather than committing it.

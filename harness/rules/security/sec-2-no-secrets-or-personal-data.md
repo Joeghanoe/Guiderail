@@ -24,7 +24,7 @@ sources:
 
 # Enforcement
 
-`hooks/guard-read.sh` and `hooks/guard-bash.sh` block reading `.env` and dumping the environment. A secret scanner in the repo's verify step catches committed secrets. Review checks log and telemetry statements.
+[guard-read.sh](../../hooks/guard-read.sh) and [guard-bash.sh](../../hooks/guard-bash.sh) block reading `.env` and dumping the environment. A secret scanner in the repo's verify step catches committed secrets. Review checks log and telemetry statements.
 
 # Boundary
 

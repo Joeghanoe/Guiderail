@@ -62,7 +62,7 @@ DEFAULT_RESULTS = HERE / "eval-results.jsonl"   # committed, so a run started on
 ENGINES = ["claude", "codex", "copilot", "agy", "replay"]
 
 # What the reviewer is built from. A change to any of it makes earlier results about a different reviewer.
-HASHED = ("index.md", "principles", "rules", "examples", "playbooks", "templates", "tools/review", "tools/harness/bundle.py")
+HASHED = ("index.md", "principles", "rules", "examples", "playbooks", "templates", "tools/review", "tools/harness/bundle.py", "../skills")
 SKIPPED = {"history.jsonl", "eval-results.jsonl", ".DS_Store", "eval-queue.py"}   # the queue is not part of the reviewer it measures
 
 # The engines print free text on failure, so these are patterns, not an API. A miss only costs one more error

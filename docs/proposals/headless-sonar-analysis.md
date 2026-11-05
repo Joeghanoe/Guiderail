@@ -12,7 +12,7 @@ Use language-native analyzer packages through a headless verification command. T
 | `.editorconfig` / `.globalconfig` | Enable rules and set C# diagnostic severities | Configuration only; an installed analyzer must execute |
 | `StyleCop.Analyzers` | Optional additional C# style checks | Does not replace Sonar rules |
 | ESLint + `eslint-plugin-sonarjs` | Local JavaScript/TypeScript analysis | Type-aware rules require parser/type configuration; the package does not reproduce every SonarQube JS/TS rule |
-| Existing `sonar-read.sh` | Read published issues, hotspots and quality-gate state | Does not scan local edits; retain the existing read and credential restrictions |
+| Existing [sonar-read.sh](../../harness/tools/sonar/sonar-read.sh) | Read published issues, hotspots and quality-gate state | Does not scan local edits; retain the existing read and credential restrictions |
 
 Sonar documents standalone NuGet configuration through `.editorconfig` and `.globalconfig`. Parameterized C# rules can also require a `SonarLint.xml` additional file. See the [Sonar .NET analyzer documentation](https://github.com/SonarSource/sonar-dotnet#configuring-rules). StyleCop documents its separate [Roslyn analyzer package](https://github.com/DotNetAnalyzers/StyleCopAnalyzers).
 
@@ -20,7 +20,7 @@ Use the maintained [SonarJS ESLint package documentation](https://github.com/Son
 
 ## Proposed command and ownership
 
-Add a `local-analysis` subcommand to `harness/tools/verification/verify.py`, backed by `harness/tools/sonar/local_analysis.py`. Reuse existing evidence and process execution support rather than introducing another verification framework. Proposed maintainer: `team:teamvalue-aicoe`; adopting repository owners choose dependencies, rule configuration and required gates.
+Add a `local-analysis` subcommand to [verify.py](../../harness/tools/verification/verify.py), backed by `harness/tools/sonar/local_analysis.py`. Reuse existing evidence and process execution support rather than introducing another verification framework. Proposed maintainer: `team:teamvalue-aicoe`; adopting repository owners choose dependencies, rule configuration and required gates.
 
 Illustrative CLI, unavailable until implemented:
 
@@ -79,8 +79,8 @@ These snippets illustrate configuration ownership. They are not complete consume
 ## Integration after acceptance
 
 1. Review the feedback under H.1 and assign a stable example ID only on acceptance. Propose the corresponding E-016/T.1 wording change so the local command becomes the reproducible check for disk contents and IDE diagnostics remain optional assistance. Keep server reads for published analysis and quality-gate evidence.
-2. Implement and calibrate the C# adapter first, then ESLint. Register only demonstrated coverage in `requirements.json`; a proposed command must not appear as implemented. Add tool documentation and refresh generated indexes when those files exist.
-3. Integrate with an adopting repository's existing full verification command. `node-verify.sh` already runs an available `lint` script, so avoid running the same ESLint check twice. Reuse retained output or invoke the adapter once. Keep the stop hook's fast path bounded; do not add unconditional full rebuilds on every stop.
+2. Implement and calibrate the C# adapter first, then ESLint. Register only demonstrated coverage in [requirements.json](../../harness/tools/verification/requirements.json); a proposed command must not appear as implemented. Add tool documentation and refresh generated indexes when those files exist.
+3. Integrate with an adopting repository's existing full verification command. [node-verify.sh](../../harness/tools/code/node-verify.sh) already runs an available `lint` script, so avoid running the same ESLint check twice. Reuse retained output or invoke the adapter once. Keep the stop hook's fast path bounded; do not add unconditional full rebuilds on every stop.
 4. Propose required CI steps for the adopting repository after pilot validation. Full checks remain explicit; absence of an analyzer or lint script cannot satisfy a required check. Consumer owners retain control of branch policies and required gates.
 
 ## Acceptance checks

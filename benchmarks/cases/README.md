@@ -1,6 +1,6 @@
 # Evaluation cases and the train / validation / holdout split
 
-Cases are brownfield: a change task on an existing codebase, with hidden acceptance criteria. Greenfield scenarios stay in `benchmarks/greenfield/`. `harness/tools/testing/run_brownfield.py` runs validation cases (see below).
+Cases are brownfield: a change task on an existing codebase, with hidden acceptance criteria. Greenfield scenarios stay in `benchmarks/greenfield/`. [run_brownfield.py](../../harness/tools/testing/run_brownfield.py) runs validation cases (see below).
 
 To register existing projects through symlinks or copies, freeze their sources and document known gaps, follow the [reference project validation workflow](../reference-projects.md). It also explains how the local project registry connects to these executable cases.
 
@@ -12,7 +12,7 @@ To register existing projects through symlinks or copies, freeze their sources a
 
 - One component has one role. A pattern seen in a train component may reappear in a validation case; that tests generalisation. Do not turn a validation or holdout case into an example, a rule edit or a template.
 - A case holds `task.md` (what the agent is asked), `criteria.md` (hidden checks and rule IDs), `case.json`, and `snapshot.json` (neutral file paths plus sha256, because the sources have no Git metadata).
-- The map from neutral aliases to real paths is private (`~/.harness-evaluation/private/`) and is the only place real names appear. Repo content carries none (`harness/templates/project-terms.txt`).
+- The map from neutral aliases to real paths is private (`~/.harness-evaluation/private/`) and is the only place real names appear. Repo content carries none ([project-terms.txt](../../harness/templates/project-terms.txt)).
 - Boundary examples need a human owner. Candidates without one are parked in `~/.harness-evaluation/pending-boundary/` until a person accepts the deviation.
 
 ## Running a validation case

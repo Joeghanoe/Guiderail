@@ -11,11 +11,12 @@ Source: [Way of Work](https://teamvaluebv.sharepoint.com/:fl:/g/contentstorage/C
 - [Principles](principles/) - P1-P13, pointers to Vegviser, which is the authority
 - [Rules](rules/) - what follows from them, with the tool or hook that enforces each one
 - [Examples](examples/) - worked examples with a verdict; human-reviewed examples are precedent
-- [Playbooks](playbooks/) - review a change, add an example, orchestrate a workload, process feedback, classify a test failure, write a business test plan, analyse ServiceNow, draw an integration diagram, verify a deployment, triage an incident
+- [Playbooks](playbooks/) - shared procedures for design, implementation, diagnosis and verification
+- [Processes](../skills/index.md) - engineering skills, owned procedures and future coverage
 - [Gates](gates/) - registration of each deterministic check: tool, owner, coverage, blind spots
 
 # Tools
 
-- [tools/](tools/) - scripts grouped by domain, see its index: harness, review, testing, cloud, azure-devops, servicenow, sonar, diagrams, orchestration
+- [tools/](tools/) - CLI operations and implementation contracts
 - [hooks/](hooks/) - Claude Code guard hooks: bash, read, stop-verify
-- [templates/](templates/) - `example.md` for feedback, `finding.md` for a review finding, `business-testplan.spec.json` for a business test plan, `solution-design.md` for a new service's design, `repo/` for what a project repo owns (AGENTS.md, analyzers)
+- [templates/](templates/) - [example.md](templates/example.md) for feedback, [finding.md](templates/finding.md) for a review finding, [business-testplan.spec.json](templates/business-testplan.spec.json) for a business test plan, [solution-design.md](templates/solution-design.md) for a new service's design, `repo/` for what a project repo owns (AGENTS.md, analyzers)

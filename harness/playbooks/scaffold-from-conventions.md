@@ -62,7 +62,7 @@ Stop and do the obvious thing instead when:
 
 It is a proposal about where files go and what they are called. It is not a review, not an approval, and not evidence that the code is right:
 
-- `playbooks/review-change.md` applies to the result exactly as it would without the brief. A finding still needs a rule ID, a `file:line` and your own reading - "the brief said so" is not evidence, and the tool never judges compliance.
+- [REVIEW-CHANGE.md](../../skills/engineering/code-review/REVIEW-CHANGE.md) applies to the result exactly as it would without the brief. A finding still needs a rule ID, a `file:line` and your own reading - "the brief said so" is not evidence, and the tool never judges compliance.
 - The project verify still has to pass (T.1).
 - Matching the repo's shape is not the same as following the rules. A repo can consistently do something CODE.5 or T.2 forbids; the brief will report that shape as a convention, because it is one. Judge the convention against the rules, and when the repo's own convention breaks a rule, say so rather than copying it. That is not something to reproduce.
 

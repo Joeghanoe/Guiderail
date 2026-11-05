@@ -7,7 +7,7 @@ BUNDLE = pathlib.Path(__file__).resolve().parents[2]
 
 
 def add_parsers(commands, common):
-    evaluation = commands.add_parser('eval', help='measure native skill selection in read-only model sessions')
+    evaluation = commands.add_parser('eval', help='measure native skill selection, reference routing and handoffs in read-only sessions')
     skills = evaluation.add_subparsers(dest='action', required=True).add_parser('skills')
     common(skills)
     skills.add_argument('--engine', choices=('claude', 'copilot'), required=True)

@@ -6,7 +6,7 @@ set -euo pipefail
 base="origin/${SYSTEM_PULLREQUEST_TARGETBRANCH:-refs/heads/main}"
 base="${base/refs\/heads\//}"
 
-pattern='^(AGENTS\.base\.md$|skills/|adapters/|harness/tvh$|harness/(rules|playbooks|examples|templates|hooks)/|harness/tools/(cli/|harness/(bundle|context)\.py$|review/|verification/))'
+pattern='^(AGENTS\.base\.md$|skills/|adapters/|harness/tvh$|harness/(rules|playbooks|examples|templates|hooks)/|harness/tools/(cli/|harness/(bundle|context|guidance)\.py$|review/|verification/))'
 changed="$(git diff --name-only "$base"...HEAD)"
 if grep -Eq "$pattern" <<<"$changed"; then
   echo "review inputs changed: the reviewer evals run"

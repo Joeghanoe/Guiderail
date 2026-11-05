@@ -57,6 +57,7 @@ def main():
         "--mode", "plan", "--output-format", "json",
         "--dangerously-skip-permissions",
         "--add-dir", str(review_dir), "--add-dir", str(bundle_dir),
+        "--add-dir", str(bundle_dir.resolve().parent / "skills"),
         "--print-timeout", f"{TIMEOUT_SECONDS}s",
     ]
     model = os.environ.get("HARNESS_REVIEW_MODEL")

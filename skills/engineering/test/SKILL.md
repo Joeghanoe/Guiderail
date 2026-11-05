@@ -1,31 +1,19 @@
 ---
 name: test
-description: Design, write, and execute tests following strict TDD discipline and TeamValue testing rules. Use when writing unit tests, integration scenarios, or designing test suites.
+description: Design or change automated tests for observable behavior, regressions, and contracts. Use when writing tests or choosing test boundaries; business acceptance sheets use acceptance instead.
 ---
 
-# Testing & TDD Discipline
+# Test observable behavior
 
-Write meaningful, falsifiable tests that protect business invariants and verify real public behavior.
+Inputs are approved criteria or an observed defect and the public boundary under test. Read the applicable [testing rules](../../../harness/rules/testing/index.md). Use [test design](TEST-DESIGN.md) for selecting layers, independent assertions and the defect reproduction loop.
 
-## Core Rules & The Red-Green Loop
-1. **Red Before Green**: Write a failing test exercising the intended behavior before writing any production code.
-2. **Minimal Code to Pass**: Write only the code required to make the failing test pass. Avoid anticipatory code.
-3. **Confirm the Public Seam**: Before writing a test, state the public boundary/interface you are exercising. Test against public behavior, not private implementation details.
-4. **Test in the Right Layer (T.3)**: Unit tests for domain logic; integration tests for DB/API contracts; smoke tests for deployments.
+Test domain invariants at unit boundaries and I/O contracts with integration tests. Inject I/O, time and configuration. Avoid tests that copy implementation logic, assert private state or merely count mock calls. Apply the existing defect test-first discipline; a low-impact documentation correction does not need invented tests.
 
-## Anti-Patterns to Guard Against
-- **Implementation-Coupled Tests**: Tests that mirror private methods or internal state, breaking whenever code is refactored without behavioral change.
-- **Tautological Assertions**: Tests that mirror or duplicate the implementation logic rather than asserting against an independent source of truth.
-- **Horizontal Slicing**: Writing all tests across a technical layer at once. Prefer vertical slices through a feature seam.
+When a test fails unexpectedly, use [failure classification](../../../harness/playbooks/classify-test-failure.md) before changing either product or assertion.
 
-## Process & Tooling
-Follow the [Testing Rules](~/.golden-path-harness/harness/rules/testing/index.md) (`T.1`–`T.6`):
-1. Write the failing test at the confirmed seam.
-2. Run test presence check:
-   `tvh checks test-presence`
-3. Verify scenario mapping (T.5):
-   `tvh checks scenarios --input-file <changed.txt>`
-4. Run tests locally via repo runner (`dotnet test`, `pnpm test`) to confirm green.
+```bash
+tvh checks test-presence --input-file <changed-paths.txt> --
+tvh checks scenarios --input-file <changed-paths.txt> --
+```
 
-## Expected Evidence
-A failing test reproducing a defect (for fixes) or a clean green suite verifying new behavior along a confirmed public seam.
+Run the repository's test command and retain results. Hand back the criterion-to-test mapping, reproduced failure for defects, current results and any untested boundaries. A green suite does not establish business acceptance or deployment approval.

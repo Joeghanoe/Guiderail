@@ -19,11 +19,11 @@ sources:
 
 Phase: **idea**. Nothing here is decided or built.
 
-Support desks triage the same kinds of incidents again and again, often closing them with a workaround (restart, clear a queue) rather than a structural fix. The harness already has a read-only triage playbook (`triage-incident.md`, status draft) and the wrappers to read customer environments, but triage only happens when someone asks an agent in a session.[^evidence] The support desk already keeps its known causes and workarounds as solution articles in its ITSM tool.[^requirement]
+Support desks triage the same kinds of incidents again and again, often closing them with a workaround (restart, clear a queue) rather than a structural fix. The harness already has a read-only triage playbook ([triage-incident.md](../harness/playbooks/triage-incident.md), status draft) and the wrappers to read customer environments, but triage only happens when someone asks an agent in a session.[^evidence] The support desk already keeps its known causes and workarounds as solution articles in its ITSM tool.[^requirement]
 
 # Why (verdict)
 
-`automation-candidate` under H.2 (P6, P12, P13): triage is repeated work with a stable shape, and the harness review loop (examples as labelled data, `eval.py` as held-out evaluation, thresholds as gate, feedback as new labels) can be reused for it rather than training a model.
+`automation-candidate` under H.2 (P6, P12, P13): triage is repeated work with a stable shape, and the harness review loop (examples as labelled data, [eval.py](../harness/tools/review/eval.py) as held-out evaluation, thresholds as gate, feedback as new labels) can be reused for it rather than training a model.
 
 The idea, in steps up the ladder:
 

@@ -50,6 +50,7 @@ def main():
         "--max-turns", str(MAX_TURNS),
         "--add-dir", str(review_dir),
         "--add-dir", str(bundle_dir),
+        "--add-dir", str(bundle_dir.resolve().parent / "skills"),
         "--output-format", "json",
     ]
     model = os.environ.get("HARNESS_REVIEW_MODEL")

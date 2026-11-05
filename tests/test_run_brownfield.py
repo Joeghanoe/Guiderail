@@ -128,7 +128,14 @@ class RunBrownfieldTests(unittest.TestCase):
 
     def test_hooks_are_off_by_default(self):
         self.run_it(self.profile(), "plain")
-        self.assertFalse((self.root / "plain" / "workspace" / ".claude").exists())
+        workspace = self.root / "plain/workspace"
+        self.assertFalse((workspace / ".claude").exists())
+        self.assertTrue((workspace / "skills/engineering/code-review/REVIEW-CHANGE.md").is_file())
+        design = workspace / "skills/engineering/design/SKILL.md"
+        self.assertIn("../../../.harness/playbooks/start-greenfield.md", design.read_text())
+        self.assertIn("](.harness/index.md)", (workspace / "AGENTS.base.md").read_text())
+        violations, _ = bf.diff_gates("", [("M", "skills/engineering/design/SKILL.md")])
+        self.assertTrue(violations)
 
     def test_items_the_grader_leaves_out_are_inconclusive(self):
         graded = bf.complete({"items": [{"id": "G01", "verdict": "pass"}]}, ["G01", "T.5"])

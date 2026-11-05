@@ -7,7 +7,7 @@
 ## 2026-11-04
 
 - Extended `tvh` with frontend capture/comparison, bounded streaming pipeline watches, greenfield initialization, and recorded design verification. Added native initial-skill-selection probes with observed tool-call evidence; workflow outcomes remain separate. Pipeline diagnosis stays a playbook and CLI operation, and installation removes the retired harness-owned skill adapter. The verify template now fails when its design gate is unavailable instead of silently passing design-only verification.
-- Approved the [process-skills and unified-CLI proposal](../docs/proposals/process-skills-and-unified-cli.md), allowing breaking changes during development. Added the `tvh` pilot for guidance selection, project verification, independent change review, Azure DevOps diagnosis and restricted cloud/Sonar reads. Installation publishes the review skill for Claude Code and Copilot. At the owner's direction, pipeline diagnosis remains a playbook and CLI operation rather than a skill. Playbooks remain canonical; native findings and verification receipts retain their contracts.
+- Approved the [process-skills and unified-CLI proposal](../docs/adr/0009-process-skills-and-unified-cli.md), allowing breaking changes during development. Added the `tvh` pilot for guidance selection, project verification, independent change review, Azure DevOps diagnosis and restricted cloud/Sonar reads. Installation publishes the review skill for Claude Code and Copilot. At the owner's direction, pipeline diagnosis remains a playbook and CLI operation rather than a skill. Playbooks remain canonical; native findings and verification receipts retain their contracts.
 - Captured [feedback on editor-dependent Sonar diagnostics](../feedback/headless-sonar-analysis-without-open-editor-files.md) and a [proposed local analysis tool](../docs/proposals/headless-sonar-analysis.md). The design uses Sonar Roslyn analyzers and ESLint with explicit scope and evidence. It preserves the server reader and records the proposed departure from E-016's IDE-first workflow. No runner, rule change or consumer adoption is active.
 
 ## 2026-11-03
@@ -40,7 +40,7 @@
 - Removed E-034 and its dedicated fixture at the owner's request. Historical eval evidence, including its failed bad case, remains in the result records; its identifier is not reused.
 - Recorded the owner's approval of [ADRs 0001–0007](../docs/adr/). Kept ADR 0008, the development-process proposal and the knowledge-base incident-triage automation idea open for separate review.
 - Moved processed feedback to [docs/feedback/processed](../docs/feedback/processed/), retained the [current conventions](../docs/decisions/feedback-conventions.md) as an editable record, and documented [example verdicts, lifecycle and evaluation results](../docs/example-verdicts.md). Removed the temporary draft-approval audit after preserving useful provenance.
-- Adopted this OKF `log.md` summary format from Vegviser. Entries describe material changes and rationale, newest date first; Git retains the authoritative diff and history. Current conventions and ADRs retain their own authority and lifecycle.
+- Adopted this OKF [log.md](log.md) summary format from Vegviser. Entries describe material changes and rationale, newest date first; Git retains the authoritative diff and history. Current conventions and ADRs retain their own authority and lifecycle.
 
 ## 2026-10-31
 

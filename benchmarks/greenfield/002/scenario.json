@@ -56,7 +56,11 @@
       "source": "AGENTS.base.md",
       "path": "candidate/AGENTS.base.md",
       "replace": {
-        "~/.golden-path-harness/harness": ".harness"
+        "~/.golden-path-harness/harness": ".harness",
+        "](harness/": "](.harness/",
+        "](../harness/": "](../.harness/",
+        "](../../../harness/": "](../../../.harness/",
+        "~/.golden-path-harness/bin/tvh": "./.harness/tvh"
       }
     },
     {
@@ -75,6 +79,16 @@
         "tools/review",
         "tools/index.md"
       ]
+    },
+    {
+      "source": "skills",
+      "path": "candidate/skills",
+      "replace": {
+        "](harness/": "](.harness/",
+        "](../harness/": "](../.harness/",
+        "](../../../harness/": "](../../../.harness/",
+        "~/.golden-path-harness/bin/tvh": "./.harness/tvh"
+      }
     }
   ],
   "evaluator_files": [

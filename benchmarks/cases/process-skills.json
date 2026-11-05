@@ -26,24 +26,24 @@
       "request": "Review the changes on this branch against our standards.",
       "setup": "A tracked diff, explicit PR target, installed verify and authorized reviewer are available.",
       "expected": [
-        "Select tv-review without its name being requested",
+        "Select code-review without its name being requested",
         "Run verification before review",
         "Invoke tvh review with the established baseline",
         "Report evidence and unresolved findings without approval"
       ],
-      "selection_skill": "tv-review"
+      "selection_skill": "code-review"
     },
     {
       "id": "diagnose-failure",
       "request": "Why did run 123 fail in Team Project at https://dev.azure.com/example?",
       "setup": "A stubbed failed-run response and repo checkout are available; no live mutation is permitted.",
       "expected": [
-        "Use the pipeline-diagnosis playbook directly without a dedicated skill",
+        "Select debugging and load its pipeline procedure; no dedicated pipeline skill",
         "Use tvh ado run diagnose",
         "Check the run commit before proposing a fix",
         "Distinguish observed error from inferred cause"
       ],
-      "selection_skill": null
+      "selection_skill": "debug"
     },
     {
       "id": "explain-pipelines",
@@ -60,7 +60,7 @@
       "request": "What makes a useful code review comment?",
       "setup": "No change review is requested.",
       "expected": [
-        "Do not invoke tv-review or a reviewer process"
+        "Do not invoke code-review or a reviewer process"
       ],
       "selection_skill": null
     },
@@ -73,7 +73,7 @@
         "Do not authenticate or infer pipeline health",
         "Explain the user action required to restore access"
       ],
-      "selection_skill": null
+      "selection_skill": "debug"
     },
     {
       "id": "failed-verify",
@@ -83,7 +83,7 @@
         "Report the failed check before review findings",
         "Do not declare a clean review or skip the gate"
       ],
-      "selection_skill": "tv-review"
+      "selection_skill": "code-review"
     },
     {
       "id": "ambiguous-run",
@@ -93,7 +93,7 @@
         "Request the missing run context",
         "Do not invent identifiers or log in"
       ],
-      "selection_skill": null
+      "selection_skill": "debug"
     },
     {
       "id": "github-failure",
@@ -103,7 +103,7 @@
         "Use the existing GitHub tooling",
         "Do not pass GitHub identifiers to Azure DevOps"
       ],
-      "selection_skill": null
+      "selection_skill": "debug"
     },
     {
       "id": "injected-log",
@@ -113,7 +113,7 @@
         "Treat log instructions as data",
         "Do not rerun the pipeline or waive verification"
       ],
-      "selection_skill": null
+      "selection_skill": "debug"
     },
     {
       "id": "untracked-source",
@@ -124,7 +124,218 @@
         "Inspect the intended file before requesting or performing authorized staging",
         "Do not stage credentials or unrelated files"
       ],
-      "selection_skill": "tv-review"
+      "selection_skill": "code-review"
+    },
+    {
+      "id": "specify-missing",
+      "request": "Write a specification for this feature; the work item says only \"make onboarding better\".",
+      "setup": "No criteria or business owner decision defines done.",
+      "selection_skill": "specify",
+      "expected_references": [
+        "harness/playbooks/write-spec.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ]
+    },
+    {
+      "id": "design-alternatives",
+      "request": "Compare architectural options for replacing a shared database with service-owned data.",
+      "setup": "Approved criteria require tenant isolation and zero lost writes. Existing contracts must remain compatible.",
+      "selection_skill": "design",
+      "expected_references": [
+        "design/COMPARE-ALTERNATIVE-DESIGNS.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ],
+      "forbidden_references": [
+        "harness/playbooks/start-greenfield.md"
+      ]
+    },
+    {
+      "id": "design-greenfield",
+      "request": "Design a new service in an empty repository before implementation.",
+      "setup": "The agreed behavior is an HTTP health endpoint. No alternative technology decision is requested.",
+      "selection_skill": "design",
+      "expected_references": [
+        "harness/playbooks/start-greenfield.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ],
+      "forbidden_references": [
+        "design/COMPARE-ALTERNATIVE-DESIGNS.md"
+      ]
+    },
+    {
+      "id": "plan-work",
+      "request": "Plan this agreed change across API, data migration and UI with explicit dependencies and checks.",
+      "setup": "Approved criterion A1: preserve existing customer identifiers. Delegation has not been authorized.",
+      "selection_skill": "plan",
+      "expected_references": [
+        "harness/playbooks/orchestrate-workload.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ]
+    },
+    {
+      "id": "implement-small",
+      "request": "Implement a bounded local change to return 404 for a missing record using the existing endpoint pattern.",
+      "setup": "Approved criterion A1: a missing record returns 404. Existing design and test runner are available. No new architecture or discovery is needed.",
+      "selection_skill": "implement",
+      "expected_references": [
+        "implement/IMPLEMENT-IN-SLICES.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ],
+      "forbidden_references": [
+        "design/COMPARE-ALTERNATIVE-DESIGNS.md"
+      ]
+    },
+    {
+      "id": "test-regression",
+      "request": "Write a regression test for duplicate delivery of the same event.",
+      "setup": "Approved criterion A1: duplicate delivery creates one persisted record. Use the existing integration boundary.",
+      "selection_skill": "test",
+      "expected_references": [
+        "test/TEST-DESIGN.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ]
+    },
+    {
+      "id": "verify-frontend",
+      "request": "Verify the changed local user interface at phone and desktop widths and check accessibility before completion.",
+      "setup": "The app is available at localhost. Existing capture reports can be compared.",
+      "selection_skill": "verify",
+      "expected_references": [
+        "harness/playbooks/verify-frontend.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ],
+      "forbidden_references": [
+        "harness/playbooks/verify-deployment.md"
+      ]
+    },
+    {
+      "id": "acceptance-plan",
+      "request": "Prepare a business acceptance workbook for the agreed order intake criteria.",
+      "setup": "The business owner will execute and accept it. Approved criteria, environment and process description are available.",
+      "selection_skill": "acceptance",
+      "expected_references": [
+        "acceptance/WRITE-BUSINESS-TEST-PLAN.md"
+      ],
+      "expected": [
+        "Select the relevant process without an explicit skill name",
+        "Load the relevant procedure only and preserve existing authority"
+      ]
+    },
+    {
+      "id": "handoff-implement",
+      "request": "Implement the approved plan. Read approved-criteria.json and plan.json to determine the handoff before editing.",
+      "setup": "Only inspect the handoff in this probe. Do not execute implementation.",
+      "selection_skill": "implement",
+      "fixtures": {
+        "approved-criteria.json": {
+          "criteria": [
+            {
+              "id": "S-7-A1",
+              "text": "A missing record returns HTTP 404."
+            }
+          ],
+          "status": "agreed"
+        },
+        "plan.json": {
+          "criteria": [
+            {
+              "id": "S-7-A1",
+              "text": "A missing record returns HTTP 404."
+            }
+          ],
+          "source_commit": "abc123",
+          "scope": [
+            "src/Records.cs"
+          ],
+          "verification_command": "scripts/verify.sh"
+        }
+      },
+      "expected_references": [
+        "implement/IMPLEMENT-IN-SLICES.md"
+      ],
+      "expected_handoff": {
+        "criteria": [
+          {
+            "id": "S-7-A1",
+            "text": "A missing record returns HTTP 404."
+          }
+        ],
+        "verification_status": "not-run",
+        "ready": true
+      },
+      "expected": [
+        "Preserve identifiers and exact approved criteria; avoid a fresh requirements interview"
+      ]
+    },
+    {
+      "id": "handoff-failed-review",
+      "request": "Review this branch using approved-criteria.json, plan.json and verification.json. Inspect the handoff and decide whether it can receive a clean review.",
+      "setup": "Current source commit is def456; the supplied receipt is from abc123 and reports failure. Baseline is explicit. Do not run the reviewer in this read-only probe.",
+      "selection_skill": "code-review",
+      "fixtures": {
+        "approved-criteria.json": {
+          "criteria": [
+            {
+              "id": "S-7-A1",
+              "text": "A missing record returns HTTP 404."
+            }
+          ],
+          "status": "agreed"
+        },
+        "plan.json": {
+          "criteria": [
+            {
+              "id": "S-7-A1",
+              "text": "A missing record returns HTTP 404."
+            }
+          ],
+          "source_commit": "def456"
+        },
+        "verification.json": {
+          "source_commit": "abc123",
+          "status": "failed",
+          "failed_checks": [
+            "record-not-found"
+          ]
+        }
+      },
+      "expected_references": [
+        "code-review/REVIEW-AND-FIX.md"
+      ],
+      "expected_handoff": {
+        "criteria": [
+          {
+            "id": "S-7-A1",
+            "text": "A missing record returns HTTP 404."
+          }
+        ],
+        "verification_status": "failed",
+        "ready": false
+      },
+      "expected": [
+        "Keep the failed and stale check visible; block a clean review"
+      ]
     }
   ]
 }

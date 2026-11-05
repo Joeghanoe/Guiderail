@@ -2,7 +2,7 @@
 
 `tvh` is the supported invocation interface for every current public harness tool. The [command catalog](commands.md) lists all routes and the internal implementations deliberately kept private. Run `tvh tools --check --json` to verify that every executable tool file is classified. The review skill selects its canonical process. Operational tasks use playbooks and commands directly; pipeline diagnosis has no dedicated skill.
 
-From a checkout, run `./harness/tvh`. After `install.sh`, add `~/.golden-path-harness/bin` to PATH or use its `tvh` executable directly. `GOLDEN_PATH_HOME` relocates the installed executable and skill references. The installer never edits shell profiles or adds a blanket `tvh` permission rule. A conflicting executable in the installation directory is refused; a different executable already on PATH is reported.
+From a checkout, run `./harness/tvh`. After [install.sh](../../../install.sh), add `~/.golden-path-harness/bin` to PATH or use its `tvh` executable directly. `GOLDEN_PATH_HOME` relocates the installed executable and skill references. The installer never edits shell profiles or adds a blanket `tvh` permission rule. A conflicting executable in the installation directory is refused; a different executable already on PATH is reported.
 
 ```bash
 tvh doctor --json
@@ -86,7 +86,7 @@ Human output previews at most 12,000 bytes per stream and links to the complete 
 | `doctor`, `context select` | Local inspection and evidence writes |
 | `verify` | Executes repository code and may build artifacts or use the network; existing verification receipt semantics apply |
 | `review` | Reads the tracked diff, writes evidence, and calls the selected provider; existing reviewer restrictions apply |
-| `ado run diagnose` | Restricted Azure DevOps GETs through `ado-run-failure.sh`; existing identity and redaction behavior applies |
+| `ado run diagnose` | Restricted Azure DevOps GETs through [ado-run-failure.sh](../azure-devops/ado-run-failure.sh); existing identity and redaction behavior applies |
 | `ado run watch` | Restricted repeated GETs through the existing watcher; does not queue or retry |
 | `cloud read`, `sonar read` | Existing restricted read wrappers; no new write verbs or credential access |
 | `greenfield init` | Writes design skeletons and an external project verify; no source implementation or deployment |
@@ -100,7 +100,7 @@ Timeouts terminate the process group on POSIX and use `taskkill /T` on Windows. 
 
 ## Validation and remaining evaluation
 
-`tests/test_cli.py` covers explicit workflows and installation. `tests/test_cli_catalog.py` checks exhaustive file classification, offline help for every route, real local tool dispatch, stdin scope, raw JSON compatibility, native exits, artifact paths, wrapper refusals and human-only boundaries. The deterministic suite makes no provider or remote service calls. Private libraries, provider/grader adapters, hook protocols and snapshot fixtures remain internal; their owners are recorded in the catalog. Direct CI implementation calls may remain.
+[test_cli.py](../../../tests/test_cli.py) covers explicit workflows and installation. [test_cli_catalog.py](../../../tests/test_cli_catalog.py) checks exhaustive file classification, offline help for every route, real local tool dispatch, stdin scope, raw JSON compatibility, native exits, artifact paths, wrapper refusals and human-only boundaries. The deterministic suite makes no provider or remote service calls. Private libraries, provider/grader adapters, hook protocols and snapshot fixtures remain internal; their owners are recorded in the catalog. Direct CI implementation calls may remain.
 
 The [pilot evaluation cases](../../../benchmarks/cases/process-skills.json) distinguish expected native skill selection from workflow outcomes. Run a selected case explicitly with a pinned provider model:
 
@@ -111,6 +111,6 @@ tvh eval skills --engine copilot --model <exact-model-id> \
 
 Use `--all` to run every case. An exact model and an explicit case selection are required; no model calls run during installation or `doctor`. The runner creates temporary native project skills, permits only file-reading and skill tools, and retains raw JSON events, native usage, client version, input hashes, and observed tool calls. It never modifies personal skills or authentication. Claude uses project settings with external integrations disabled; Copilot disables custom instructions and built-in external integrations. Personal client configuration or skills may still affect discovery, and tool restrictions are not a sandbox.
 
-Only a model-issued native `skill`/`Skill` call counts as invocation. A response claiming to have used a skill does not count. Missing terminal events, malformed traces, failed processes, and timeouts are incomplete. A completed selection mismatch returns exit 1. The report assesses initial selection only, marks workflow outcomes unassessed, and leaves unavailable metrics null. Pipeline cases expect no dedicated skill. Full workflow, adapter parity, quantitative adoption thresholds, and token-efficiency comparisons remain separate evaluations. See the [approved proposal](../../../docs/proposals/process-skills-and-unified-cli.md).
+Only a model-issued native `skill`/`Skill` call counts as invocation. A response claiming to have used a skill does not count. Missing terminal events, malformed traces, failed processes, and timeouts are incomplete. A completed selection mismatch returns exit 1. The report assesses native selection, observed conditional reference reads and synthetic handoff inspection, marks completed workflow outcomes unassessed, and leaves unavailable metrics null. Pipeline cases select debugging and expect no dedicated pipeline skill. Full workflow, adapter parity, quantitative adoption thresholds, and token-efficiency comparisons remain separate evaluations. See the [accepted CLI decision](../../../docs/adr/0009-process-skills-and-unified-cli.md).
 
 The native discovery and tool restrictions follow the clients' installed CLI help and the [GitHub CLI command reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference).

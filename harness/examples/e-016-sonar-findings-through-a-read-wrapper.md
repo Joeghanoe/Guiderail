@@ -20,7 +20,7 @@ Fixing code-quality findings requires the issue list from Sonar. Without a dedic
 
 # Why (verdict)
 
-Just like `cloud-read.sh`, external reads belong in a read-only wrapper that strictly rejects state-changing calls (H.2). This keeps credentials safe and standardizes how agents fetch findings.
+Just like [cloud-read.sh](../tools/cloud/cloud-read.sh), external reads belong in a read-only wrapper that strictly rejects state-changing calls (H.2). This keeps credentials safe and standardizes how agents fetch findings.
 
 # Compliant pattern
 
@@ -29,8 +29,8 @@ Just like `cloud-read.sh`, external reads belong in a read-only wrapper that str
 - GET only, host fixed to `sonarcloud.io`, no `-X`, no body.
 - Allowlist of read endpoints: `issues/search`, `hotspots/search`, `hotspots/show`, `qualitygates/project_status`, `measures/component`.
 - Token from `SONAR_TOKEN` in the shell, or from the user's env file (`~/.config/harness/.env`, or `HARNESS_ENV_FILE`), which the wrapper parses itself. It is passed to curl on stdin, never printed, never an argument, never written to disk. An agent reads only `.harness/.env.example`, to tell the user which variable is missing or expired (HTTP 401) and how to renew it.
-- `guard-bash.sh` blocks curl to Sonar and any command naming the token.
-- Exit 3 with a reason when refused, as `cloud-read.sh` does.
+- [guard-bash.sh](../hooks/guard-bash.sh) blocks curl to Sonar and any command naming the token.
+- Exit 3 with a reason when refused, as [cloud-read.sh](../tools/cloud/cloud-read.sh) does.
 
 - Shift left: when a change touches code Sonar analyses (C#), check findings before reporting done (T.1). With the SonarQube for IDE extension installed (`sonarsource.sonarlint-vscode`), read the IDE diagnostics for the changed files first, because that is the cheapest scan. Without it, or for the project's server-side ruleset, use `sonar-read.sh issues/search` with `impactSoftwareQualities=RELIABILITY,SECURITY`. Filtering on `types=BUG,VULNERABILITY` misses Reliability findings filed as code smells (a missed `cts.Cancel()` -> `CancelAsync` finding showed this).
 

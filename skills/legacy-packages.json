@@ -1,0 +1,32 @@
+{
+  "design": [
+    "236ee111552bf248ecb945fefd9394f9b665b5526a36d1567d986a2414e23cd8"
+  ],
+  "test": [
+    "9158fabad617df6a757672578d4ac31bb77943d4aea40d732dda53aad1648fa8"
+  ],
+  "verify": [
+    "dbc0e342adb854d37fcb5b6201057c5b12c4bdd9eb9268f70e8d4265019c4a8c"
+  ],
+  "plan": [
+    "2852c935f5df6b5a3846b59283d3f4ffbf89b086624c2f93a5e408f315b1abc7"
+  ],
+  "code-review": [
+    "0968a8cf35195374fb7fdf076ac13f3b05a1e7421880a7639d39a5fbbda10465"
+  ],
+  "acceptance": [
+    "7db6d8ed517e996de560bf2aa35871c150612c5ddb5c2b325c36b36fc206069d"
+  ],
+  "implement": [
+    "4243e6d5898f01e37e5bf9cdc6365f8eb9dbe0cb8c7bc1130db4f8a0584476cd"
+  ],
+  "specify": [
+    "c51d2979b250416d40b9591e0c54dc219e5dcd83f64b87ccf25f09a66ecee89c"
+  ],
+  "tv-review": [
+    "d55a60e4c9129ac6ba834b3b3e2d4ec84a0f38f987bdcd4f2406c1e4edaea223"
+  ],
+  "debug": [
+    "44b0a12c1cc1adf94d92ef17588d00755f135848d6ad29394286850183a38fd3"
+  ]
+}

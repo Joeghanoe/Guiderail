@@ -327,6 +327,13 @@ def cmd_check(root, _args):
     ids = {}
     errors = [e for path, meta, body in concepts(root) for e in check_concept(root, path, meta, body, ids)]
     errors += check_indexes(root)
+    if root.name == "harness" and (root.parent / "AGENTS.base.md").is_file() and (root.parent / "skills/processes.json").is_file():
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("bundle_guidance", pathlib.Path(__file__).with_name("guidance.py"))
+        guidance = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(guidance)
+        errors += guidance.audit(root.parent)["errors"]
+        errors += guidance.check_catalog(root.parent)
     for e in errors:
         print(e, file=sys.stderr)
     print(f"bundle check: {len(errors)} problem(s)")

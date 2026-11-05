@@ -24,7 +24,7 @@ Outside the composition root (`Program.cs`, `Startup.cs`), code does not:
 
 # Enforcement
 
-Review and the tests. A repo may also opt in to `harness/templates/repo/BannedSymbols.txt` with `Microsoft.CodeAnalysis.BannedApiAnalyzers`, which turns most of this into a build error (the composition root opts out with one scoped suppression); no repo is required to.
+Review and the tests. A repo may also opt in to [BannedSymbols.txt](../../templates/repo/BannedSymbols.txt) with `Microsoft.CodeAnalysis.BannedApiAnalyzers`, which turns most of this into a build error (the composition root opts out with one scoped suppression); no repo is required to.
 
 # Boundary
 

@@ -116,9 +116,10 @@ def harness_identity():
     verification = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(verification)
     return {**verification.harness_identity(),
-            'cli_inputs': {name: hashlib.sha256((BUNDLE / name).read_bytes()).hexdigest()
+            'cli_inputs': {name: (hashlib.sha256((BUNDLE / name).read_bytes()).hexdigest()
+                                  if (BUNDLE / name).is_file() else None)
                            for name in ('tvh', 'tools/cli/main.py', 'tools/cli/workflows.py', 'tools/cli/catalog.py',
-                                        'tools/cli/catalog.json', 'playbooks/review-and-fix.md',
+                                        'tools/cli/catalog.json', '../skills/engineering/code-review/REVIEW-AND-FIX.md',
                                         'playbooks/diagnose-pipeline-failure.md')}}
 
 

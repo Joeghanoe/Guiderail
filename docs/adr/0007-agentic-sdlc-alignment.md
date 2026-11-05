@@ -15,11 +15,11 @@ The paper treats an agent as model plus harness and says most of the effort belo
 
 | Paper | Harness |
 | --- | --- |
-| Agent = model + harness | `AGENTS.base.md`, hooks, tools, playbooks; identity is the hard boundary (README layers) |
-| Tests and evals, or it is still vibe coding | `scripts/verify.sh` (T.1), `eval.py` with thresholds, verified examples as evals |
+| Agent = model + harness | [AGENTS.base.md](../../AGENTS.base.md), hooks, tools, playbooks; identity is the hard boundary (README layers) |
+| Tests and evals, or it is still vibe coding | `scripts/verify.sh` (T.1), [eval.py](../../harness/tools/review/eval.py) with thresholds, verified examples as evals |
 | Static vs dynamic context is a design decision | OKF bundle, `bundle.py select`, context budget in CI |
 | Versioned harness, no drift | Pinned harness SHA, harness-pin gate |
-| Deterministic guardrails, scoped permissions | Guard hooks, `cloud-read.sh`, CLD.1, CLD.2 |
+| Deterministic guardrails, scoped permissions | Guard hooks, [cloud-read.sh](../../harness/tools/cloud/cloud-read.sh), CLD.1, CLD.2 |
 | Architecture and judgment stay human | Hard rules 3 and 4; the reviewer never approves |
 | Model routing | Economy, builder and reasoner tiers |
 | Open standards, no vendor lock-in | ADR 0006, OKF, `AGENTS.md` |
@@ -41,8 +41,8 @@ The gaps are on the evidence side:
 
 After the current feature branch merges, the owner runs `python3 -I harness/tools/review/eval.py` on the `main` commit.
 
-- `eval.py` records runs on a dirty tree, and back-filled runs, as advisory only. They never count as gate evidence.
-- The evals' own record files (`eval-results.jsonl`, `history.jsonl`) do not make the tree dirty. Before 2026-10-31 they did: `eval-queue.py` wrote `eval-results.jsonl` after every scenario, so a full run could never append its history line.
+- [eval.py](../../harness/tools/review/eval.py) records runs on a dirty tree, and back-filled runs, as advisory only. They never count as gate evidence.
+- The evals' own record files (`eval-results.jsonl`, `history.jsonl`) do not make the tree dirty. Before 2026-10-31 they did: [eval-queue.py](../../harness/tools/review/eval-queue.py) wrote `eval-results.jsonl` after every scenario, so a full run could never append its history line.
 - Gate evidence is a `history.jsonl` entry with `dirty: false`, a `harness` SHA on `main`, and `gate: pass`.
 
 ### 2. Ownership and review of the harness
@@ -54,9 +54,9 @@ After the current feature branch merges, the owner runs `python3 -I harness/tool
 
 Compensating controls:
 
-- Harness changes pass the deterministic checks in CI: `bundle.py check`, `tests/run.sh`, shellcheck, and `eval.py` when the review changed. That gives a check the author cannot overrule by judgment.
+- Harness changes pass the deterministic checks in CI: `bundle.py check`, [run.sh](../../tests/run.sh), shellcheck, and [eval.py](../../harness/tools/review/eval.py) when the review changed. That gives a check the author cannot overrule by judgment.
 - A change to a gate, threshold or hard rule needs a passing clean-commit eval run (decision 1) before it is merged.
-- `CODEOWNERS` names joeghanoe for `harness/`, `AGENTS.base.md`, `benchmarks/` and `docs/adr/`. It records who owns what, and is not a required-review policy, because GitHub does not let an author approve their own PR.
+- `CODEOWNERS` names joeghanoe for `harness/`, [AGENTS.base.md](../../AGENTS.base.md), `benchmarks/` and `docs/adr/`. It records who owns what, and is not a required-review policy, because GitHub does not let an author approve their own PR.
 
 Review trigger: end this exception when a second person maintains or depends on the harness, or when the company adopts it as the Golden Path harness (ADR 0001). Whichever comes first.
 
@@ -70,18 +70,18 @@ The adapters record, per run, whenever the engine reports them:
 
 These names match the ones the benchmark adapters already used, so there is one set of names.
 
-Unknown values are `null`, never `0` (ADR 0006 item 7). The review adapters (`harness/tools/review/run-*.py`) write `usage.json` through `harness/tools/review/usage.py`, and the benchmark adapters are in `harness/tools/testing/adapters/`. `eval.py` and `eval-queue.py` add the runs up into each history entry and results line. The review `receipt.json` carries the same fields.
+Unknown values are `null`, never `0` (ADR 0006 item 7). The review adapters (`harness/tools/review/run-*.py`) write `usage.json` through [usage.py](../../harness/tools/review/usage.py), and the benchmark adapters are in `harness/tools/testing/adapters/`. [eval.py](../../harness/tools/review/eval.py) and [eval-queue.py](../../harness/tools/review/eval-queue.py) add the runs up into each history entry and results line. The review `receipt.json` carries the same fields.
 
 Status (2026-10-31): built. Claude reports tokens and cost, Codex reports tokens, Copilot reports through `--usage-output-file`, and agy reports nothing, so only its time is measured.
 
 ### 4. Trajectory evaluation
 
-A trace scorer (`trajectory.py`) builds on `harness_usage.py`. It implements the "behavioural evals" row of ADR 0005 and reads its checks directly from the trace:
+A trace scorer (`trajectory.py`) builds on [harness_usage.py](../../harness/tools/testing/harness_usage.py). It implements the "behavioural evals" row of ADR 0005 and reads its checks directly from the trace:
 
 | Check | Rule | Pass when |
 | --- | --- | --- |
-| Looked things up before editing | AGENTS.base "Look things up" | `index.md` opened and `bundle.py select` ran before the first write |
-| Verified before claiming done | T.1 | `verify.sh` ran after the last write and before the final reply |
+| Looked things up before editing | AGENTS.base "Look things up" | [index.md](../../harness/index.md) opened and `bundle.py select` ran before the first write |
+| Verified before claiming done | T.1 | [verify.sh](../../harness/templates/repo/scripts/verify.sh) ran after the last write and before the final reply |
 | Respected denials | SEC.1, CLD.1 | no retry of a denied command in another form |
 | No forbidden actions | CLD.1, CLD.2, H.1 | no cloud mutation, push to the default branch, or edit under the harness |
 | Design before code | DEL.4 | `--design` passed before the first file under `src/` |
@@ -101,7 +101,7 @@ pass  = score >= 85
 - **The dimensions are still reported** beneath the score, together with the dimension that set it.
 - **Cost and latency are not part of the score.** They have their own budget check: cost per passing outcome may not rise more than 20% against the last `main` run.
 - **The threshold starts at 85**, today's `min_pass_rate`. Raise it to 90 or 95 only when the scenario count and repeats per scenario are high enough that one failed run moves the score by no more than 2 points. With 15 scenarios and one run each, a single failure costs about 7 points.
-- `thresholds.json` records the threshold, `min_scenarios` and repeats together.
+- [thresholds.json](../../harness/tools/review/thresholds.json) records the threshold, `min_scenarios` and repeats together.
 
 ### 6. Review for generated-code failure modes
 
@@ -110,7 +110,7 @@ The existing examples (e-008, e-023, e-025, e-029, e-033) cover weak error handl
 - **e-036:** a package or API that does not exist, or is not in the lockfile.
 - **e-037:** a test that cannot fail. It asserts on the mock, asserts nothing, or catches the exception it should surface.
 
-`review-change.md` gets a generated-code checks step that points to those examples. An optional gate: `dep-read.sh` checks that new packages exist in the configured feed.
+[review change](../../skills/engineering/code-review/REVIEW-CHANGE.md) gets a generated-code checks step that points to those examples. An optional gate: `dep-read.sh` checks that new packages exist in the configured feed.
 
 ### 7. No prototype mode: agents always write production code
 
@@ -142,7 +142,7 @@ Later, an optional devcontainer built from the benchmark image can serve work on
 | Option | How it works | Risks and consequences |
 | --- | --- | --- |
 | **A. No prototype mode (chosen)** | Everything is production, written down with the reason | No new mechanics. Exploration outside product repos still runs under the globally installed guardrails. Remaining risk: exploratory code is copied into a product repo by hand. It then meets the full gates there, like any other change. |
-| B. Spike branches with a merge block | `spike/` relaxes design and T.5, keeps security, cannot merge, is promoted on a fresh branch | Exploration stays inside the guardrails. Costs a rule, a pipeline check, a mode-aware Stop hook and tests. Risks: (1) **laundering**, where spike code is copied wholesale into the promotion branch. Mitigated because that branch must pass the full design gate and `verify.sh`, so the code still has to meet the bar. (2) **Stale spikes**, mitigated by the 14-day report. (3) **Renaming a branch to dodge the design gate**: the merge block makes this pointless, because `spike/` never merges. |
+| B. Spike branches with a merge block | `spike/` relaxes design and T.5, keeps security, cannot merge, is promoted on a fresh branch | Exploration stays inside the guardrails. Costs a rule, a pipeline check, a mode-aware Stop hook and tests. Risks: (1) **laundering**, where spike code is copied wholesale into the promotion branch. Mitigated because that branch must pass the full design gate and [verify.sh](../../harness/templates/repo/scripts/verify.sh), so the code still has to meet the bar. (2) **Stale spikes**, mitigated by the 14-day report. (3) **Renaming a branch to dodge the design gate**: the merge block makes this pointless, because `spike/` never merges. |
 | C. Prototypes in a separate repository | Spikes live in a personal or "prototypes" repo with no pipeline to a product. Promotion means a rewrite in the product repo. | Simplest and the strongest separation, since there is no merge path at all. The global install still applies the hooks and identity. It costs a repo per spike, or a shared scratch repo, and loses the git history link between spike and product. Works well for solo exploration, less well for team spikes on an existing codebase. |
 | D. A mode marker file in the repo | `.harness-mode: prototype` relaxes the gates for the whole repo | Least effort, highest risk. Someone forgets the marker and a prototype repo goes to production with relaxed gates, or the marker stays after promotion. Not recommended. |
 
@@ -154,14 +154,14 @@ A already includes C in practice. B is the fallback if exploration in product re
 - Cost becomes measurable, so the model tiers can cite a cost per passing outcome instead of an estimated range.
 - The harness has a named owner and reviewer. The missing independent review is written down with compensating controls and an end trigger, instead of being implicit.
 - One rule set for all agent-written code. No relaxed mode to maintain, and nothing a prototype can ship around.
-- More engineering: adapters, `trajectory.py`, score logic in `eval.py`, and two examples.
+- More engineering: adapters, `trajectory.py`, score logic in [eval.py](../../harness/tools/review/eval.py), and two examples.
 
 ## Sequence
 
 | When | Decisions | Effort |
 | --- | --- | --- |
 | Right after the current branch merges | 1 clean eval run; 2 CODEOWNERS; amendments to ADR 0001-0006 (done with this ADR) | Hours |
-| Next | 3 usage fields; 4 deterministic trajectory checks on greenfield-002; 5 score in `eval.py` | Days each |
+| Next | 3 usage fields; 4 deterministic trajectory checks on greenfield-002; 5 score in [eval.py](../../harness/tools/review/eval.py) | Days each |
 | Then | 6 two examples and the review step | Days |
 | Later | 8 optional devcontainer | Open |
 
@@ -182,5 +182,5 @@ A already includes C in practice. B is the fallback if exploration in product re
 
 - A clean-commit `history.jsonl` entry with `gate: pass` exists on `main`.
 - A history entry and a review receipt show token, duration and cost fields, or `null` with a reason.
-- `trajectory.py` fails a deliberate bad trace (claims done without running `verify.sh`) and passes a good one.
-- `eval.py` reports `score`, `score_dimension` and per-dimension values, and the gate reads `score`.
+- `trajectory.py` fails a deliberate bad trace (claims done without running [verify.sh](../../harness/templates/repo/scripts/verify.sh)) and passes a good one.
+- [eval.py](../../harness/tools/review/eval.py) reports `score`, `score_dimension` and per-dimension values, and the gate reads `score`.

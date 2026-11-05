@@ -3,14 +3,14 @@
 Scaffolding here means **reading the target repo's conventions, not writing files from a template**. The
 folder is named for the task an agent has ("scaffold a new service"); the tool is read-only and writes
 nothing. A generator would have to carry one team's project shape inside a project-agnostic bundle, which
-is what `templates/project-terms.txt` exists to prevent, and it would rot
+is what [project-terms.txt](../../templates/project-terms.txt) exists to prevent, and it would rot
 silently as the repo moved. An extractor cannot rot: it reads the repo as it is today.
 
 Playbook: [scaffold-from-conventions.md](../../playbooks/scaffold-from-conventions.md).
 
 ## Tools
 
-* `read-conventions.py` - reports what one kind of file looks like **in this repo**: its name, its folder,
+* [read-conventions.py](read-conventions.py) - reports what one kind of file looks like **in this repo**: its name, its folder,
   its companions, where the repo wires it up, and the lines its files share. Every statement cites the
   files it came from and carries a confidence. Read-only; no network.
 
@@ -61,7 +61,7 @@ and names no shape. It never falls back on a default for .NET, TypeScript or any
 ## Boundary
 
 The output is a **proposal**, not a decision. The agent still reads the cited files and judges them; the
-brief waives nothing. `playbooks/review-change.md` and `scripts/verify.sh` apply to the resulting code
+brief waives nothing. [REVIEW-CHANGE.md](../../../skills/engineering/code-review/REVIEW-CHANGE.md) and `scripts/verify.sh` apply to the resulting code
 exactly as they would without it. The tool reports names and places and never judges compliance: a finding
 still needs a rule ID, a `file:line` and the reviewer's own reading.
 

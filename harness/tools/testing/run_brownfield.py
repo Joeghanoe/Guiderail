@@ -89,12 +89,29 @@ def materialize(case_dir, case, snapshot, work, hooks=False):
     shutil.copyfile(case_dir / "task.md", workspace / "TASK.md")
     (workspace / "CLAUDE.md").write_text("@AGENTS.base.md\n", encoding="utf-8")
     base_rules = (rc.REPOSITORY / "AGENTS.base.md").read_text(encoding="utf-8")
-    (workspace / "AGENTS.base.md").write_text(base_rules.replace("~/.golden-path-harness/harness", ".harness"),
+    replacements = {"~/.golden-path-harness/harness": ".harness",
+                    "~/.golden-path-harness/bin/tvh": "./.harness/tvh",
+                    "](harness/": "](.harness/", "](../harness/": "](../.harness/",
+                    "](../../../harness/": "](../../../.harness/"}
+    for old, new in replacements.items():
+        base_rules = base_rules.replace(old, new)
+    (workspace / "AGENTS.base.md").write_text(base_rules,
                                               encoding="utf-8", newline="")
     for item in rc.expand_tree({"source": "harness", "path": ".harness", "exclude": HARNESS_EXCLUDE}):
         target = workspace / item["path"]
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(rc.REPOSITORY / item["source"], target)
+    for item in rc.expand_tree({"source": "skills", "path": "skills", "replace": replacements}):
+        source = rc.REPOSITORY / item["source"]
+        target = workspace / item["path"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        if item.get("replace"):
+            text = source.read_text(encoding="utf-8")
+            for old, new in item["replace"].items():
+                text = text.replace(old, new)
+            target.write_text(text, encoding="utf-8")
+        else:
+            shutil.copyfile(source, target)
     if hooks:
         install_hooks(workspace)
     pristine = work / "pristine"
@@ -167,7 +184,7 @@ def diff_gates(diff, changes):
     added = added_lines(diff)
     violations = ["credential-pattern-in-added-code"] if any(CREDENTIAL.search(x) for x in added) else []
     guids = sum(1 for x in added if GUID.search(x))
-    touched_harness = [p for _, p in changes if p.startswith((".harness/", ".claude/")) or p in ("AGENTS.base.md", "CLAUDE.md", "TASK.md", "scripts/verify.sh")]
+    touched_harness = [p for _, p in changes if p.startswith((".harness/", ".claude/", "skills/")) or p in ("AGENTS.base.md", "CLAUDE.md", "TASK.md", "scripts/verify.sh")]
     violations += ["harness-or-instructions-modified:" + p for p in touched_harness]
     return violations, {"added_lines": len(added), "added_lines_with_guid": guids,
                         "files_changed": [f"{s} {p}" for s, p in changes]}

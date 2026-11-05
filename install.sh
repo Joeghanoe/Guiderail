@@ -13,8 +13,8 @@
 #   ~/.claude/CLAUDE.md         a marked block that imports AGENTS.base.md
 #   ~/.claude/settings.json     the guard hooks, the Stop verify, an allow rule for cloud-read.sh
 #   ~/.codex/hooks.json         adapt an existing RTK hook for Codex's rewrite contract
-#   ~/.claude/skills/tv-review/ /tv-review for Claude Code
-#   ~/.copilot/skills/tv-review/ /tv-review for Copilot (VS Code and CLI)
+#   ~/.claude/skills/<process>/ complete native packages for Claude Code
+#   ~/.copilot/skills/<process>/ complete native packages for Copilot (VS Code and CLI)
 #   ~/.golden-path-harness/bin/tvh the CLI; add this directory to PATH or use the full path
 #   VS Code user prompts        teamvalue.instructions.md for Copilot
 # Removes the old AI Hub wiring: its CLAUDE.md/AGENTS.md import block, its Claude marketplace and plugin, and
@@ -41,7 +41,7 @@ command -v "$py" >/dev/null 2>&1 || { echo "install.sh: Python 3 is required (ma
 command -v jq >/dev/null 2>&1 || { echo "install.sh: jq is required by the hooks and tools (macOS: brew install jq; Windows: winget install jqlang.jq)." >&2; exit 1; }
 
 "$py" -I - "$mode" "$here" "$HOME" "$vscode" "$stamp" <<'PY'
-import json, os, pathlib, re, shutil, subprocess, sys
+import hashlib, importlib.util, json, os, pathlib, re, shutil, subprocess, sys
 
 mode, here, home, vscode, stamp = sys.argv[1:]
 here, home, vscode = pathlib.Path(here), pathlib.Path(home), pathlib.Path(vscode)
@@ -58,6 +58,21 @@ cli_mark = "# TeamValue CLI (managed by install.sh)"
 for target in (cli_path, cli_path.with_suffix(".cmd")):
     if target.exists() and cli_mark not in target.read_text(encoding="utf-8"):
         sys.exit(f"install.sh: {target} is not harness-managed; move it away first")
+spec = importlib.util.spec_from_file_location("harness_guidance", here / "harness/tools/harness/guidance.py")
+guidance = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(guidance)
+skill_sources = guidance.packages(here)
+legacy_hashes = json.loads((here / "skills/legacy-packages.json").read_text())
+legacy = {(client, name): hashes for client in (".claude", ".copilot")
+          for name, hashes in legacy_hashes.items()}
+if install:
+    try:
+        for client in (".claude", ".copilot"):
+            for source in skill_sources:
+                guidance.preflight(source, home / client / "skills" / source.parent.name,
+                                   here, gp_home, legacy.get((client, source.parent.name)))
+    except ValueError as error:
+        sys.exit(f"install.sh: {error}")
 TOOLS = ("cloud/cloud-read.sh *", "sonar/sonar-read.sh *", "servicenow/sn-get.sh *", "servicenow/sn-access-check.sh",
          "greenfield/greenfield-init.sh *")
 CLOUD_READ = [f"Bash({'bash ' if t.startswith('greenfield/') else ''}{base}/harness/tools/{t})"
@@ -107,7 +122,7 @@ def make_link(link, target):
 if install:
     for name in ("config", "cache", "state", "workspaces", "logs", "testing"):
         (gp_home / name).mkdir(parents=True, exist_ok=True)
-for name, target in (("harness", here / "harness"), ("feedback", here / "feedback")):
+for name, target in (("harness", here / "harness"), ("skills", here / "skills"), ("docs", here / "docs"), ("feedback", here / "feedback")):
     root_link = gp_home / name
     if is_link(root_link):
         remove_link(root_link)
@@ -147,7 +162,7 @@ for path, ours in ((home / ".claude" / "CLAUDE.md", True), (home / "AGENTS.md", 
     text = NEW_BLOCK.sub("\n", OLD_BLOCK.sub("\n", text)).rstrip("\n") + "\n"
     if install and ours:
         text += (f"\n# TeamValue harness (managed by install.sh)\n@{here}/AGENTS.base.md\n"
-                 f"If the text `tvh-loaded` is not in your context, the import failed: read {here}/AGENTS.base.md once.\n"
+                 f"If `tvh-loaded` is absent, read [base instructions](<{here}/AGENTS.base.md>) once.\n"
                  "# end TeamValue harness\n")
     write(path, text.lstrip("\n"))
 
@@ -212,23 +227,20 @@ for name in ("known_marketplaces.json", "installed_plugins.json"):
         if stale:
             write(path, json.dumps(data, indent=2) + "\n")
 
-# Both clients discover native personal skills; VS Code profile instructions do not register a slash command.
-skills_dir = here / "skills/engineering"
-skill_sources = sorted(skills_dir.glob("*/SKILL.md")) if skills_dir.exists() else []
-
+# Native clients receive the complete package. Preflight ran before any installation writes.
 for client in (".claude", ".copilot"):
     for source in skill_sources:
-        name = source.parent.name
-        skill = home / client / "skills" / name / "SKILL.md"
+        directory = home / client / "skills" / source.parent.name
         if install:
-            text = source.read_text(encoding="utf-8")
-            if gp_home != home / ".golden-path-harness":
-                text = text.replace("~/.golden-path-harness", str(gp_home))
-            write(skill, text)
-        elif skill.exists():
-            backup(skill)
-            skill.unlink()
-            print(f"removed {skill}")
+            guidance.publish(source, directory, here, gp_home, legacy.get((client, source.parent.name)))
+        else:
+            guidance.uninstall(directory)
+    retired_review = home / client / "skills/tv-review"
+    old_review = retired_review / "SKILL.md"
+    if old_review.is_file() and hashlib.sha256(old_review.read_bytes().replace(str(gp_home).encode(), b"~/.golden-path-harness")).hexdigest() in legacy.get((client, "tv-review"), []):
+        backup(old_review)
+        old_review.unlink()
+    # Preserve unrelated personal content in retired directories.
     # Pipeline diagnosis is a playbook/CLI operation, not a native skill. Remove only our retired adapter.
     retired = home / client / "skills/tv-diagnose-pipeline/SKILL.md"
     retired_marker = ("name: tv-diagnose-pipeline\ndescription: Investigate an actual failed Azure DevOps "
@@ -261,7 +273,8 @@ if vscode.exists():
                                  capture_output=True, text=True).stdout.strip() or "unknown"
         header = ("---\napplyTo: '**'\ndescription: TeamValue harness rules. Generated by install.sh; do not edit.\n---\n\n"
                   f"<!-- harness version: {version} -->\n\n")
-        write(instructions, header + (here / "AGENTS.base.md").read_text(encoding="utf-8"))
+        write(instructions, header + guidance.render((here / "AGENTS.base.md").read_text(encoding="utf-8"),
+                                         here / "AGENTS.base.md", instructions, here, gp_home))
     for f in ((example,) if install else (instructions, example)):
         if f.exists():
             f.unlink()

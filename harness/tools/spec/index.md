@@ -8,7 +8,7 @@ Playbook: [write-spec.md](../../playbooks/write-spec.md).
 
 | When the user says | Tool / Playbook | Command |
 |---|---|---|
-| "write a spec" / "what does done mean here?" | Spec playbook | `~/.golden-path-harness/harness/playbooks/write-spec.md` |
+| "write a spec" / "what does done mean here?" | Spec playbook | [write-spec.md](../../playbooks/write-spec.md) |
 | "put the spec in my vault" | Spec note writer | `tvh spec new --raw -- --customer <folder> --title "<title>"` |
 | "mark the spec agreed" / "it is built" | Front-matter update | `tvh spec set --raw -- --customer <folder> --slug <slug> --field status=agreed` |
 | "is there already a spec for this?" | Listing | `tvh spec list --raw -- --customer <folder>` |
@@ -16,7 +16,7 @@ Playbook: [write-spec.md](../../playbooks/write-spec.md).
 
 ## Where it writes
 
-`<vault>/<customer>/specs/<slug>.md`, from `templates/spec.md`. The vault root comes from `--vault` or
+`<vault>/<customer>/specs/<slug>.md`, from [spec.md](../../templates/spec.md). The vault root comes from `--vault` or
 `HARNESS_VAULT`; without either, the tool refuses rather than guessing. `<customer>` is the top-level vault
 folder for that customer or product and must already exist — the harness hardcodes no customer name (SEC.2).
 

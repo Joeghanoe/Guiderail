@@ -323,6 +323,9 @@ def score(spec, findings):
 
 def copy_evaluation_bundle(source, destination, spec):
     shutil.copytree(source, destination, ignore=shutil.ignore_patterns("__pycache__"))
+    skills = source.resolve().parent / "skills"
+    if skills.is_dir() and skills != (destination.parent / "skills").resolve():
+        shutil.copytree(skills, destination.parent / "skills", dirs_exist_ok=True)
     if spec.get("mask_example"):
         (destination / spec["example_path"]).unlink()
         cases_directory = destination / "examples"

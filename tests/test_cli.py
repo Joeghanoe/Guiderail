@@ -298,11 +298,11 @@ out.mkdir()
 
     def test_native_skill_probe_observes_calls_and_does_not_trust_self_reports(self):
         native_call = {'type': 'tool.execution_start',
-                       'data': {'toolName': 'skill', 'arguments': {'skill': 'tv-review'}}}
+                       'data': {'toolName': 'skill', 'arguments': {'skill': 'code-review'}}}
         complete = {'type': 'assistant.idle', 'data': {}}
         answer = {'type': 'assistant.message', 'data': {'content': 'The next step is verification.'}}
         for events, code, status in (([native_call, answer, complete], 0, 'completed'),
-                                      ([{'type': 'assistant.message', 'data': {'content': 'I used tv-review'}}, complete], 1, 'failed'),
+                                      ([{'type': 'assistant.message', 'data': {'content': 'I used code-review'}}, complete], 1, 'failed'),
                                       ([native_call], 2, 'incomplete'),
                                       ([complete], 2, 'incomplete')):
             self.skill_probe_stub(events)
@@ -318,13 +318,14 @@ out.mkdir()
             self.assertNotIn('--allow-all-tools', argv)
 
     def test_operational_probe_does_not_require_a_dedicated_skill(self):
-        self.skill_probe_stub([{'type': 'assistant.message', 'data': {'content': 'Read the run through the CLI.'}},
+        self.skill_probe_stub([{'type': 'tool.execution_start', 'data': {'toolName': 'skill', 'arguments': {'skill': 'debug'}}},
+                               {'type': 'assistant.message', 'data': {'content': 'Read the run through the CLI.'}},
                                {'type': 'assistant.idle', 'data': {}}])
         run, data = self.invoke('eval', 'skills', '--json', '--engine', 'copilot', '--model', 'test-model',
                                 '--only', 'diagnose-failure', '--repeats', '1')
         self.assertEqual((run.returncode, data['status']), (0, 'completed'), data)
         workspace = pathlib.Path(data['artifacts']['directory']) / 'diagnose-failure-1/workspace'
-        self.assertTrue((workspace / '.github/skills/tv-review/SKILL.md').is_file())
+        self.assertTrue((workspace / '.github/skills/code-review/SKILL.md').is_file())
         self.assertFalse((workspace / '.github/skills/tv-diagnose-pipeline').exists())
         self.skill_probe_stub([{'type': 'tool.execution_start', 'data': {
             'toolName': 'skill', 'arguments': {'skill': 'tv-diagnose-pipeline'}}},
@@ -362,7 +363,7 @@ out.mkdir()
             self.assertEqual(run.returncode, 0, run.stderr)
             self.assertTrue(personal.exists())
             launcher = self.root / 'gp/bin/tvh'
-            skill = home / '.copilot/skills/tv-review/SKILL.md'
+            skill = home / '.copilot/skills/code-review/SKILL.md'
             if mode:
                 self.assertFalse(launcher.exists())
                 self.assertFalse(skill.exists())
@@ -370,7 +371,7 @@ out.mkdir()
                 result = subprocess.run([str(launcher), 'doctor', '--json'], cwd=self.repo, env=env,
                                         capture_output=True, text=True)
                 self.assertEqual(result.returncode, 0, result.stderr)
-                self.assertIn(str(self.root / 'gp'), skill.read_text())
+                self.assertTrue((skill.parent / 'REVIEW-AND-FIX.md').is_file())
                 self.assertFalse(retired.exists())
                 settings = json.loads((home / '.claude/settings.json').read_text())
                 self.assertFalse(any('tvh *' in x for x in settings['permissions']['allow']))

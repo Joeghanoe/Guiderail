@@ -15,7 +15,7 @@ sources:
 
 # Situation
 
-The global instructions say: before editing code, open `index.md`, run `bundle.py select --brief <files>` and open the rule files whose summary applies. In a session that refactored eight pipelines into one shared deploy template, the agent did none of it and edited Bicep and YAML directly. The result broke IAC.7 and its newer examples (E-044, E-049): the new template forwarded about 30 values as template parameters, kept fixed values as parameter defaults, and left the environment catalog as a top-level pipeline parameter. The owner noticed and asked why the example had not been applied.
+The global instructions say: before editing code, open [index.md](../harness/index.md), run `bundle.py select --brief <files>` and open the rule files whose summary applies. In a session that refactored eight pipelines into one shared deploy template, the agent did none of it and edited Bicep and YAML directly. The result broke IAC.7 and its newer examples (E-044, E-049): the new template forwarded about 30 values as template parameters, kept fixed values as parameter defaults, and left the environment catalog as a top-level pipeline parameter. The owner noticed and asked why the example had not been applied.
 
 Two causes. The lookup is an instruction, and instructions get skipped under momentum. And when it does run, `select --brief` prints one line per rule. The examples that carry the newer convention are linked from the rule body, two hops away, so even a run that follows the instruction does not put them in front of the agent.
 
@@ -27,7 +27,7 @@ H.2 says a check that guards a rule moves up the ladder from instruction to hook
 
 1. **Edit gate.** A `PreToolUse` hook on `Edit|Write` (and `NotebookEdit`) denies the call until `bundle.py select` has run in this session. `select` writes a marker keyed by the session id. The denial message names the command to run, so the agent recovers in one step.
 2. **Surface the examples.** On the first edit of each file type per session, the hook returns `additionalContext`: the matching rule summaries plus the titles and paths of the examples linked from those rules, with human-verified, newer examples first. For `*.yml` that includes IAC.7, E-006, E-044 and E-049. `select --brief` gains an `--examples` line per rule for the same purpose.
-3. **Backstop.** `stop-verify.sh` fails the turn when code files changed and no `select` marker exists, so a miss is caught even where the edit hook did not run (for example in CI or Copilot).
+3. **Backstop.** [stop-verify.sh](../harness/hooks/stop-verify.sh) fails the turn when code files changed and no `select` marker exists, so a miss is caught even where the edit hook did not run (for example in CI or Copilot).
 4. **Prose last.** A repo `AGENTS.md` may name the rules that matter most there (here: IAC.7, with E-044 as the target layout). That supplements the hook; it does not replace it.
 
 Not a rule change: IAC.7 and E-044 were right. The proposal changes how they reach the agent.
@@ -54,4 +54,4 @@ agent: Edit Pipelines/deploy-connector.yml   # no lookup; instruction skipped
 
 # Not verified
 
-Drafted from one session by the agent that made the mistake. Steps 1 and 2 are now prototyped: `harness/hooks/edit-gate.sh` (PreToolUse on `Edit|Write|NotebookEdit`), a session marker written by `guard-bash.sh` when it sees `bundle.py select`, and `select --brief --examples`. Tested in `tests/run.sh` (edit-gate section) with Claude Code's hook input. The marker lives under `$TMPDIR/golden-path-harness-lookup/<session_id>`; it fails open when there is no `session_id` or no `bundle.py`. Not yet checked in Copilot or CI, and the `stop-verify.sh` backstop (step 3) is not built. It does not contradict a human-reviewed example.
+Drafted from one session by the agent that made the mistake. Steps 1 and 2 are now prototyped: [edit-gate.sh](../harness/hooks/edit-gate.sh) (PreToolUse on `Edit|Write|NotebookEdit`), a session marker written by [guard-bash.sh](../harness/hooks/guard-bash.sh) when it sees `bundle.py select`, and `select --brief --examples`. Tested in [run.sh](../tests/run.sh) (edit-gate section) with Claude Code's hook input. The marker lives under `$TMPDIR/golden-path-harness-lookup/<session_id>`; it fails open when there is no `session_id` or no [bundle.py](../harness/tools/harness/bundle.py). Not yet checked in Copilot or CI, and the [stop-verify.sh](../harness/hooks/stop-verify.sh) backstop (step 3) is not built. It does not contradict a human-reviewed example.

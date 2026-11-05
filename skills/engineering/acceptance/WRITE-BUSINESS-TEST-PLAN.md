@@ -22,7 +22,7 @@ Someone who does not read code has to run or sign off an end-to-end test: a proj
 4. **Write each step in business words.** Who acts (a role, not a name), what happens, the status in both systems, the time target when there is one, and what must be seen. Use a technical term once, with a plain explanation, or not at all. Technical detail (sample files, queries, queue names) belongs in a separate technical plan that the tester gets, and the business plan points to it.
 5. **Take every expected result from the criteria or the code**, never from memory. A criterion with no implementation is not silently dropped: write the step, and tell the user the gap exists.
 6. **Say the practical things:** data that persists in the target system must be unique per run, tests that create data in a shared system say who cleans it up, and waiting times (configuration that takes minutes to apply) are in the step.
-7. **Build it.** Copy `templates/business-testplan.spec.json`, fill it in, then `tvh testing business-plan --raw -- spec.json plan.xlsx` (needs `openpyxl`). Keep the spec next to the workbook so a change in behaviour is a change in the spec and a rebuild.
+7. **Build it.** Copy [business-testplan.spec.json](../../../harness/templates/business-testplan.spec.json), fill it in, then `tvh testing business-plan --raw -- spec.json plan.xlsx` (needs `openpyxl`). Keep the spec next to the workbook so a change in behaviour is a change in the spec and a rebuild.
 8. **Hand it over honestly:** say that the file was generated and not opened in Excel, that row heights are estimates, and which open questions remain. Match the language of the audience; ask when unsure.
 
 # Do not

@@ -35,7 +35,7 @@ A criterion nobody can run is an open question, not a criterion. Behaviour the i
 
 # Work packages
 
-Only when this spec feeds `~/.golden-path-harness/harness/playbooks/orchestrate-workload.md`: one row per work package, each with its file paths, the criteria it must satisfy, and the verification command that must pass.
+Only when this spec feeds [orchestrate-workload.md](../playbooks/orchestrate-workload.md): one row per work package, each with its file paths, the criteria it must satisfy, and the verification command that must pass.
 
 | Package | Files | Criteria | Verification |
 | ------- | ----- | -------- | ------------ |

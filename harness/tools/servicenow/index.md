@@ -10,8 +10,8 @@ Playbook: [analyse-servicenow.md](../../playbooks/analyse-servicenow.md).
 |---|---|---|
 | "ServiceNow config" / "why does SN do X?" | Configuration reader | `tvh servicenow get --raw -- <table> "<query>" "<fields>"` |
 | "check ServiceNow access" / "which tables can we read?" | Access checker | `tvh servicenow access --raw --` |
-| "analyse ServiceNow" / "business rule or flow issue" | Analysis playbook | `~/.golden-path-harness/harness/playbooks/analyse-servicenow.md` |
+| "analyse ServiceNow" / "business rule or flow issue" | Analysis playbook | [analyse-servicenow.md](../../playbooks/analyse-servicenow.md) |
 
 ## Allowlisted tables
 
-`sn-get.sh` restricts queries to configuration and metadata tables only (e.g., `sys_script`, `sys_dictionary`, `sys_transform_map`, `sys_update_xml`, `sys_db_object`). It strictly refuses queries against operational or personal data tables (`incident`, `sys_user`, etc.) per rule SEC.2.
+[sn-get.sh](sn-get.sh) restricts queries to configuration and metadata tables only (e.g., `sys_script`, `sys_dictionary`, `sys_transform_map`, `sys_update_xml`, `sys_db_object`). It strictly refuses queries against operational or personal data tables (`incident`, `sys_user`, etc.) per rule SEC.2.

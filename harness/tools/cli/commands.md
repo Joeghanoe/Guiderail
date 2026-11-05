@@ -118,3 +118,4 @@ These are reached through the public commands or hook/profile protocols. They ar
 | [testing/brownfield-verify.sh](../testing/brownfield-verify.sh) | Snapshot verification fixture installed by the brownfield runner. |
 | [verification/keyvault.ps1](../verification/keyvault.ps1) | PowerShell scanner implementation used by checks keyvault. |
 | [verification/standard_checks.py](../verification/standard_checks.py) | Scanner adapters used by checks commands. |
+| [harness/guidance.py](../harness/guidance.py) | Guidance link validation and native skill packaging used by bundle check, installation and eval skills. |

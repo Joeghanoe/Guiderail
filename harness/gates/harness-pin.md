@@ -14,11 +14,11 @@ Which harness version reviewed the PR: the checkout of the harness repository mu
 
 # Blind spots
 
-Local work uses whatever `~/.golden-path-harness/harness` points to (`install.sh`); a developer on an old checkout reviews against old rules until they pull.
+Local work uses whatever [harness](..) points to ([install.sh](../../install.sh)); a developer on an old checkout reviews against old rules until they pull.
 
 # Complementary checks
 
-`bundle.py check`, `bundle.py privacy-check`, `tests/run.sh` and the reviewer evals in the harness repo's own CI.
+`bundle.py check`, `bundle.py privacy-check`, [run.sh](../../tests/run.sh) and the reviewer evals in the harness repo's own CI.
 
 # Failure behaviour
 

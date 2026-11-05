@@ -19,7 +19,7 @@ sources:
 
 # Situation
 
-Azure read access has an unnecessary second identity/configuration path. `cloud-read.sh` uses the user's normal Azure CLI login for most `az` commands, but refuses `az rest` unless `HARNESS_AZURE_CONFIG_DIR` is set; when set, it redirects the CLI to that directory. The Azure DevOps read helpers also conditionally redirect to it. This makes the same read-only command policy depend on whether an environment variable is configured, and requires a separate login setup even when the user has already logged in and granted the agent permission to read.
+Azure read access has an unnecessary second identity/configuration path. [cloud-read.sh](../../../harness/tools/cloud/cloud-read.sh) uses the user's normal Azure CLI login for most `az` commands, but refuses `az rest` unless `HARNESS_AZURE_CONFIG_DIR` is set; when set, it redirects the CLI to that directory. The Azure DevOps read helpers also conditionally redirect to it. This makes the same read-only command policy depend on whether an environment variable is configured, and requires a separate login setup even when the user has already logged in and granted the agent permission to read.
 
 The initial symptom was reading pull-request comments: `az devops invoke` is blocked because `invoke` is in the mutating-verb list, while `az rest --method get` is blocked by the config-directory requirement. The underlying issue is broader than either command: identity setup and command authorization are coupled when they should be independent.
 
@@ -27,16 +27,16 @@ The initial symptom was reading pull-request comments: `az devops invoke` is blo
 
 Adopted. Command authorization is decided from the command (HTTP method and arguments), not from a required configuration directory:
 
-1. `cloud-read.sh` permits `az rest` with `--method get` using the user's current Azure login without requiring `HARNESS_AZURE_CONFIG_DIR`.
-2. `cloud-read.sh` permits `az devops invoke` for GET/HEAD/OPTIONS requests without an `--in-file` payload.
-3. Dedicated helper `harness/tools/azure-devops/ado-pr-threads.sh` provides formatted PR comment and resolution status.
+1. [cloud-read.sh](../../../harness/tools/cloud/cloud-read.sh) permits `az rest` with `--method get` using the user's current Azure login without requiring `HARNESS_AZURE_CONFIG_DIR`.
+2. [cloud-read.sh](../../../harness/tools/cloud/cloud-read.sh) permits `az devops invoke` for GET/HEAD/OPTIONS requests without an `--in-file` payload.
+3. Dedicated helper [ado-pr-threads.sh](../../../harness/tools/azure-devops/ado-pr-threads.sh) provides formatted PR comment and resolution status.
 
 ## Implemented change
 
-- Removed the `HARNESS_AZURE_CONFIG_DIR` requirement for `az rest` in `cloud-read.sh`. `az rest` requires `--method get`.
-- Permitted `az devops invoke` in `cloud-read.sh` when using read methods (GET, HEAD, OPTIONS or default GET) and no `--in-file`.
-- Created `harness/tools/azure-devops/ado-pr-threads.sh` to read and parse PR comment threads and resolution status.
-- Added test coverage in `tests/run.sh` covering `az rest GET`, `az devops invoke GET`, and `ado-pr-threads.sh`.
+- Removed the `HARNESS_AZURE_CONFIG_DIR` requirement for `az rest` in [cloud-read.sh](../../../harness/tools/cloud/cloud-read.sh). `az rest` requires `--method get`.
+- Permitted `az devops invoke` in [cloud-read.sh](../../../harness/tools/cloud/cloud-read.sh) when using read methods (GET, HEAD, OPTIONS or default GET) and no `--in-file`.
+- Created [ado-pr-threads.sh](../../../harness/tools/azure-devops/ado-pr-threads.sh) to read and parse PR comment threads and resolution status.
+- Added test coverage in [run.sh](../../../tests/run.sh) covering `az rest GET`, `az devops invoke GET`, and [ado-pr-threads.sh](../../../harness/tools/azure-devops/ado-pr-threads.sh).
 
 # Not verified
 

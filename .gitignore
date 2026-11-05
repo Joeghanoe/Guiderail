@@ -383,3 +383,7 @@ workspaces/
 /benchmarks/inventory.md
 /benchmarks/code5-validation.md
 /benchmarks/engineering-standards-decisions.md
+
+# Engineering diagnosis guidance is source, not a Visual Studio build directory.
+!skills/engineering/debug/
+!skills/engineering/debug/**

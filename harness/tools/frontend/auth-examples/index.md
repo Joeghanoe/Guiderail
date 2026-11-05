@@ -2,9 +2,9 @@
 
 `screenshot.mjs --auth-state <file>` captures a page behind a login by seeding browser storage and cookies before the app boots. It
 does not log in. A producer is any script that fetches a credential out of band and writes the state file (format in
-[`../auth-state.mjs`](../auth-state.mjs)).
+[[auth-state.mjs](../auth-state.mjs)](../auth-state.mjs)).
 
-* `msal-client-credentials.mjs` - Azure AD / Entra ID with MSAL: client-credentials token, MSAL v5 cache entries in `sessionStorage`. The pattern of
+* [msal-client-credentials.mjs](msal-client-credentials.mjs) - Azure AD / Entra ID with MSAL: client-credentials token, MSAL v5 cache entries in `sessionStorage`. The pattern of
   the Aquarium portal's Cypress login, without Cypress. Not run against a real tenant by the harness.
 
 Other shapes are the same few lines: an app that keeps `{ "token": "..." }` in `localStorage`, a session in `sessionStorage`, or a cookie

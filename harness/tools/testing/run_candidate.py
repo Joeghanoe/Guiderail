@@ -142,7 +142,10 @@ def expand_tree(entry):
         rel = file.relative_to(root).as_posix()
         if {"__pycache__", "bin", "obj"} & set(pathlib.PurePosixPath(rel).parts) or any(rel == s or rel.startswith(s + "/") for s in skipped):
             continue
-        yield {"source": file.relative_to(REPOSITORY).as_posix(), "path": entry["path"] + "/" + rel}
+        item = {"source": file.relative_to(REPOSITORY).as_posix(), "path": entry["path"] + "/" + rel}
+        if entry.get("replace") and file.suffix == ".md":
+            item["replace"] = entry["replace"]
+        yield item
 
 
 def freeze_scenario(args):

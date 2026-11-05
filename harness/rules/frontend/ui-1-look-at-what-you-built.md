@@ -17,7 +17,7 @@ sources:
 
 # Rule
 
-A change that alters what a user sees is run and looked at before it is reported done (T.1 for the visual part). `playbooks/verify-frontend.md` is the how; `tools/frontend/screenshot.mjs` is the tool.
+A change that alters what a user sees is run and looked at before it is reported done (T.1 for the visual part). [verify-frontend.md](../../playbooks/verify-frontend.md) is the how; [screenshot.mjs](../../tools/frontend/screenshot.mjs) is the tool.
 
 - **Rendered, not assumed.** The page runs and is screenshotted at 320 (reflow), 390 (phone), 768 (tablet) and 1280 (desktop) CSS pixels. The agent opens the screenshots and looks at them; a passing build says nothing about layout.
 - **Responsive.** No horizontal scroll at 320 px, nothing cut off or overlapping, touch targets of at least 44x44 px on phones (24x24 px is the WCAG 2.2 AA floor), text readable without zoom.

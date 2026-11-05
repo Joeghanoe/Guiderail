@@ -17,11 +17,11 @@ sources:
 
 # Situation
 
-`greenfield-init.sh` wrote `scripts/verify.sh` into each repo, and the Stop hook, local runs and CI were meant to share it. That puts a second copy of the pipeline in every repo next to its CI.
+[greenfield-init.sh](../tools/greenfield/greenfield-init.sh) wrote `scripts/verify.sh` into each repo, and the Stop hook, local runs and CI were meant to share it. That puts a second copy of the pipeline in every repo next to its CI.
 
 # Why (verdict)
 
-CI is the authority and runs the full gate. The agent still needs a fast local check, so it is kept per project in `~/.golden-path-harness/projects/<repo-id>/verify.sh` (`tools/code/project-verify.sh`). When it finds something CI misses, the check is added there; a critical one is proposed to the repo's CI as a diff for a human, never applied by the agent (CLD.2). A `scripts/verify.sh` committed in a repo is not used by the Stop hook.
+CI is the authority and runs the full gate. The agent still needs a fast local check, so it is kept per project in `~/.golden-path-harness/projects/<repo-id>/verify.sh` ([project-verify.sh](../tools/code/project-verify.sh)). When it finds something CI misses, the check is added there; a critical one is proposed to the repo's CI as a diff for a human, never applied by the agent (CLD.2). A `scripts/verify.sh` committed in a repo is not used by the Stop hook.
 
 ## Good example
 
@@ -39,4 +39,4 @@ cp ~/.golden-path-harness/harness/templates/repo/scripts/verify.sh scripts/verif
 
 # Not verified
 
-Tested with stubs (`tests/run.sh`), not against a real repo with CI. Repos that already carry a `scripts/verify.sh` lose the Stop check until `project-verify.sh init` is run for them.
+Tested with stubs ([run.sh](../../tests/run.sh)), not against a real repo with CI. Repos that already carry a `scripts/verify.sh` lose the Stop check until `project-verify.sh init` is run for them.

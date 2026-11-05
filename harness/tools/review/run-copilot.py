@@ -57,6 +57,7 @@ def main():
         "--disable-builtin-mcps",
         "--add-dir", str(review_dir),
         "--add-dir", str(bundle_dir),
+        "--add-dir", str(bundle_dir.resolve().parent / "skills"),
         "--no-auto-update",
         "--usage-output-file", str(review_dir / USAGE_FILE),
     ]

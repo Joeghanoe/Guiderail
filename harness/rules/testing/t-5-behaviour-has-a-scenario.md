@@ -19,7 +19,7 @@ Scenarios carry a stable intent ID or tag (`DS-4`, `@b2b-external`) so a test, a
 
 # Two checks
 
-1. Presence, deterministic and opt-in: where the repo has adopted `tools/testing/check-scenarios.py`, it maps changed components to scenario folders using `.harness-scenarios.json`. That gate requires a changed scenario or a PR description line `e2e: n/a - <reason>`. Consumer repos are not required to adopt its mapping file, intent attributes or CI step.
+1. Presence, deterministic and opt-in: where the repo has adopted [check-scenarios.py](../../tools/testing/check-scenarios.py), it maps changed components to scenario folders using `.harness-scenarios.json`. That gate requires a changed scenario or a PR description line `e2e: n/a - <reason>`. Consumer repos are not required to adopt its mapping file, intent attributes or CI step.
 2. Fit, review: does the scenario cover the intent of the change, not just something in the same folder?
 
 # Boundary

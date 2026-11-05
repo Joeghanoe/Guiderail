@@ -142,7 +142,7 @@ jobs:
                   --force-full-deployment ${{ parameters.forceFullDeployment }}
 ```
 
-The script is an illustrative deployment boundary, not an existing implementation. It must accept and validate these arguments and pass the relevant values to Bicep. Script arguments and Bicep parameters remain explicit process/module interfaces; the eliminated boilerplate is forwarding the same configuration through every YAML template layer. `variables.tst.yml` and `variables.prd.yml` supply the corresponding environment settings using the same keys.
+The script is an illustrative deployment boundary, not an existing implementation. It must accept and validate these arguments and pass the relevant values to Bicep. Script arguments and Bicep parameters remain explicit process/module interfaces; the eliminated boilerplate is forwarding the same configuration through every YAML template layer. `variables.tst.yml` and [variables.prd.yml](../../../harness/examples/fixtures/e-006/variables/variables.prd.yml) supply the corresponding environment settings using the same keys.
 
 These snippets illustrate ownership and expansion only. A production implementation must preserve the intended dependency graph, approval gates and configuration-to-IaC mapping. Variables are strings in Azure Pipelines; convert explicitly when passing booleans, numbers or structured values into typed contracts. Values needed for stage expansion must exist at template expansion time, not be produced by an earlier job.
 

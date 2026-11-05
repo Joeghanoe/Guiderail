@@ -19,12 +19,12 @@ sources:
 
 When a repo or a service is new, these exist before the first feature code, and are kept true as the code changes:
 
-- **`docs/solution-design.md`** from `templates/solution-design.md`: the one question the service answers, its components and what each depends on, how data flows and where it is stored, how it fails, what it reports, what it does not do. The code follows it; a divergence is fixed in one of the two in the same change.
+- **`docs/solution-design.md`** from [solution-design.md](../../templates/solution-design.md): the one question the service answers, its components and what each depends on, how data flows and where it is stored, how it fails, what it reports, what it does not do. The code follows it; a divergence is fixed in one of the two in the same change.
 - **One ADR per decision that is hard to reverse or likely to be questioned again** (stored data layout, retention, identity of a run, failure semantics, a technology choice), in `docs/adr/`. The format and the numbering belong to the repo's ADR convention or Vegviser's `vegviser-adr` skill; the harness defines none. Where neither exists, a short `NNNN-title.md` with context, decision and consequences is enough.
-- **The repo's own `AGENTS.md`** from `templates/repo/AGENTS.md`: layout, vocabulary, current decisions, how a change crosses boundaries (CODE.7), how to verify, when to ask. The base file is not a substitute.
-- **The project verify** (T.1), kept in `~/.golden-path-harness/projects/<repo-id>/verify.sh`, so "done" has a command; CI is the full gate and the design gate is proposed to it as a step. A repo may add `Directory.Build.props` and `BannedSymbols.txt` for T.2; the harness does not require them.
+- **The repo's own `AGENTS.md`** from `AGENTS.md`: layout, vocabulary, current decisions, how a change crosses boundaries (CODE.7), how to verify, when to ask. The base file is not a substitute.
+- **The project verify** (T.1), kept in `~/.golden-path-harness/projects/<repo-id>/verify.sh`, so "done" has a command; CI is the full gate and the design gate is proposed to it as a step. A repo may add `Directory.Build.props` and [BannedSymbols.txt](../../templates/repo/BannedSymbols.txt) for T.2; the harness does not require them.
 
-`tools/greenfield/greenfield-init.sh` writes all of these as skeletons; the project verify runs `tools/greenfield/design-check.py` and fails while a template prompt is left or a structural check fails.
+[greenfield-init.sh](../../tools/greenfield/greenfield-init.sh) writes all of these as skeletons; the project verify runs [design-check.py](../../tools/greenfield/design-check.py) and fails while a template prompt is left or a structural check fails.
 
 # Boundary
 

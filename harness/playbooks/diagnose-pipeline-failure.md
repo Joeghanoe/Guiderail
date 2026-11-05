@@ -19,7 +19,7 @@ verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 2. Read the failure: `tvh ado run diagnose --organization <org-url> --project <project> --id <runId> --tail-lines 80`. It prints the run, the failed stage/job/task, the error issues and the tail of each failed task's log. The error issue is often only "Bash exited with code 1"; the cause is a few lines above the end of the log, so raise `--tail-lines` (at most 400) before concluding there is nothing there. The result retains full wrapper output outside the repository. CLI exit 0 means the read completed, not that the pipeline passed or the cause is established. Exit 2 means incomplete evidence; inspect the retained diagnostic, and do not infer a clean result.
 3. Check that the run built what you have. Compare its commit with `git rev-parse HEAD` and `git log <commit>..HEAD`. When HEAD is ahead, check whether a later commit already fixed it before changing anything.
 4. Find the first error, not the last. Later lines are usually fallout. Search the repo for the literal error text, then `docs/` (findings, common issues) for a known cause.
-5. Classify. A failing test inside the run is sorted further with `classify-test-failure.md`.
+5. Classify. A failing test inside the run is sorted further with [classify-test-failure.md](classify-test-failure.md).
 
 | Class | Signal | Next step |
 | --- | --- | --- |

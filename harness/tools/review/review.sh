@@ -14,7 +14,7 @@ py=python3
 
 r="${1:?usage: review.sh <review-dir>}"
 r="$(cd "$r" && pwd)"
-bundle="$(cd "$(dirname "$0")/../.." && pwd)"
+bundle="$(cd "$(dirname "$0")/../.." && pwd -P)"
 
 "$py" -I "$bundle/tools/harness/bundle.py" select <"$r/changed.txt" >"$r/selected.json"
 semantic=""
@@ -22,8 +22,10 @@ if [[ -f "$bundle/tools/verification/verify.py" ]]; then
   "$py" -I "$bundle/tools/verification/verify.py" review-plan --selected "$r/selected.json" --out "$r/semantic-plan.json"
   semantic="Semantic requirement scopes and rubrics: $r/semantic-plan.json. Use them for evidence-based findings; preserve public rule IDs and the existing JSON array contract."
 fi
+procedure="$bundle/../skills/engineering/code-review/REVIEW-CHANGE.md"
+[[ -f "$procedure" ]] || { echo "review: missing canonical skill procedure: $procedure" >&2; exit 2; }
 cat >"$r/prompt.md" <<EOF
-Review this change. Follow $bundle/playbooks/review-change.md exactly and answer with only the JSON array.
+Review this change. Follow $bundle/../skills/engineering/code-review/REVIEW-CHANGE.md exactly and answer with only the JSON array.
 The harness bundle is $bundle; paths in selected.json starting with / are relative to it.
 Selected rules and examples (open only these): $r/selected.json
 ${semantic}

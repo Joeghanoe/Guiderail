@@ -28,4 +28,4 @@ sources:
 
 # Enforcement
 
-`hooks/stop-verify.sh` runs the project verify with `--fast` when an agent wants to stop and sends it back to work when it fails. The pipeline runs the full gate and blocks the PR.
+[stop-verify.sh](../../hooks/stop-verify.sh) runs the project verify with `--fast` when an agent wants to stop and sends it back to work when it fails. The pipeline runs the full gate and blocks the PR.

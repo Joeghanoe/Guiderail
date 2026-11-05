@@ -1,4 +1,4 @@
-"""Read-only native skill-selection probe. Full workflow outcomes are deliberately unscored."""
+"""Read-only native selection, reference-routing and handoff probes; workflow execution is unscored."""
 import hashlib
 import importlib.util
 import json
@@ -10,8 +10,8 @@ import sys
 BUNDLE = pathlib.Path(__file__).resolve().parents[2]
 REPO = BUNDLE.parent
 CASES = REPO / 'benchmarks/cases/process-skills.json'
-SKILLS = ('tv-review',)
-RETIRED_SKILLS = ('tv-diagnose-pipeline',)
+SKILLS = tuple(p.parent.name for p in sorted((REPO / 'skills/engineering').glob('*/SKILL.md')))
+RETIRED_SKILLS = ('tv-review', 'tv-diagnose-pipeline')
 
 
 def module(name, path):
@@ -24,15 +24,17 @@ def module(name, path):
 def prepare(workspace, engine):
     """Native project discovery, with no modification to the user's personal skills or credentials."""
     directory = workspace / ('.github/skills' if engine == 'copilot' else '.claude/skills')
+    guidance = module('skill_probe_guidance', BUNDLE / 'tools/harness/guidance.py')
     hashes = {}
-    for name in SKILLS:
-        source = REPO / 'skills/engineering' / name / 'SKILL.md'
-        content = source.read_text(encoding='utf-8')
-        hashes[name] = hashlib.sha256(content.encode()).hexdigest()
-        target = directory / name / 'SKILL.md'
-        target.parent.mkdir(parents=True)
-        # Resolve the canonical process from this checkout, not an unrelated installed version.
-        target.write_text(content.replace('~/.golden-path-harness/harness', str(BUNDLE)), encoding='utf-8')
+    for entry in guidance.packages(REPO):
+        name = entry.parent.name
+        target = directory / name
+        for relative, data in guidance.payload(entry, target, REPO, REPO).items():
+            path = target / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+            hashes[name + '/' + relative] = hashlib.sha256(data).hexdigest()
+
     return hashes
 
 
@@ -86,6 +88,33 @@ def selection(calls, expected):
             'match': relevant == ([expected] if expected else [])}
 
 
+def read_paths(calls, workspace):
+    paths = set()
+    for call in calls:
+        if str(call['tool']).lower() not in {'read', 'view'} or not isinstance(call['args'], dict):
+            continue
+        value = call['args'].get('file_path') or call['args'].get('path')
+        if isinstance(value, str):
+            path = pathlib.Path(value)
+            paths.add(str((workspace / path).resolve() if not path.is_absolute() else path.resolve()))
+    return sorted(paths)
+
+
+def assess_guidance(case, calls, workspace, answer):
+    paths = read_paths(calls, workspace)
+    missing = [ref for ref in case.get('expected_references', []) if not any(p.endswith('/' + ref) for p in paths)]
+    unrelated = [ref for ref in case.get('forbidden_references', []) if any(p.endswith('/' + ref) for p in paths)]
+    handoff = None
+    if case.get('expected_handoff'):
+        try:
+            clean = answer.strip().removeprefix('```json').removeprefix('```').removesuffix('```').strip()
+            handoff = json.loads(clean).get('handoff') == case['expected_handoff']
+        except (ValueError, AttributeError):
+            handoff = False
+    return {'read_paths': paths, 'missing_references': missing, 'unrelated_references': unrelated,
+            'handoff_match': handoff, 'match': not missing and not unrelated and handoff is not False}
+
+
 def run(args, out, result, execute):
     case_bytes = CASES.read_bytes()
     document = json.loads(case_bytes)
@@ -118,11 +147,19 @@ def run(args, out, result, execute):
             workspace = run_dir / 'workspace'
             workspace.mkdir(parents=True)
             hashes = prepare(workspace, args.engine)
+            for name, value in case.get('fixtures', {}).items():
+                if pathlib.Path(name).name != name:
+                    raise ValueError('Fixture names must be local filenames')
+                (workspace / name).write_text(json.dumps(value, indent=2) + '\n', encoding='utf-8')
             prompt = ('Choose the appropriate initial engineering process for the request below. '
                       'Read applicable process guidance using the available tools. '
                       'This probe assesses initial process selection only: do not execute commands, '
                       'change files, authenticate, or call external services. '
-                      'Explain the next step and any missing information.\n\nRequest:\n' + case['request'])
+                      'Explain the next step and any missing information.\n\nRequest:\n' + case['request'] + '\n\nAvailable context:\n' + case['setup'])
+            if case.get('expected_handoff'):
+                prompt += ('\nRead the supplied fixture files. Return only a JSON object with a handoff field containing '
+                           'criteria (id and exact approved text), verification_status (not-run, passed or failed), '
+                           'and ready (whether the next requested action can proceed cleanly with this evidence).')
             (run_dir / 'prompt.txt').write_text(prompt, encoding='utf-8')
             step = execute(command(args.engine, executable, args.model, prompt, run_dir), workspace,
                            run_dir, 'agent', args.timeout, environment)
@@ -155,8 +192,15 @@ def run(args, out, result, execute):
             complete = (step['exit_code'] == 0 and not parse_errors and completed and not errors
                         and model_answer and not violations)
             observed = selection(calls, case['selection_skill']) if complete else None
+            answer = (next((e.get('result', '') for e in reversed(events) if e.get('type') == 'result'), '')
+                      if args.engine == 'claude' else '\n'.join(e.get('data', {}).get('content', '') for e in events
+                      if e.get('type') == 'assistant.message' and isinstance(e.get('data'), dict)))
+            guidance_result = assess_guidance(case, calls, workspace, answer) if complete else None
             metrics = {metric: None for metric in document['metrics']}
             metrics['wall_seconds'] = step['wall_seconds']
+            if guidance_result:
+                paths = [pathlib.Path(p) for p in guidance_result['read_paths']]
+                metrics['loaded_guidance_bytes'] = sum(p.stat().st_size for p in paths if p.is_file() and p.suffix == '.md')
             native = run_dir / 'native-usage.json'
             if native.is_file():
                 counts = usage.from_usage_file(json.loads(native.read_text(encoding='utf-8')))
@@ -167,13 +211,16 @@ def run(args, out, result, execute):
                 metrics.update({key: counts.get(key) for key in ('input_tokens', 'cached_input_tokens', 'output_tokens')})
             records.append({'case': case['id'], 'repeat': repeat + 1,
                             'status': 'completed' if complete else 'incomplete', 'selection': observed,
-                            'tool_calls': calls, 'trace': step['stdout'], 'skill_hashes': hashes,
+                            'guidance': guidance_result, 'tool_calls': calls, 'trace': step['stdout'], 'skill_hashes': hashes,
+                            'fixture_hashes': {name: hashlib.sha256((workspace / name).read_bytes()).hexdigest()
+                                               for name in case.get('fixtures', {})},
                             'tool_policy_violations': violations,
                             'metrics': metrics, 'workflow_status': 'not-assessed'})
     report = {'schema_version': 1, 'engine': args.engine, 'engine_version': version, 'model': args.model,
-              'measurement': 'native-initial-skill-selection',
+              'measurement': 'native-skill-selection-reference-routing-and-handoff-inspection',
               'limitations': ['Personal client configuration and skills may also be loaded.',
-                              'Tool restrictions are not a sandbox.', 'Full workflow execution is not assessed.',
+                              'Tool restrictions are not a sandbox.', 'Full workflow execution is not assessed; handoff cases inspect retained artifacts without executing code.',
+                              'Loaded guidance bytes estimate full sizes of requested files; delivery success, partial reads and automatic injection are not measured.',
                               'No adoption thresholds or token-efficiency comparison are applied.'],
               'cases_sha256': hashlib.sha256(case_bytes).hexdigest(), 'runner_sha256': runner_sha256,
               'records': records}
@@ -181,7 +228,7 @@ def run(args, out, result, execute):
     report_path.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     result['artifacts']['skill_selection'] = str(report_path)
     result['data'] = {'runs': len(records), 'completed': sum(r['status'] == 'completed' for r in records),
-                      'matches': sum(bool(r['selection'] and r['selection']['match']) for r in records),
+                      'matches': sum(bool(r['selection'] and r['selection']['match'] and r['guidance'] and r['guidance']['match']) for r in records),
                       'workflow_status': 'not-assessed'}
     result['status'] = ('incomplete' if any(r['status'] != 'completed' for r in records) else
                         'failed' if result['data']['matches'] != len(records) else 'completed')

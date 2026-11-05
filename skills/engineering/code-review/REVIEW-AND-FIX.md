@@ -9,12 +9,12 @@ verified: { by: human:joeghanoe, at: 2026-11-01T20:11:03Z }
 
 # Why
 
-The PR pipeline (`infra/pipelines/ai-review.yml`) runs the deterministic gate first, then the review, and a human reads the end result: the diff next to the findings and what happened to them. This playbook runs the same flow on a local branch, before the PR, so the human reviews fixed code and open questions instead of a list of comments.
+The PR pipeline ([ai-review.yml](../../../infra/pipelines/ai-review.yml)) runs the deterministic gate first, then the review, and a human reads the end result: the diff next to the findings and what happened to them. This playbook runs the same flow on a local branch, before the PR, so the human reviews fixed code and open questions instead of a list of comments.
 
 # Input
 
 - The local branch and an explicit comparison baseline taken from the PR target or repository instructions. Do not guess a default branch. The CLI uses its merge base with HEAD and includes staged and unstaged tracked changes.
-- Arguments, if any, name a target (PR, branch, path) and review topics. The default is the current branch. A request for a repository or release review follows `review-repository.md` and makes no fixes unless requested.
+- Arguments, if any, name a target (PR, branch, path) and review topics. The default is the current branch. A request for a repository or release review follows [review-repository.md](REVIEW-REPOSITORY.md) and makes no fixes unless requested.
 
 # Steps
 
@@ -33,12 +33,12 @@ The PR pipeline (`infra/pipelines/ai-review.yml`) runs the deterministic gate fi
    - it does not need a behaviour decision (retry, rollback or ordering semantics), a change outside this branch's scope, or a change on another connector's branch. Otherwise the finding stays open with the reason. Do not fix a finding to make a review look clean.
 6. **Fix.** Apply the fixes as small edits, one finding at a time, each traceable to its rule ID. Do not refactor around them. A fix that needs a test adds the test (T.4, T.5).
 7. **Verify again (T.1).** Re-run the gate from step 1. A fix whose check fails is reverted or reported, never left half done. A fix that could not be checked is reported as such.
-8. **Report.** Set `outcome` on each finding (`fixed`, `skipped`, `no_change_needed`) and `reason` on each `skipped`, save the array, and show it with `tvh findings render --raw -- <file> --branch <b> --rules <n> --verified <what ran>`. Use `templates/review-report.md` for the human report, scaled to the change. Include the rendered findings without changing their JSON or severities. Record scope and commit, check results, relevant decisions, spec coverage, quality notes for points with no rule, and open verifications. Omit inapplicable sections. Keep stable finding IDs within the report and distinguish fixed, open and explicitly accepted findings. Acceptance requires a recorded human decision; an agent cannot accept risk. Add one line on what is done well.
+8. **Report.** Set `outcome` on each finding (`fixed`, `skipped`, `no_change_needed`) and `reason` on each `skipped`, save the array, and show it with `tvh findings render --raw -- <file> --branch <b> --rules <n> --verified <what ran>`. Use [review-report.md](../../../harness/templates/review-report.md) for the human report, scaled to the change. Include the rendered findings without changing their JSON or severities. Record scope and commit, check results, relevant decisions, spec coverage, quality notes for points with no rule, and open verifications. Omit inapplicable sections. Keep stable finding IDs within the report and distinguish fixed, open and explicitly accepted findings. Acceptance requires a recorded human decision; an agent cannot accept risk. Add one line on what is done well.
 9. **Receipt.** Reference the CLI's `result.json`, retained findings, and the independent verification receipt. Report the source and harness state checked and all missing checks. CLI success never means approval. If fixes changed the source, identify the original review separately from post-fix verification; do not present its receipt as covering later edits.
-10. **Stop.** Do not commit, push, open or update a PR, or resolve a thread: a human does (CLD.2). The human reviews the diff and the report, and accepts, reverts or reopens each fix. A rejected fix or finding is feedback: `process-feedback.md` (H.1).
+10. **Stop.** Do not commit, push, open or update a PR, or resolve a thread: a human does (CLD.2). The human reviews the diff and the report, and accepts, reverts or reopens each fix. A rejected fix or finding is feedback: [process-feedback.md](../../../harness/playbooks/process-feedback.md) (H.1).
 
 # Output
 
-`tvh findings render` prints the finding summary and evidence. The human report adds the review context using `templates/review-report.md`; the validated JSON remains the pipeline contract.
+`tvh findings render` prints the finding summary and evidence. The human report adds the review context using [review-report.md](../../../harness/templates/review-report.md); the validated JSON remains the pipeline contract.
 
 Use `~/.golden-path-harness/bin/tvh` when `tvh` is not on PATH. CLI exit 1 reports findings or a failed check; exit 2 means the operation is incomplete. Inspect retained evidence rather than treating either as a clean review.

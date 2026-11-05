@@ -5,7 +5,7 @@ Use `tvh code types --raw -- Widget.cs Other.cs` from the source tree for an exp
 For repository-scoped change checks and retained verification receipts, use `tvh checks code-types --json -- --repo . --baseline origin/main --symbols none`. The [CLI catalog](../cli/commands.md) records both operations. CLI exit 0 means complete without findings, 1 reports findings, and 2 means incomplete. Native JSON and exit codes remain in retained evidence; `--raw` preserves the native JSON stream for explicit-file callers.
 
 The [checker source](Program.cs) is authoritative for structural mechanics and exclusions.
-`tests/test_code_types.py` demonstrates the accepted cases. This page documents invocation and
+[test_code_types.py](../../../tests/test_code_types.py) demonstrates the accepted cases. This page documents invocation and
 report handling rather than maintaining another list of the policy's exception details.
 
 Limitations: this is a syntax check, not a build or semantic analysis. It cannot establish responsibility,
@@ -17,7 +17,7 @@ languages remain covered by review. Run independent build/tests and review along
 Fixtures: `python -m unittest discover -s tests -p test_code_types.py` after building. The fixed fixture
 verdicts exercise the approved scope. They do not change reviewer thresholds. The [verification runner](../verification/index.md) integrates this checker into the full verify template and an independent reusable PR step.
 
-`tests/run.sh` builds the checker and runs its fixtures; CI installs the .NET 10 SDK first.
+[run.sh](../../../tests/run.sh) builds the checker and runs its fixtures; CI installs the .NET 10 SDK first.
 These fixtures gate checker regressions. Consumer compliance is checked only where the updated verify template or reusable PR pipeline is adopted; see [the gate](../../gates/code-types.md).
 JSON schema version 2 adds `inheritedFindings`, `symbols` and `coverage`. Baseline syntax errors
 return exit 2. Capture the checker commit and SDK version alongside JSON for reproducibility.

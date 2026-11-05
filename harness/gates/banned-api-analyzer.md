@@ -10,7 +10,7 @@ tags: [testing, dotnet]
 
 # Scope
 
-Optional. A repo opts in by copying `harness/templates/repo/Directory.Build.props` and `BannedSymbols.txt`; the harness does not scaffold or require them, and `design-check` does not look for them.
+Optional. A repo opts in by copying `harness/templates/repo/Directory.Build.props` and [BannedSymbols.txt](../templates/repo/BannedSymbols.txt); the harness does not scaffold or require them, and `design-check` does not look for them.
 
 # Coverage
 

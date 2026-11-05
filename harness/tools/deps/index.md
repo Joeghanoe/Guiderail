@@ -16,7 +16,7 @@ command, a human runs it. Gate: [framework-currency.md](../../gates/framework-cu
 
 ## What the wrapper does and refuses
 
-`dep-read.sh` fronts `dotnet`, `npm` and `pnpm` and allows only reads: `dotnet list package` (also `dotnet package
+[dep-read.sh](dep-read.sh) fronts `dotnet`, `npm` and `pnpm` and allows only reads: `dotnet list package` (also `dotnet package
 list`) with `--outdated`, `--deprecated`, `--vulnerable`, `--include-transitive`, `--format json`;
 `dotnet --list-sdks`, `--list-runtimes`, `--info`, `--version`; `npm|pnpm outdated`, `ls`, `audit`. Anything else
 (`add`, `remove`, `update`, `install`, `ci`, `restore`, `audit fix`, `run`, `--interactive`, `--source`,
@@ -34,7 +34,7 @@ down for a human. Write `--option=value` for npm and pnpm options that take a va
 
 ## The gate
 
-`check-currency.py` takes "current" from files, never the network. `--current` is a JSON file the team maintains,
+[check-currency.py](check-currency.py) takes "current" from files, never the network. `--current` is a JSON file the team maintains,
 `{"asof": "2026-10-28", "dotnet": 10, "node": 24, "packages": {"react": "19.1.0"}}`. The `--dotnet-outdated` and
 `--npm-outdated` files add the latest version of each package the package manager reports (text or JSON); a package
 missing from an outdated listing is current. No `dotnet` in `--current` while the repo targets .NET is exit 2.

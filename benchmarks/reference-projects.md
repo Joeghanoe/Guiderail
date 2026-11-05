@@ -106,7 +106,7 @@ Keep `task.md` separate from evaluator expectations. The candidate receives only
 For executable brownfield cases, use the existing [case format and commands](cases/README.md):
 
 - Version `task.md`, hidden `criteria.md`, `case.json` and `snapshot.json` under `benchmarks/cases/validation/<case-id>/`, using neutral aliases.
-- Keep real source mappings in `~/.harness-evaluation/private/`. Point them at the frozen snapshot, not the live checkout. Follow an existing case and the mapping contract in `harness/tools/testing/run_brownfield.py`.
+- Keep real source mappings in `~/.harness-evaluation/private/`. Point them at the frozen snapshot, not the live checkout. Follow an existing case and the mapping contract in [run_brownfield.py](../harness/tools/testing/run_brownfield.py).
 - The runner currently uses that fixed private directory; it does not discover `reference.json` or follow `GOLDEN_PATH_HOME` for source mappings. Its snapshot file hashes must match the mapped sources.
 - The runner executes scoped change tasks on partial snapshots. Whole-project audits remain a manual evaluation under this workflow; do not assume that registering a project enables automated audit or full-project build verification.
 

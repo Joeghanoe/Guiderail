@@ -11,7 +11,7 @@
 
 Meaningful corrections should become durable feedback without requiring the user to classify them or ask for a draft. The current process only accepts feedback tied to an existing rule. This excludes new conventions and missing requirements, or encourages attaching them to an unrelated rule.
 
-The early-return draft in [`feedback/code-return-early-no-nested-else-minimal-ternaries.md`](../../feedback/code-return-early-no-nested-else-minimal-ternaries.md) demonstrates the gap. It proposes a control-flow convention but points to CODE.3 because the format requires an existing rule.
+The early-return draft in [processed early-return draft](../feedback/processed/code-return-early-no-nested-else-minimal-ternaries.md) demonstrates the gap. It proposes a control-flow convention but points to CODE.3 because the format requires an existing rule.
 
 ## Existing decisions and overlap
 

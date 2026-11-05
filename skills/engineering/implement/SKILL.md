@@ -1,28 +1,21 @@
 ---
 name: implement
-description: Implement code changes, features, or bugfixes following vertical slicing, test-first discipline, and TeamValue coding rules. Use when writing, modifying, or refactoring code.
+description: Implement or refactor a scoped feature or fix using established repository conventions and approved requirements. Use when changing code; do not start specification or architecture interviews for an already bounded change.
 ---
 
-# Implementation Discipline
+# Implement verified slices
 
-Deliver clean, maintainable code in vertical slices backed by test evidence and verified against TeamValue standards.
+Inputs are the intended behavior, affected repository and established baseline or explicit paths. Preserve approved criteria and decision references. Ask only for missing decisions that block the work; do not invent acceptance criteria. Keep the change focused on its requested outcome.
 
-## Core Rules
-1. **Vertical Slices**: Implement features as complete, runnable vertical slices through the stack, rather than horizontal layer-by-layer scaffolding.
-2. **Minimal Code to Satisfy Spec**: Write only the code required to satisfy the agreed criteria or failing tests. Resist speculative generality.
-3. **Single Responsibility (DEL.3)**: A change solves one problem and shows its evidence. Keep PRs small and self-contained.
-4. **Zero Secrets (SEC.2)**: Never commit secrets, credentials, or read `.env` files (use `.env.example`).
-5. **Done Means Verified (T.1)**: Every new behavior ships with tests that exercise it.
+Read [implementation slices](IMPLEMENT-IN-SLICES.md) for the edit/test loop and handoff. For a new service use [start greenfield](../../../harness/playbooks/start-greenfield.md); when adding a file family use [repository conventions](../../../harness/playbooks/scaffold-from-conventions.md). Read [workload planning](../../../harness/playbooks/orchestrate-workload.md) only when the work actually needs decomposition and delegation is authorized.
 
-## Process & Tooling
-1. Select applicable guidance before editing:
-   `tvh context select --brief --changed --baseline <baseline>`
-2. Follow discovered repo conventions:
-   `tvh scaffold conventions --raw -- --root <repo>`
-3. Check code structure and conventions:
-   `tvh checks code-types --json -- App.cs`
-4. Run project verification before declaring done:
-   `tvh verify --repo .`
+```bash
+tvh context select --brief --changed --baseline <baseline>
+tvh scaffold brief --raw -- --repo <repository> --kind service
+tvh code types --raw -- App.cs --symbols none
+tvh verify --repo .
+```
 
-## Expected Evidence
-Working, formatted code accompanied by passing unit/scenario tests and clean verification receipts (`tvh verify`).
+Select rules for each new kind of file. Do not read secrets or dotenv files; use example configuration. Test observable behavior through injected I/O, configuration and time boundaries. For user-visible changes, use [frontend verification](../../../harness/playbooks/verify-frontend.md).
+
+Deliver the diff scope, criteria-to-evidence mapping, verification receipts and unresolved questions to independent review. Missing checks remain incomplete. Local implementation does not authorize publication, cloud changes or release.

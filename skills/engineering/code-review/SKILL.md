@@ -1,43 +1,19 @@
 ---
 name: code-review
-description: Review changes since a fixed point along two parallel axes — Standards (repo standards + Fowler smell baseline) and Spec (originating issue/spec requirements). Use when reviewing a branch, PR, or diff.
+description: Review a branch, pull request, or local diff against repository standards and originating requirements. Use for an actual change or repository review, not a conceptual question about review practices.
 ---
 
-# Two-Axis Code Review Discipline
+# Review changes independently
 
-Review code along two independent axes without letting one mask the other.
+Establish the target, explicit baseline, intended source scope and originating requirements. Never guess the target branch. Distinguish standards findings from missing, partial or conflicting requirements. If no spec is available, report spec coverage as unassessed.
 
-## 1. Pin the Fixed Point
-- Compare against merge-base: `git diff <fixed-point>...HEAD`.
-- Confirm ref resolves (`git rev-parse <fixed-point>`) and diff is non-empty before proceeding.
-- Pre-flight quality gate: run `tvh verify --repo .`. If verification fails, stop and report failures first.
+Read [review and safe remediation](REVIEW-AND-FIX.md) for a change review. It owns gate ordering, independent reviewer execution, finding validation and permitted fixes. Failed verification blocks a clean review. Untracked intended files leave scope incomplete. Do not launch duplicate reviewers.
 
-## 2. Axis 1: Standards (Repo Rules + Smell Baseline)
-Evaluate whether the diff conforms to repository conventions and architectural hygiene.
-- **Documented Repo Standards**: Check against TeamValue rules (`CODE.*`, `SEC.*`, `T.*`, etc.) via `tvh review --repo . --baseline <fixed-point>`.
-- **Fowler Smell Baseline** (heuristic judgment calls, subordinate to repo standards):
-  - *Mysterious Name*: name doesn't reveal intent or purpose.
-  - *Duplicated Code*: same logic shape across multiple hunks.
-  - *Feature Envy*: method reaches into another object's data more than its own.
-  - *Data Clumps*: parameters or fields that always travel together without a dedicated type.
-  - *Primitive Obsession*: primitive types used where a domain value object belongs.
-  - *Repeated Switches*: conditional cascades on types recurring across the diff.
-  - *Shotgun Surgery*: one conceptual change forces edits across scattered files.
-  - *Divergent Change*: single module edited for multiple unrelated reasons.
-  - *Speculative Generality*: hooks, parameters, or abstractions not demanded by the spec.
-  - *Message Chains*: deep `a.b().c().d()` coupling.
-  - *Middle Man*: delegating without adding behavior.
-  - *Refused Bequest*: inheriting or overriding while ignoring parent contracts.
-*(Skip anything linters or compilers already enforce).*
+Read [change-review judgment](REVIEW-CHANGE.md) when assessing evidence against selected rules. For an explicitly requested repository or release assessment, use [repository review](REVIEW-REPOSITORY.md) instead. Do not load both modes by default. Code smells are subordinate quality heuristics; cite a canonical rule for a finding, otherwise label it a quality note.
 
-## 3. Axis 2: Spec (Requirement Conformance)
-Evaluate whether the diff faithfully satisfies the originating requirements:
-- Missing or partial requirements requested by the spec/work item.
-- Scope creep: behavior in the diff not requested by the spec.
-- Incorrect behavior: implemented logic that conflicts with acceptance criteria.
+```bash
+tvh verify --repo .
+tvh review --repo . --baseline <target-ref> --engine <authorized-engine>
+```
 
-## 4. Reporting & Aggregation
-Present findings under `## Standards` and `## Spec` side by side.
-- **Do not rerank across axes**: a change can pass Standards but fail Spec, or pass Spec while failing Standards.
-- End with a summary of the worst issue within each axis.
-- The agent never approves a PR; merge decisions remain with human reviewers (CLD.2).
+Keep the native findings contract unchanged. The human report separates Standards from Spec and records scope, evidence, fixed findings and unresolved decisions. Hand permitted fixes back with fresh verification evidence. A human accepts findings and approves or merges the PR.
