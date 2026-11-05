@@ -14,7 +14,7 @@ Which harness version reviewed the PR: the checkout of the harness repository mu
 
 # Blind spots
 
-Local work uses whatever [harness](..) points to ([install.sh](../../install.sh)); a developer on an old checkout reviews against old rules until they pull.
+Local work uses whatever [harness](../index.md) points to ([install.sh](../../install.sh)); a developer on an old checkout reviews against old rules until they pull.
 
 # Complementary checks
 

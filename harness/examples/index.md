@@ -1,6 +1,6 @@
 # Folders
 
-* [fixtures](fixtures/) - 0 concepts
+* [fixtures](fixtures/index.md) - 0 concepts
 
 # Examples
 

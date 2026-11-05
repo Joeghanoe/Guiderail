@@ -1,6 +1,6 @@
 # CODE.5 responsibility review
 
-Assess responsibility independently of the structural checker. Read the task, rule and Boundary, design, changed component and relevant callers. Record missing context as inconclusive.
+Assess responsibility independently of the structural checker. Read the task, [CODE.5 rule and boundary](../../../rules/code/code-5-one-responsibility.md), design, changed component and relevant callers. Record missing context as inconclusive.
 
 | Score | Evidence |
 | --- | --- |

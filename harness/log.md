@@ -38,7 +38,7 @@
 - Recorded prior owner adoption of CODE.8, CODE.10, DEL.4, DEL.5, OBS.3, T.6 and start-greenfield from targeted merged PRs, with approval commits on those documents. Marked the tested design-check and OpenAPI-drift gate descriptions stable.
 - Recorded the owner's explicit approval of CODE.7, CODE.9, CODE.11, OBS.2, UI.1, UI.2 and the remaining operational playbooks. The owner confirmed write-business-test-plan had supported acceptance testing. All active rules, gates and playbooks are stable.
 - Removed E-034 and its dedicated fixture at the owner's request. Historical eval evidence, including its failed bad case, remains in the result records; its identifier is not reused.
-- Recorded the owner's approval of [ADRs 0001–0007](../docs/adr/). Kept ADR 0008, the development-process proposal and the knowledge-base incident-triage automation idea open for separate review.
+- Recorded the owner's approval of [ADRs 0001–0007](../docs/adr/index.md). Kept ADR 0008, the development-process proposal and the knowledge-base incident-triage automation idea open for separate review.
 - Moved processed feedback to [docs/feedback/processed](../docs/feedback/processed/), retained the [current conventions](../docs/decisions/feedback-conventions.md) as an editable record, and documented [example verdicts, lifecycle and evaluation results](../docs/example-verdicts.md). Removed the temporary draft-approval audit after preserving useful provenance.
 - Adopted this OKF [log.md](log.md) summary format from Vegviser. Entries describe material changes and rationale, newest date first; Git retains the authoritative diff and history. Current conventions and ADRs retain their own authority and lifecycle.
 

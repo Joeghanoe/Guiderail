@@ -111,7 +111,7 @@ Only what is specific to the repo:
 - Optional: `.harness-scenarios.json` (components and their scenario folders, T.5), and for .NET `Directory.Build.props` with [BannedSymbols.txt](harness/templates/repo/BannedSymbols.txt) (the T.2 build gate; copy them from `harness/templates/repo/`).
 - The PR pipeline: add [ai-review.yml](infra/pipelines/ai-review.yml) as a template; see its header. Pin a tag and pass its commit SHA as `harnessCommit`; a tag can move, the SHA cannot. The run links the checkout as `.harness/` and removes it at the end, also after a failure.
 
-Copilot code review on GitHub runs on GitHub's servers and cannot see [harness](harness); for a GitHub repo, the review runs through the pipeline instead.
+Copilot code review on GitHub runs on GitHub's servers and cannot see [harness](harness/index.md); for a GitHub repo, the review runs through the pipeline instead.
 
 ## Is it loaded? (adapter check)
 
@@ -132,7 +132,7 @@ The AI review is only trusted as far as its evals show (Vegviser AI Evaluation S
 
 ## How the harness learns
 
-- **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft example in [feedback](feedback) (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into `harness/examples/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13 (rule H.1).
+- **Feedback, in one place.** A correction of harness output, from any repo, becomes a draft example in [feedback](feedback/README.md) (this repo's `feedback/`). A human reviews the drafts, moves the accepted ones into `harness/examples/` with `verified`, and commits. Principles are Vegviser's; the harness only points to P1-P13 (rule H.1).
 - **Trust.** An example with `verified: { by: human:<id>, ... }` is precedent for the reviewer and an eval; an unverified example is a hint.
 - **PR threads.** The reviewer posts each finding as a thread. Its resolution (Fixed, Won't fix, By design) is the feedback signal.
 - **Automation ladder.** A repeated task becomes a playbook, then a script, then a hook or CI check (rule H.2).
@@ -178,4 +178,4 @@ The harness does not assume a vendor. Rules, playbooks and tools speak in tiers 
 
 Engineering process entry points, ownership and planned coverage are in the [process catalog](skills/index.md).
 
-The accepted [architecture decisions](docs/adr/index.md) record the CLI and process-skill contracts.
+The accepted [architecture decisions](docs/adr/index.md) record the CLI and process-skill contracts. The [documentation index](docs/README.md) also links processed feedback, proposals and implementation lessons.

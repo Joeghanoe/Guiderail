@@ -50,7 +50,7 @@ Receipts distinguish source revision/dirty state, stage, exact argv, timeout, ex
 
 ## Review and retrieval
 
-[review.sh](../review/review.sh) supplies `semantic-plan.json` with applicable registry scopes and rubric references to the separate reviewer. Findings keep existing public rule IDs and JSON shape. The registry does not create an automatic numeric semantic gate. Calibrate the rubric before making scores blocking; human review remains authoritative.
+[review.sh](../review/review.sh) supplies `semantic-plan.json` with applicable registry scopes and rubric references to the separate reviewer. Findings keep existing public rule IDs and JSON shape. The registry does not create an automatic numeric semantic gate. The [CODE.5 responsibility rubric](rubrics/code5-responsibility.md) guides that judgment. Calibrate the rubric before making scores blocking; human review remains authoritative.
 
 Claude and agy edit hooks call [context.py](../harness/context.py). A successful lookup plus document hashes produces a temporary session receipt before edit guidance is cached. Newly relevant content is delivered even for an already-seen extension. Failed selection blocks the edit and writes no success marker. Without a session ID, context is delivered uncached. A selection receipt records references, not a claim that the agent opened the documents.
 

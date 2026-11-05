@@ -1,3 +1,3 @@
 # Folders
 
-* [scripts](scripts/) - 0 concepts
+* [scripts](scripts/index.md) - 0 concepts

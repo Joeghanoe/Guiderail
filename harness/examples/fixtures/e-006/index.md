@@ -1,3 +1,3 @@
 # Folders
 
-* [variables](variables/) - 0 concepts
+* [variables](variables/index.md) - 0 concepts

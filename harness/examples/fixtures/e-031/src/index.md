@@ -1,3 +1,3 @@
 # Folders
 
-* [Functions](Functions/) - 0 concepts
+* [Functions](Functions/index.md) - 0 concepts

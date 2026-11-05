@@ -21,6 +21,21 @@ spec.loader.exec_module(probe)
 
 
 class GuidanceTests(unittest.TestCase):
+    def test_document_graph_reaches_indexes_without_directory_link_resolution(self):
+        pending = [ROOT / 'README.md']
+        reached = set()
+        while pending:
+            source = pending.pop()
+            if source in reached:
+                continue
+            reached.add(source)
+            for match in guidance.LINK.finditer(guidance.prose(source.read_text())):
+                target = guidance.target_path(source, match[2], ROOT)
+                if target is not None and target.is_file() and target.suffix == '.md':
+                    pending.append(target)
+        indexes = {p for p in guidance.markdown_files(ROOT) if p.name == 'index.md'}
+        self.assertEqual(sorted(str(p.relative_to(ROOT)) for p in indexes - reached), [])
+
     def test_source_catalog_links_and_active_reachability(self):
         self.assertEqual(guidance.check_catalog(ROOT), [])
         self.assertEqual(guidance.audit(ROOT)['errors'], [])

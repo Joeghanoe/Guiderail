@@ -8,3 +8,11 @@ These scenarios ask a candidate to build a new service. The task and acceptance 
 | 002 | Local managed backup service | [Task](002/task.md) | [Acceptance requirements](002/criteria.md) | [Scenario](002/scenario.json) |
 
 Use the [benchmark navigation](../README.md) for other evaluation entry points and the [brownfield case guide](../cases/README.md) for the train, validation and holdout boundaries. This index is evaluator navigation, not an additional candidate input.
+
+## Candidate instruction adapters
+
+The scenario sources retain the candidate instruction adapters for [001](001/CLAUDE.md) and [002](002/CLAUDE.md). Their `@` references are resolved in the materialized candidate workspace, not this source folder.
+
+## Contracts and evaluator
+
+Scenario 001 supplies [contract v1](../local-backup-contract.md) as `CONTRACT.md`; scenario 002 supplies [contract v2](../local-backup-contract-v2.md). The [backup evaluation guide](../local-backup-evaluation.md) documents the independent grader and original calibration scenario.

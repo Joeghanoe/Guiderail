@@ -220,3 +220,7 @@ The implementation was validated end-to-end against [`teamvaluegroup/BrewBook`](
 3. `pre_activation` and `activation` completed successfully with inlined prompt resolution.
 4. The GitHub Copilot CLI agent initialized inside the firewall container, analyzed the PR diff, and executed verification.
 5. `detection` and `safe_outputs` validated outputs and posted the review to GitHub.
+
+## Implementation lessons
+
+The [workflow source](../../.github/workflows/golden-path-review.md) defines the central review. The [central workflow integration notes](../learnings/gh-aw-central-workflow-integration.md) record setup failures, visibility requirements and checkout behavior from implementing this decision.

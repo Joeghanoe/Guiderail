@@ -55,27 +55,56 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A[Backlog story: need and rationale] --> B[Vegviser: knowledge-assisted spec proposal]
-    B --> C[Human writes/refines spec and acceptance criteria in story]
-    C --> D{Human approves story/spec?}
-    D -->|Revise| B
-    D -->|Approved and versioned| E[Harness: agent orchestration]
-    E --> F[Implement + generate tests + run regressions]
-    F --> G{Independent quality and acceptance gates pass?}
-    G -->|No, fix within approved scope| E
-    G -->|Yes| H[PR linked to story + evidence]
-    H --> I{Independent human PR approval}
-    I -->|Changes requested| E
-    I -->|Approved| J[Merge and CI]
-    J --> K[Automated DEV → TEST → ACC with environment gates]
-    K --> L{Authorized human PRD approval}
-    L -->|Not approved| M[Hold release]
-    L -->|Approved| N[Automated PRD deployment]
-    N --> O[Audit trail and operational feedback]
-    O -.-> A
+    A[Issue or work item: need, bug or improvement] --> B[Triage: clarify, prioritize and assign]
+    B --> C[Vegviser-assisted specification and acceptance criteria]
+    C --> D{Human approves specification?}
+    D -->|Revise| C
+    D -->|Approved and versioned| E[Harness: implement, test and verify]
+    E --> F[PR linked to work item and evidence]
+    F --> G{Quality gates and independent human review}
+    G -->|Fix within scope| E
+    G -->|Requirements change| C
+    G -->|Approved| H[Merge and CI]
+    H --> I[DEV → TEST → ACC with applicable gates]
+    I --> J{Authorized human PRD approval}
+    J -->|Approved| K[Automated PRD deployment]
+    J -->|Not approved| L[Hold release]
+    K --> M[Audit trail and operational feedback]
+    M -.-> A
 ```
 
-**Note:** This diagram shows the intended future process, not the current approved deployment permissions. The human checkpoint is deliberately **after Vegviser and before the harness**. The story remains the authoritative record, including human-authored or human-edited specification text.
+This diagram describes the intended process. Deployment permissions remain subject to the existing Way-of-Work and customer-specific gates. Automatic TEST/ACC promotion requires the policy agreement described in decision 7. The human specification checkpoint remains after Vegviser-assisted refinement and before harness execution.
+
+### Detailed steps
+
+1. **Record the request.** Create or link an issue or work item for a business need, bug, incident follow-up, or improvement. Capture the problem, rationale, available evidence, and affected system. Keep one canonical work item in the team's backlog tool, such as Azure Boards or GitHub Issues. Link related records rather than maintaining competing specifications.
+2. **Triage the work.** Assess completeness, duplicates, affected components, and likely ownership. An agent can prepare this assessment and ask for missing information. A human decides priority, ownership, and whether to refine, defer, reject, or link the request to existing work. Record the disposition in the work item. Triage does not authorize implementation.
+3. **Refine the specification.** Use Vegviser and repository context to draft the intended outcome, scope, acceptance criteria, nonfunctional requirements, constraints, and unresolved decisions. The human story owner writes or edits the result in the work item or a versioned artifact linked from it. Keep refinement proportionate to the change; a routine bug fix does not require a separate discovery exercise.
+4. **Approve the specification.** Record explicit human approval against the specification version before autonomous implementation begins. Resolve decisions that materially affect scope or acceptance. A command invocation or board move alone does not establish approval.
+5. **Implement and verify.** The harness consumes the approved version, plans and implements the change, generates tests, runs regressions and applicable checks, and collects evidence. It can fix failures within the approved scope. If the work requires changed requirements or acceptance criteria, return to refinement and obtain approval of the revised specification.
+6. **Review the pull request.** Link the PR to the canonical work item, approved specification, and evidence. Deterministic quality gates, independent acceptance checks, and AI review support an independent human reviewer. Fix review findings within scope through the harness. Requirement changes return to refinement. Apply the existing reassessment policy when code changes after approval.
+7. **Merge and promote.** After the required checks and human approval, merge and run CI. Deploy through DEV, TEST, and ACC under the applicable customer and environment policies. Automate promotion where policy permits it; retain required approvals where it does not.
+8. **Authorize and deploy to production.** The authorized Product Owner or delegate approves the tested release/version for PRD. Hold the release when approval is withheld. After approval, the pipeline performs the deployment and records its result.
+9. **Observe and feed back.** Verify the deployment and review operational feedback against the intended outcome. Link defects, incidents, and further improvements to new or existing work items for triage. Retain the trace from the approved requirement through implementation, review, and release.
+
+### Boards and AI-assisted workflows
+
+Azure Boards or GitHub Projects tracks progress across these steps; the board does not add another process stage. Use the team's existing statuses and link the work item, execution, PR, and release evidence. A merged PR does not by itself prove that a change has reached production or met its intended outcome. Apply the team's agreed closure criteria.
+
+AI-first means agents prepare work by default where useful, while humans retain the decisions and approvals described above. Attach workflows to existing steps through events or explicit commands. Use automatic triggers for routine analysis and commands for deliberate requests or reruns. Commands request an operation; the workflow checks its prerequisites and the caller's authority before acting.
+
+| Process step | Trigger or command | Expected assistance | Implementation status |
+| --- | --- | --- | --- |
+| Triage | New work item or `/golden-path-triage` | Assess completeness, duplicates, routing, and missing information; propose bounded metadata updates. | Proposed integration and command. |
+| Specification | `/golden-path-refine` | Consult Vegviser and repository context; produce a draft specification, acceptance criteria, and open questions. | Proposed integration and command. |
+| Implementation | Existing harness entry point | Consume the approved specification and produce implementation and verification evidence. | Harness responsibility already established; no new start command required by this refinement. |
+| PR review | `/golden-path-review` | Review the change against engineering standards and the approved specification; report findings for human review. | Existing centralized workflow; see [ADR 0011](0011-centralized-agentic-review-workflow.md). |
+
+Vegviser's MCP and the knowledge base behind it can provide context to triage, refinement, implementation, and review workflows. Start with read-only knowledge access and record the sources and revisions used where available. Validate authentication, runner connectivity, and tool permissions before enabling the integration. Vegviser continues to advise and produce drafts, consistent with [ADR 0003](0003-knowledge-to-code-boundary.md). Any automated backlog writes belong to an explicitly scoped workflow integration, not to Vegviser's specification authority.
+
+Use the [GitHub Agentic Workflows gallery](https://github.github.com/gh-aw/gallery/) as a source of implementation patterns, particularly issue triage and PR review. Define permitted inputs, outputs, and writes for each workflow. Keep workflow logic centralized where appropriate, following ADR 0011. GitHub documents [custom MCP integration](https://github.github.com/gh-aw/reference/tools/#custom-mcp-servers-mcp-servers), [command triggers](https://github.github.com/gh-aw/reference/command-triggers/), and [safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/). Azure DevOps work-item safe outputs are currently documented as experimental and require separate validation.
+
+Introduce triage and refinement assistance first alongside the existing review command. Validate them on real work before expanding the command set. This adds assistance to the existing Golden Path without introducing additional human handoffs.
 
 ## Rationale
 

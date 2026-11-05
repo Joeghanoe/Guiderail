@@ -1,3 +1,3 @@
 # Folders
 
-* [src](src/) - 0 concepts
+* [src](src/index.md) - 0 concepts

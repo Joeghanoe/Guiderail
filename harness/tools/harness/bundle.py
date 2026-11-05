@@ -125,7 +125,7 @@ def generated_index(directory, root):
         lines.append("# Folders\n")
         for d in subdirs:
             count = sum(1 for p in d.rglob("*.md") if p.name not in RESERVED)
-            lines.append(f"* [{d.name}]({d.name}/) - {count} concepts")
+            lines.append(f"* [{d.name}]({d.name}/{INDEX}) - {count} concepts")
         lines.append("")
     if files:
         lines.append(f"# {heading}\n")
@@ -319,7 +319,8 @@ def check_indexes(root):
             errors.append(f"/{index.relative_to(root).as_posix()}: out of date, run bundle.py index")
     root_index = (root / INDEX).read_text(encoding="utf-8") if (root / INDEX).is_file() else ""
     errors += [f"/index.md: does not link {top}/" for top in TYPES_IN_DIR
-               if (root / top).is_dir() and f"]({top}/)" not in root_index]
+               if (root / top).is_dir() and not any(
+                   f"]({target})" in root_index for target in (f"{top}/", f"{top}/{INDEX}"))]
     return errors
 
 

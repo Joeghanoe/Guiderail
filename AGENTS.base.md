@@ -26,7 +26,7 @@ Enforced by identity, wrappers and hooks where possible; they hold even if a fil
 2. **SEC.2** No secrets or personal data in code, logs, telemetry, commits or prompts. Never read `.env` files; use `.env.example` for their structure.
 3. **CLD.1** Cloud state is read-only for agents. Use `tvh cloud read <az|terraform|kubectl|hcloud> ...`; write any change down as a command for a human. Logging in (`az login`, `az account set`, any CLI login) is always done by the user, never by an agent.
 4. **CLD.2** A human deploys, applies, pushes to the default or a release branch, force-pushes, merges, runs pipelines, grants access and changes retention. An agent may push a named feature branch (`git push -u origin <feature-branch>`). Approval in one context does not extend to the next. Segregation of Duties applies: Developer != Reviewer; promotion to PRD is strictly approved by the Product Owner ("One Button Deploy").
-5. **H.1** Do not edit the [installed bundle](harness) directly. Changes go through examples and the harness repo.
+5. **H.1** Do not edit the [installed bundle](harness/index.md) directly. Changes go through examples and the harness repo.
 
 ## Select the process and command
 
@@ -36,7 +36,7 @@ Use `tvh --help` for supported operations and `tvh doctor` for local prerequisit
 
 Before using an extension, MCP, `curl` or raw CLI, consult [index.md](harness/tools/index.md). All public harness tools have `tvh` routes; use its domain help. Restricted wrappers and authorization boundaries remain in effect. The user's login is already in place; never log in (CLD.1).
 
-Open the matching playbook under [playbooks](harness/playbooks) and follow it:
+Open the matching playbook under [playbooks](harness/playbooks/index.md) and follow it:
 
 - Actual pipeline failure: [diagnose-pipeline-failure.md](harness/playbooks/diagnose-pipeline-failure.md); PR review: [review and fix](skills/engineering/code-review/REVIEW-AND-FIX.md).
 - Azure or ADO state, including resources, telemetry, policies and subscriptions: proactively read through the wrappers using [look-up-azure-and-devops.md](harness/playbooks/look-up-azure-and-devops.md).

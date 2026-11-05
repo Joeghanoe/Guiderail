@@ -6,7 +6,7 @@ nothing. A generator would have to carry one team's project shape inside a proje
 is what [project-terms.txt](../../templates/project-terms.txt) exists to prevent, and it would rot
 silently as the repo moved. An extractor cannot rot: it reads the repo as it is today.
 
-Playbook: [scaffold-from-conventions.md](../../playbooks/scaffold-from-conventions.md).
+Playbook: [scaffold-from-conventions.md](../../playbooks/scaffold-from-conventions.md). The [repo AGENTS.md template](../../templates/repo/AGENTS.md) shows which repository-specific decisions belong beside the shared harness guidance.
 
 ## Tools
 
