@@ -21,7 +21,7 @@ A service uploads documents to a partner API, catching all exceptions and return
 
 # Why (verdict)
 
-Catching exceptions and returning `null` masks catastrophic failures—callers mistakenly treat nulls as successful operations, silently dropping files (CODE.2). Allow `EnsureSuccessStatusCode()` or custom exceptions to bubble up so errors are logged with context and handled appropriately.
+Catching exceptions and returning `null` masks catastrophic failures—callers mistakenly treat nulls as successful operations, silently dropping files ([CODE.2](../rules/code/code-2-fail-loudly.md)). Allow `EnsureSuccessStatusCode()` or custom exceptions to bubble up so errors are logged with context and handled appropriately.
 
 # Compliant pattern
 

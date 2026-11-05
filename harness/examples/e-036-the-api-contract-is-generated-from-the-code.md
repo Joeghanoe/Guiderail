@@ -17,7 +17,7 @@ A backend service exposes HTTP endpoints consumed by frontends, client integrati
 
 # Why (verdict)
 
-Manually updated API specifications inevitably drift the moment an endpoint changes. Code must be the single source of truth: OpenAPI documents should be generated offline during build time (DEL.5). If committed for client code generation, CI should verify that the generated spec matches the committed snapshot.
+Manually updated API specifications inevitably drift the moment an endpoint changes. Code must be the single source of truth: OpenAPI documents should be generated offline during build time ([DEL.5](../rules/delivery/del-5-the-api-contract-is-generated.md)). If committed for client code generation, CI should verify that the generated spec matches the committed snapshot.
 
 # Compliant pattern
 

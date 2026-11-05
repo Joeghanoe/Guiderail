@@ -18,10 +18,10 @@ A message handler encounters both transient issues (timeouts, throttling) and pe
 
 # Why (verdict)
 
-Failures should fail loudly according to their type (CODE.2):
+Failures should fail loudly according to their type ([CODE.2](../rules/code/code-2-fail-loudly.md)):
 
 - Rethrow transient failures so the message broker handles retries and delivery limits.
-- Immediately dead-letter permanent failures with a fixed error code to prevent wasteful retries and queue delays (SEC.2, OBS.3).
+- Immediately dead-letter permanent failures with a fixed error code to prevent wasteful retries and queue delays ([SEC.2](../rules/security/sec-2-no-secrets-or-personal-data.md), [OBS.3](../rules/observability/obs-3-operational-output-is-a-contract.md)).
 
 # Compliant pattern
 

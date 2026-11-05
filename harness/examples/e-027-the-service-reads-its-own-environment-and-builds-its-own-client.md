@@ -18,7 +18,7 @@ An API client uses `IHttpClientFactory` to retrieve an auth token, but then spin
 
 # Why (verdict)
 
-Instantiating `HttpClient` manually bypasses connection pooling and makes core business methods untestable without contacting live external endpoints (T.2). Reading environment variables inside methods also scatters configuration throughout the codebase. Configure typed HTTP clients and bind validated options at startup in the composition root.
+Instantiating `HttpClient` manually bypasses connection pooling and makes core business methods untestable without contacting live external endpoints ([T.2](../rules/testing/t-2-services-do-not-create-io.md)). Reading environment variables inside methods also scatters configuration throughout the codebase. Configure typed HTTP clients and bind validated options at startup in the composition root.
 
 # Compliant pattern
 

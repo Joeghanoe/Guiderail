@@ -17,3 +17,7 @@ sources:
 # Rule
 
 `enableRbacAuthorization: true`, `enableSoftDelete: true`, `enablePurgeProtection: true`. No access policies.
+
+# Related guidance
+
+This rule applies [P7 Security by Design](../../principles/p-07-security-by-design.md).

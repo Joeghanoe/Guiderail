@@ -17,3 +17,7 @@ sources:
 # Rule
 
 Release a fix as a new deployment. One artifact or image is built once and promoted through the environments in order; tags are versions or commit SHAs, never `latest`.
+
+# Related guidance
+
+This rule applies [P6 Automation by Default](../../principles/p-06-automation-by-default.md).

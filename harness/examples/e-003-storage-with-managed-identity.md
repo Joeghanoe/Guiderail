@@ -18,7 +18,7 @@ An application registers Azure Blob Storage clients using connection strings con
 
 # Why (verdict)
 
-Connection strings contain long-lived access keys that grant full access from any location if leaked (SEC.3). Authenticate using `DefaultAzureCredential` with managed identities, granting least-privilege access via Azure RBAC.
+Connection strings contain long-lived access keys that grant full access from any location if leaked ([SEC.3](../rules/security/sec-3-identity-without-secrets.md)). Authenticate using `DefaultAzureCredential` with managed identities, granting least-privilege access via Azure RBAC.
 
 # Compliant pattern
 

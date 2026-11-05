@@ -29,3 +29,7 @@ Scenarios carry a stable intent ID or tag (`DS-4`, `@b2b-external`) so a test, a
 - A refactor without a change in behaviour: `e2e: n/a - refactor`, and the existing scenarios stay green.
 - Behaviour the suite cannot reach (a partner's system without a test environment): a unit or contract test, and the PR says why.
 - Infrastructure-only changes are covered by the post-deploy smoke step, not by a new scenario.
+
+# Related guidance
+
+This rule applies [P1 Business Before Technology](../../principles/p-01-business-before-technology.md), [P8 Observable by Design](../../principles/p-08-observable-by-design.md).

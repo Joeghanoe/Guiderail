@@ -19,9 +19,18 @@ sources:
 
 - Before you add a check, ask what the platform already enforces. An API gateway validates subscription keys and request schemas; a message broker enforces its own authorization; a framework validates its options.
 - Validate at the front door, with the platform's own mechanism, and only once. Do not repeat the check in every operation's policy or handler.
-- Dead configuration (a product nobody subscribes to, a role the identity never uses) is removed (CODE.1).
+- Dead configuration (a product nobody subscribes to, a role the identity never uses) is removed ([CODE.1](code-1-remove-what-is-not-used.md)).
 - When you do add your own, a comment says what the platform does not cover. "The platform returns 500 and we need a 4xx" is a reason; "to be sure" is not.
 
 # Boundary
 
 Defence in depth is allowed where the cost of a missed check is high and the second check is cheap. The comment says so.
+
+# Related guidance
+
+This rule applies [P5 Reuse Before Reinvention](../../principles/p-05-reuse-before-reinvention.md).
+
+Worked examples:
+
+- [E-012 A gateway policy does not repeat what the gateway already enforces](../../examples/e-012-use-what-the-platform-does.md) (violation).
+- [E-037 APIM products own subscription access](../../examples/e-037-apim-products-own-subscription-access.md) (violation).

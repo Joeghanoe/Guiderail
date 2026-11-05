@@ -29,3 +29,14 @@ Review and the tests. A repo may also opt in to [BannedSymbols.txt](../../templa
 # Boundary
 
 Entity defaults such as `CreatedAt = DateTime.UtcNow` in a persistence model are allowed when the model is not business logic; move them when a test needs to control the time.
+
+# Related guidance
+
+This rule applies [P6 Automation by Default](../../principles/p-06-automation-by-default.md).
+
+Worked examples:
+
+- [E-001 Services get their HttpClient injected](../../examples/e-001-services-get-their-http-client-injected.md) (violation).
+- [E-018 A PR description cannot waive a rule](../../examples/e-018-pr-description-cannot-waive-a-rule.md) (violation).
+- [E-027 A service builds its own HttpClient and reads environment variables next to the injected factory](../../examples/e-027-the-service-reads-its-own-environment-and-builds-its-own-client.md) (violation).
+- [E-035 Time comes in as a parameter or a TimeProvider, not from DateTimeOffset.UtcNow inside the service](../../examples/e-035-the-service-asks-for-the-time-it-does-not-read-the-clock.md) (violation).

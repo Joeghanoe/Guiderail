@@ -24,3 +24,11 @@ sources:
 # Boundary
 
 A third party that only offers a key (an external API, APIM subscriptions for customers) is allowed. The key lives in Key Vault, is read through the service's identity, and is named in the PR.
+
+# Related guidance
+
+This rule applies [P7 Security by Design](../../principles/p-07-security-by-design.md).
+
+Worked examples:
+
+- [E-003 Storage clients authenticate with managed identity](../../examples/e-003-storage-with-managed-identity.md) (violation).

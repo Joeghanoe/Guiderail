@@ -14,7 +14,7 @@ example_file: src/ImportStatus.cs
 
 # Situation
 
-A short pure label choice is allowed, as is a switch statement or switch expression when it makes the alternatives clear. A nested conditional expression hides the branches between operations. Report CODE.11 as readability, not a correctness failure.
+A short pure label choice is allowed, as is a switch statement or switch expression when it makes the alternatives clear. A nested conditional expression hides the branches between operations. Report [CODE.11](../rules/code/code-11-return-early.md) as readability, not a correctness failure.
 
 ## Good example
 

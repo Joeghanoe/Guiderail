@@ -58,3 +58,7 @@ resource sharedPolicy 'Microsoft.ApiManagement/service/policies@2024-05-01' = {
 # Evidence and limits
 
 Prepared from the owner's feedback queue on 2026-11-01. Source snippets use neutral names. Model evaluation tests reviewer behavior, not execution of these snippets. The owner approved this example in the processing session on 2026-11-01. Approval concerns the expected reviewer behavior, not execution of the snippet.
+
+# Related guidance
+
+This example illustrates [CODE.6 Use what the platform already does before writing it again](../rules/code/code-6-use-what-the-platform-does.md). The `rule` metadata records the same relationship for tooling.

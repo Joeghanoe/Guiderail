@@ -22,7 +22,7 @@ Clients created through other SDK constructors (`new BlobServiceClient(...)`), r
 
 # Complementary checks
 
-AI review against T.2; unit tests that must run without a network.
+AI review against [T.2](../rules/testing/t-2-services-do-not-create-io.md); unit tests that must run without a network.
 
 # Failure behaviour
 
@@ -34,4 +34,4 @@ One scoped `#pragma warning disable RS0030` with a reason, in the composition ro
 
 # Refresh trigger
 
-A new analyzer version, a new banned symbol, or a T.2 change.
+A new analyzer version, a new banned symbol, or a [T.2](../rules/testing/t-2-services-do-not-create-io.md) change.

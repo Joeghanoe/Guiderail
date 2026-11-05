@@ -24,7 +24,7 @@ sources:
 
 # Why (verdict)
 
-CLD.1 ensures agents read while write privileges remain strictly with developers. Because Azure CLI has hundreds of subcommands, the wrapper permits diagnostic queries by default while actively blocking mutating verbs (create, delete, update, deploy, assign, start, stop) and secret-exposing operations (keys, secrets, credentials).
+[CLD.1](../rules/cloud/cld-1-agents-read-cloud-state.md) ensures agents read while write privileges remain strictly with developers. Because Azure CLI has hundreds of subcommands, the wrapper permits diagnostic queries by default while actively blocking mutating verbs (create, delete, update, deploy, assign, start, stop) and secret-exposing operations (keys, secrets, credentials).
 
 ## Good example
 

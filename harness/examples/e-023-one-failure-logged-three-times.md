@@ -18,7 +18,7 @@ A batch loop catches `Exception` so one failure does not halt processing. The ca
 
 # Why (verdict)
 
-A single failure spawns three redundant telemetry records, and interpolating stack traces into custom event properties clutters alert queries and loses structured error data (CODE.2, OBS.3). Log the failure once with context, and let analytics events carry only clean item IDs and reason codes. If catching per-item to continue batch processing, report failure counts explicitly so callers know a run was only partially successful.
+A single failure spawns three redundant telemetry records, and interpolating stack traces into custom event properties clutters alert queries and loses structured error data ([CODE.2](../rules/code/code-2-fail-loudly.md), [OBS.3](../rules/observability/obs-3-operational-output-is-a-contract.md)). Log the failure once with context, and let analytics events carry only clean item IDs and reason codes. If catching per-item to continue batch processing, report failure counts explicitly so callers know a run was only partially successful.
 
 # Compliant pattern
 

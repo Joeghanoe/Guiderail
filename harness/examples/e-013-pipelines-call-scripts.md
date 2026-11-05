@@ -22,7 +22,7 @@ A deployment pipeline runs complex health-checking and registration logic inside
 
 # Why (verdict)
 
-Large inline scripts cannot be linted, tested, or run locally without copy-pasting code out of CI pipelines. Moving logic into a parameterized script file enables local testing, code reuse, and clean pipeline definitions (IAC.8). Prefer cross-platform Ubuntu agents over Windows agents for routine scripting steps.
+Large inline scripts cannot be linted, tested, or run locally without copy-pasting code out of CI pipelines. Moving logic into a parameterized script file enables local testing, code reuse, and clean pipeline definitions ([IAC.8](../rules/iac/iac-8-pipelines-call-scripts.md)). Prefer cross-platform Ubuntu agents over Windows agents for routine scripting steps.
 
 # Compliant pattern
 

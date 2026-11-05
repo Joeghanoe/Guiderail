@@ -14,13 +14,13 @@ tags: [delivery, dependencies]
 
 # Blind spots
 
-Whether the current-versions file is right. It is maintained by a person; if it still says .NET 9 after .NET 10 shipped, the gate passes net8.0. The script prints a note past 120 days and `--max-age-days` makes it exit 2, but nothing refreshes it. Which packages count as a framework: DEL.2 says "runtime and framework versions" and does not list them, so the default list is a judgement, and a repo can shrink its own list in a PR (review the diff of `.harness-currency.json`).
+Whether the current-versions file is right. It is maintained by a person; if it still says .NET 9 after .NET 10 shipped, the gate passes net8.0. The script prints a note past 120 days and `--max-age-days` makes it exit 2, but nothing refreshes it. Which packages count as a framework: [DEL.2](../rules/delivery/del-2-frameworks-n-minus-1.md) says "runtime and framework versions" and does not list them, so the default list is a judgement, and a repo can shrink its own list in a PR (review the diff of `.harness-currency.json`).
 
 Runtimes pinned outside the files above are not seen: Dockerfile base images, pipeline `UseDotNet` and `setup-node` steps, `.nvmrc`, and Bicep or HCL runtime stacks such as `linuxFxVersion` or `netFrameworkVersion`. Versions that are not literal are skipped with a `note:` (`$(Tfm)`, MSBuild property indirection, `latest`, `*`, workspace or git references), as are `netstandard` targets (a compatibility contract, not a runtime). Transitive packages are not read. For Node, "current stable" could mean the Current or the LTS line; the file decides, and `engines.node` is judged by the lowest major it allows. Prereleases are excluded only if the input excludes them. The waiver is checked for the shape of a backlog link, not for the item existing, and covers every finding in the PR.
 
 # Complementary checks
 
-AI review of DEL.2 (the rule is `enforced_by: review`), for runtimes pinned outside the manifests and for whether a linked backlog item is a real upgrade plan. Out-of-support and vulnerable versions are a different question: `dep-read.sh --allow-network dotnet list package --vulnerable` and `npm audit`.
+AI review of [DEL.2](../rules/delivery/del-2-frameworks-n-minus-1.md) (the rule is `enforced_by: review`), for runtimes pinned outside the manifests and for whether a linked backlog item is a real upgrade plan. Out-of-support and vulnerable versions are a different question: `dep-read.sh --allow-network dotnet list package --vulnerable` and `npm audit`.
 
 # Failure behaviour
 
@@ -28,7 +28,7 @@ Exit 1 with `path:line: DEL.2 message` naming the package or framework and both 
 
 # Exception route
 
-A PR description line `deps: n/a - <reason of at least 10 characters>` that includes the upgrade item, as a URL or an id such as `AB#1234`. DEL.2 asks for that backlog item to be linked in the PR, so a waiver without one is ignored and the gate says so.
+A PR description line `deps: n/a - <reason of at least 10 characters>` that includes the upgrade item, as a URL or an id such as `AB#1234`. [DEL.2](../rules/delivery/del-2-frameworks-n-minus-1.md) asks for that backlog item to be linked in the PR, so a waiver without one is ignored and the gate says so.
 
 # Refresh trigger
 

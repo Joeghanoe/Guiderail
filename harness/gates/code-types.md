@@ -28,4 +28,4 @@ Syntax cannot establish cohesive responsibility, private-helper single-user owne
 
 # Complementary review
 
-CODE.5 responsibility uses the independent reviewer and its rubric. Consumer functional tests, build and other required checks still run. This gate does not alter example verdicts or reviewer thresholds.
+[CODE.5](../rules/code/code-5-one-responsibility.md) responsibility uses the independent reviewer and its rubric. Consumer functional tests, build and other required checks still run. This gate does not alter example verdicts or reviewer thresholds.

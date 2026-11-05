@@ -27,3 +27,12 @@ sources:
 # Boundary
 
 A name imposed by a framework or a public contract stays as it is; wrap it in a clearer name inside.
+
+# Related guidance
+
+This rule applies [P11 Standards Enable Innovation](../../principles/p-11-standards-enable-innovation.md).
+
+Worked examples:
+
+- [E-009 A boolean flag that switches behaviour is named for the behaviour, or removed](../../examples/e-009-flags-that-hide-logic.md) (violation).
+- [E-019 A pure rename does not raise major findings](../../examples/e-019-a-pure-rename-does-not-raise-major-findings.md) (compliant).

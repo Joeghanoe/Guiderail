@@ -24,4 +24,13 @@ A principle gives durable direction; a standard defines an observable expectatio
 
 This harness is product-agnostic. Project-specific instructions remain in their projects; useful underlying principles and examples may strengthen general guidance and examples after review. A source's choice of product, platform or project architecture is not a harness requirement.
 
-Use **n-1** for framework currency. DEL.2 defines the supported window as the current stable release or its immediate predecessor. This wording follows the Loop page "Cloud Principles", section "Supported frameworks are always n-1", and the user's wording decision of 2026-10-29.
+Use **n-1** for framework currency. [DEL.2](../rules/delivery/del-2-frameworks-n-minus-1.md) defines the supported window as the current stable release or its immediate predecessor. This wording follows the Loop page "Cloud Principles", section "Supported frameworks are always n-1", and the user's wording decision of 2026-10-29.
+
+# Related guidance
+
+The following rules apply this principle:
+
+- [CODE.11 Return early and keep conditional expressions simple](../rules/code/code-11-return-early.md).
+- [CODE.3 Names and parameters say what they are for, and flags do not hide logic](../rules/code/code-3-names-say-what-it-is-for.md).
+- [DEL.5 The API contract is generated from the code at build time, never written by hand](../rules/delivery/del-5-the-api-contract-is-generated.md).
+- [IAC.6 New resources follow the TeamValue naming convention, or the repo's own](../rules/iac/iac-6-naming-convention.md).

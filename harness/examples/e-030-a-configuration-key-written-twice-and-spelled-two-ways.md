@@ -18,7 +18,7 @@ A method fetches an OAuth token by checking that `Gateway:OAuthUri` and `Gateway
 
 # Why (verdict)
 
-String-based configuration keys drift easily when repeated across guards and callers. Here, the guard checks the prefixed key while the payload reads the un-prefixed key, silently sending an invalid token request (CODE.4). Bind settings to a strongly-typed options class at startup or define the key as a shared constant.
+String-based configuration keys drift easily when repeated across guards and callers. Here, the guard checks the prefixed key while the payload reads the un-prefixed key, silently sending an invalid token request ([CODE.4](../rules/code/code-4-write-a-name-once.md)). Bind settings to a strongly-typed options class at startup or define the key as a shared constant.
 
 # Compliant pattern
 

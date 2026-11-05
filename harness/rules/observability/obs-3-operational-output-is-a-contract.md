@@ -17,13 +17,17 @@ sources:
 
 # Rule
 
-- The design lists the events a run emits (started, per source started and finished, finished) and their properties. Event and property names are constants (CODE.4): an alert or a report depends on them, and a rename must break a test.
+- The design lists the events a run emits (started, per source started and finished, finished) and their properties. Event and property names are constants ([CODE.4](../code/code-4-write-a-name-once.md)): an alert or a report depends on them, and a rename must break a test.
 - Use the event-sink structure defined by [CODE.8](/rules/code/code-8-dependencies-point-inward.md). A test asserts the exact sequence of events on a recording sink, for a success and for a partial failure.
-- Every event carries the run identifier and, per source, the source identifier, an outcome, counts, bytes, a duration and a reason code. Nothing carries file names, payload, exception text or credentials (SEC.2).
+- Every event carries the run identifier and, per source, the source identifier, an outcome, counts, bytes, a duration and a reason code. Nothing carries file names, payload, exception text or credentials ([SEC.2](../security/sec-2-no-secrets-or-personal-data.md)).
 - Reason codes come from one catalogue (a type plus a runbook table). An unknown failure maps to a generic code, never to the exception message.
-- A run can be queried without starting anything: a status call returns the outcome of a run, a health call answers OBS.1. An incomplete run is never reported as healthy, and the report names the affected sources.
+- A run can be queried without starting anything: a status call returns the outcome of a run, a health call answers [OBS.1](obs-1-health-reflects-reality.md). An incomplete run is never reported as healthy, and the report names the affected sources.
 - A test feeds a sentinel string through input, fault text and payload, and asserts it appears in no event, log line, report or alert.
 
 # Boundary
 
 A source may carry a more specific code than the catalogue's generic one, but only by adding it to the catalogue and the runbook. Tenant or customer identifiers are allowed; resource names only when the customer agreed and a setting says so.
+
+# Guidance and verification
+
+This rule applies [P8 Observable by Design](../../principles/p-08-observable-by-design.md) and supplies stable signals for [OBS.2 alerts](obs-2-alerts-follow-causality.md). The [design gate](../../gates/design-check.md) checks structural prerequisites; the tests required above verify event sequences and payload exclusion. [Deployment verification](../../playbooks/verify-deployment.md) inspects the emitted telemetry after deployment.

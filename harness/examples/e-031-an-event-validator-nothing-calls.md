@@ -19,7 +19,7 @@ A service contains an active mapping method alongside an unused validation metho
 
 # Why (verdict)
 
-Unused validation methods give a false sense of security—readers assume events are pre-validated when actual filtering happens downstream. Multiple duplicate lists of event names also drift over time (CODE.1, CODE.4). Delete the unused members, dependencies, and imports.
+Unused validation methods give a false sense of security—readers assume events are pre-validated when actual filtering happens downstream. Multiple duplicate lists of event names also drift over time ([CODE.1](../rules/code/code-1-remove-what-is-not-used.md), [CODE.4](../rules/code/code-4-write-a-name-once.md)). Delete the unused members, dependencies, and imports.
 
 # Compliant pattern
 

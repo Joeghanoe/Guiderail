@@ -10,7 +10,7 @@ tags: [testing, e2e]
 
 # Coverage
 
-Opt-in only. The harness may use its own mapping, but scaffolding and review do not require consumer repos to add `.harness-scenarios.json`, intent attributes or this CI step. T.5 still requires behavior coverage through the repo's existing tests.
+Opt-in only. The harness may use its own mapping, but scaffolding and review do not require consumer repos to add `.harness-scenarios.json`, intent attributes or this CI step. [T.5](../rules/testing/t-5-behaviour-has-a-scenario.md) still requires behavior coverage through the repo's existing tests.
 
 Components listed in `.harness-scenarios.json`, matched by path globs against the PR's changed files.
 
@@ -20,7 +20,7 @@ Whether the changed scenario covers the changed behaviour (that is review), comp
 
 # Complementary checks
 
-AI review of T.5 fit; the E2E run after deploy.
+AI review of [T.5](../rules/testing/t-5-behaviour-has-a-scenario.md) fit; the E2E run after deploy.
 
 # Failure behaviour
 
@@ -32,4 +32,4 @@ A PR description line `e2e: n/a - <reason>` (at least 10 characters), visible to
 
 # Refresh trigger
 
-A new component or test suite in the repo, or a T.5 change.
+A new component or test suite in the repo, or a [T.5](../rules/testing/t-5-behaviour-has-a-scenario.md) change.

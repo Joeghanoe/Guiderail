@@ -21,7 +21,7 @@ sources:
 
 # Why (verdict)
 
-CI is the authority and runs the full gate. The agent still needs a fast local check, so it is kept per project in `~/.golden-path-harness/projects/<repo-id>/verify.sh` ([project-verify.sh](../tools/code/project-verify.sh)). When it finds something CI misses, the check is added there; a critical one is proposed to the repo's CI as a diff for a human, never applied by the agent (CLD.2). A `scripts/verify.sh` committed in a repo is not used by the Stop hook.
+CI is the authority and runs the full gate. The agent still needs a fast local check, so it is kept per project in `~/.golden-path-harness/projects/<repo-id>/verify.sh` ([project-verify.sh](../tools/code/project-verify.sh)). When it finds something CI misses, the check is added there; a critical one is proposed to the repo's CI as a diff for a human, never applied by the agent ([CLD.2](../rules/cloud/cld-2-humans-take-irreversible-actions.md)). A `scripts/verify.sh` committed in a repo is not used by the Stop hook.
 
 ## Good example
 
@@ -40,3 +40,7 @@ cp ~/.golden-path-harness/harness/templates/repo/scripts/verify.sh scripts/verif
 # Not verified
 
 Tested with stubs ([run.sh](../../tests/run.sh)), not against a real repo with CI. Repos that already carry a `scripts/verify.sh` lose the Stop check until `project-verify.sh init` is run for them.
+
+# Related guidance
+
+This example illustrates [T.1 Done means verified: CI is the full gate, the project verify is the quick local subset](../rules/testing/t-1-done-means-verified.md). The `rule` metadata records the same relationship for tooling.

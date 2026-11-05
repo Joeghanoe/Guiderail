@@ -18,7 +18,7 @@ It does not prove the document is generated rather than hand-written, that opera
 
 # Complementary checks
 
-Contract tests for a spec-first API. Review of DEL.5 points 1 to 6.
+Contract tests for a spec-first API. Review of [DEL.5](../rules/delivery/del-5-the-api-contract-is-generated.md) points 1 to 6.
 
 # Failure behaviour
 

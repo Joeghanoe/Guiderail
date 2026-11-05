@@ -19,7 +19,7 @@ sources:
 
 A derived value is anything computed from other stored data: a total, a status flag, a macro, a balance, a search index, a denormalised count.
 
-1. **One owner.** The value is calculated in one named place (a function, a hook, a database computation), described in the design. Any second implementation is held equal to the first by shared test vectors (CODE.7), not by hope.
+1. **One owner.** The value is calculated in one named place (a function, a hook, a database computation), described in the design. Any second implementation is held equal to the first by shared test vectors ([CODE.7](code-7-linked-changes.md)), not by hope.
 2. **Never accepted from outside.** A caller, an import file or a form that supplies a derived value has it ignored or refused, with a notice. A typed number turns a calculated, auditable value into a guess.
 3. **Consistency is stated.** The design says, for each derived value, **when** it is right after a write:
    - _in the same transaction_: a reader sees it immediately (a database computation, a synchronous service call, a trigger);
@@ -34,3 +34,7 @@ A value that is cheap and pure (a formatted name, a sum of two fields in a view 
 # Check
 
 Review reads the design for the derived values, their owner and their consistency; a stored derived value shown in a screen straight after its input changed, or a test that reads right after a write with no wait or proof, is a major finding that cites CODE.10.
+
+# Related guidance
+
+This rule applies [P2 Architecture Provides Direction](../../principles/p-02-architecture-provides-direction.md), [P8 Observable by Design](../../principles/p-08-observable-by-design.md).

@@ -18,7 +18,7 @@ An IaC template routes blob storage diagnostic logs to Log Analytics using `allL
 
 # Why (verdict)
 
-Enabling `allLogs` streams every read operation into Log Analytics, creating massive ingestion costs for unread telemetry (IAC.1). Use the audit category group to track writes and deletes, and configure retention per environment (IAC.7). Default to cost-effective settings unless specific alerts require read telemetry.
+Enabling `allLogs` streams every read operation into Log Analytics, creating massive ingestion costs for unread telemetry ([IAC.1](../rules/iac/iac-1-proportionate-diagnostics.md)). Use the audit category group to track writes and deletes, and configure retention per environment ([IAC.7](../rules/iac/iac-7-configuration-placement.md)). Default to cost-effective settings unless specific alerts require read telemetry.
 
 # Compliant pattern
 

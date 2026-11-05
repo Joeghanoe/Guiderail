@@ -19,7 +19,7 @@ sources:
 
 # Situation
 
-E-017 made `az` reads allowed by default and refused state-changing verbs. The check looked at every word that was not an option, including the value of an option, so a resource group `set-rg` or an API Management service `publish-apim` was refused as "changes state".[^evidence] `az account set`, `az extension add` and `az devops configure` are refused by design (CLD.1), so a lookup on a subscription or organization that is not selected has to name it on the call. Without that written down the agent improvised another route.
+[E-017](e-017-az-reads-allowed-by-default.md) made `az` reads allowed by default and refused state-changing verbs. The check looked at every word that was not an option, including the value of an option, so a resource group `set-rg` or an API Management service `publish-apim` was refused as "changes state".[^evidence] `az account set`, `az extension add` and `az devops configure` are refused by design ([CLD.1](../rules/cloud/cld-1-agents-read-cloud-state.md)), so a lookup on a subscription or organization that is not selected has to name it on the call. Without that written down the agent improvised another route.
 
 # Why (verdict)
 

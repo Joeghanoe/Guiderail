@@ -18,7 +18,7 @@ A service logs customer notification events.
 
 # Why (verdict)
 
-Writing personal details (names, emails) into log lines leaks PII into downstream logging platforms, support tickets, and external exports (SEC.2). Log a customer or entity ID instead, giving support teams the necessary lookup reference without exposing personal data.
+Writing personal details (names, emails) into log lines leaks PII into downstream logging platforms, support tickets, and external exports ([SEC.2](../rules/security/sec-2-no-secrets-or-personal-data.md)). Log a customer or entity ID instead, giving support teams the necessary lookup reference without exposing personal data.
 
 # Compliant pattern
 

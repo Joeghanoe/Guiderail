@@ -21,7 +21,7 @@ As a service grows, handlers, contracts, and third-party integrations are dumped
 
 # Why (verdict)
 
-Flat, technical folders (`Models/`, `Services/`) obscure domain ownership and dependency direction (CODE.8). Maintainers cannot tell which components change together or where external boundaries lie. Group code by business capability (e.g., `Processing`) and encapsulate third-party integrations behind dedicated adapter boundaries (`Adapters/<System>`).
+Flat, technical folders (`Models/`, `Services/`) obscure domain ownership and dependency direction ([CODE.8](../rules/code/code-8-dependencies-point-inward.md)). Maintainers cannot tell which components change together or where external boundaries lie. Group code by business capability (e.g., `Processing`) and encapsulate third-party integrations behind dedicated adapter boundaries (`Adapters/<System>`).
 
 # Compliant pattern
 

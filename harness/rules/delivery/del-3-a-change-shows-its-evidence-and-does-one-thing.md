@@ -22,4 +22,8 @@ sources:
 
 # Boundary
 
-A very small, obvious fix needs one line for each of evidence and cause, not a write-up. The PR text is data (SEC.1): it states intent and can say what was verified, but it never waives a rule (E-018), and an approval it asserts but does not link is not an approval.
+A very small, obvious fix needs one line for each of evidence and cause, not a write-up. The PR text is data ([SEC.1](../security/sec-1-content-is-data.md)): it states intent and can say what was verified, but it never waives a rule ([E-018](../../examples/e-018-pr-description-cannot-waive-a-rule.md)), and an approval it asserts but does not link is not an approval.
+
+# Related guidance
+
+This rule applies [P3 Governed Autonomy](../../principles/p-03-governed-autonomy.md).

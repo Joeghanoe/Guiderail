@@ -22,7 +22,7 @@ After migrating hosting models, a startup file retains commented-out service reg
 
 # Why (verdict)
 
-Commented-out code creates confusion about whether logic was abandoned, disabled, or temporarily parked. Version control preserves history—dead code, orphaned registrations, and unused packages should simply be deleted so maintainers do not have to decipher them (CODE.1).
+Commented-out code creates confusion about whether logic was abandoned, disabled, or temporarily parked. Version control preserves history—dead code, orphaned registrations, and unused packages should simply be deleted so maintainers do not have to decipher them ([CODE.1](../rules/code/code-1-remove-what-is-not-used.md)).
 
 # Compliant pattern
 

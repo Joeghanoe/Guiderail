@@ -21,7 +21,7 @@ A single method handles both queue messages and manual HTTP calls, using a gener
 
 # Why (verdict)
 
-Flags like `isManual` describe callers rather than behaviors, forcing readers to trace nested `if (!isManual)` branches to understand what happens (CODE.3). Name flags after what they actually do (e.g., `deadLetterOnError`), or split them into distinct methods when callers want different behavior.
+Flags like `isManual` describe callers rather than behaviors, forcing readers to trace nested `if (!isManual)` branches to understand what happens ([CODE.3](../rules/code/code-3-names-say-what-it-is-for.md)). Name flags after what they actually do (e.g., `deadLetterOnError`), or split them into distinct methods when callers want different behavior.
 
 # Compliant pattern
 

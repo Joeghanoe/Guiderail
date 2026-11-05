@@ -17,3 +17,7 @@ sources:
 # Rule
 
 Set the minimum TLS version explicitly to 1.2 or higher wherever the resource offers the setting. Do not rely on the platform default; defaults change and differ per resource type.
+
+# Related guidance
+
+This rule applies [P7 Security by Design](../../principles/p-07-security-by-design.md).

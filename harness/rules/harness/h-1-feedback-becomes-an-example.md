@@ -22,3 +22,7 @@ When a user corrects output that came from a rule (a wrong finding, a missed iss
 | Examples | An agent proposes, a human accepts | The human adds `verified: { by: human:<id>, at: ... }` |
 
 Feedback cannot override a principle, hard rule or human-reviewed precedent. The playbook defines how to record contradictions and legitimate boundaries without silently changing that authority.
+
+# Related guidance
+
+This rule applies [P3 Governed Autonomy](../../principles/p-03-governed-autonomy.md), [P12 Continuous Improvement](../../principles/p-12-continuous-improvement.md).

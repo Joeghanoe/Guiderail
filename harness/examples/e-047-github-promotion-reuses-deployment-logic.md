@@ -180,3 +180,7 @@ jobs:
 # Evidence and limits
 
 Inspected the local reference checkout on 2026-11-01 at the revision recorded in sources. The example keeps its loader-output and reusable-workflow architecture, adapts the configuration format to the requested YAML convention, and forwards the selected ref to configuration loading. No customer identifiers or secrets are copied. The last step prints configuration instead of deploying; authentication, artifacts and infrastructure output wiring are outside this focused fixture. Local checks exercise the loader and its environment selection, not a live GitHub deployment.
+
+# Related guidance
+
+This example illustrates [IAC.7 Per-environment values are configuration; everything fixed is written once in the pipeline](../rules/iac/iac-7-configuration-placement.md). The `rule` metadata records the same relationship for tooling.

@@ -18,7 +18,7 @@ A queue-triggered function forwards events to an internal API using a private he
 
 # Why (verdict)
 
-Queue messages complete whenever a handler exits without throwing. Swallowing failures acknowledges the message, losing the update without retries or dead-lettering (CODE.2). Let errors throw or call `EnsureSuccessStatusCode()`, and only return a value when it provides meaningful status to the caller.
+Queue messages complete whenever a handler exits without throwing. Swallowing failures acknowledges the message, losing the update without retries or dead-lettering ([CODE.2](../rules/code/code-2-fail-loudly.md)). Let errors throw or call `EnsureSuccessStatusCode()`, and only return a value when it provides meaningful status to the caller.
 
 # Compliant pattern
 

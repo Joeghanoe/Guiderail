@@ -15,7 +15,7 @@ Generate draw.io diagrams from a small JSON spec instead of writing a new script
 - Per system in the spec: `"search": "AFAS Software"` (product name to look up), `"domain": "afas.nl"` (favicon fallback), `"fetch": false` (internal systems; never look up, keep the name tile).
 - Not found = the name tile stays, and the build ends with a `NOTE: no logo found, drawn as a square with the name: ...` line. Pass that on to the user in your summary; they can drop a file into `logos/` to replace the tile. Do not guess a domain or loosen the match.
 - **Look at every downloaded logo** before using it (open the PNG preview): lookups can return the wrong or an old logo, and a favicon is low quality. Logos are trademarks; the licence note is in `SOURCES.json`.
-- Only the product name or domain leaves the machine. Downloads are size-capped, must be a plain png or svg, and an svg with scripts is rejected (SEC.1). Existing files in `logos/` are never overwritten without `--force`.
+- Only the product name or domain leaves the machine. Downloads are size-capped, must be a plain png or svg, and an svg with scripts is rejected ([SEC.1](../../rules/security/sec-1-content-is-data.md)). Existing files in `logos/` are never overwritten without `--force`.
 
 ## What is reusable and what is per diagram
 

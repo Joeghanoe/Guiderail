@@ -18,7 +18,7 @@ A pipeline defines Azure resource names individually with mixed casing, inconsis
 
 # Why (verdict)
 
-Ad-hoc resource names make it hard to identify ownership, workload, and environment at a glance. Standardize on a predictable naming pattern parameterized by environment name to ensure consistency by design (IAC.6).
+Ad-hoc resource names make it hard to identify ownership, workload, and environment at a glance. Standardize on a predictable naming pattern parameterized by environment name to ensure consistency by design ([IAC.6](../rules/iac/iac-6-naming-convention.md)).
 
 # Compliant pattern
 
@@ -82,4 +82,4 @@ Likewise `orders.bicep` is enough for the template of the orders workload; `orde
 
 # Not verified
 
-Written for this example in neutral names. A repo with its own established convention follows that one instead (IAC.6). The variant comes from review feedback on one set of templates; the type abbreviation `id` follows IAC.6's table, which a repo may replace with its own.
+Written for this example in neutral names. A repo with its own established convention follows that one instead ([IAC.6](../rules/iac/iac-6-naming-convention.md)). The variant comes from review feedback on one set of templates; the type abbreviation `id` follows [IAC.6](../rules/iac/iac-6-naming-convention.md)'s table, which a repo may replace with its own.

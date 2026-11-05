@@ -22,3 +22,7 @@ one-off command  ->  playbook (concept)  ->  script in tools/  ->  hook or CI ch
 - A review finding that keeps being accepted (`fixed` on the PR thread) is a candidate to become an analyzer, an architecture test or a check script. The rule's `enforced_by` then names the tool.
 
 Each step up costs fewer tokens and gives the same answer every run. Look in `tools/` and `playbooks/` before writing a second variant of something that exists.
+
+# Related guidance
+
+This rule applies [P6 Automation by Default](../../principles/p-06-automation-by-default.md), [P12 Continuous Improvement](../../principles/p-12-continuous-improvement.md).

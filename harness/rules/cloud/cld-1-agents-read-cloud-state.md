@@ -22,7 +22,7 @@ Logging in is always done by the user: `az login`, `az account set`, `kubectl co
 | Layer | What | Hard or soft |
 | --- | --- | --- |
 | 1. Identity | The agent's CLI uses its own login: Azure `Reader` without data-plane roles, a T Cloud user with only read policies, an Azure DevOps PAT with read scopes. Locally: a separate `AZURE_CONFIG_DIR`, so the agent never sees your Owner token | **Hard**: the real boundary |
-| 2. Wrapper | [cloud-read.sh](../../tools/cloud/cloud-read.sh): for `az`, everything except state-changing verbs (create, update, delete, ...) and secret-returning reads, so monitoring, logs and metrics work (E-017); for the other CLIs, read verbs only | Hard for what goes through it |
+| 2. Wrapper | [cloud-read.sh](../../tools/cloud/cloud-read.sh): for `az`, everything except state-changing verbs (create, update, delete, ...) and secret-returning reads, so monitoring, logs and metrics work ([E-017](../../examples/e-017-az-reads-allowed-by-default.md)); for the other CLIs, read verbs only | Hard for what goes through it |
 | 3. Hooks | [guard-bash.sh](../../hooks/guard-bash.sh) blocks cloud CLIs, cloud management URLs and Az write cmdlets outside the wrapper | Guardrail |
 | 4. Instructions | This rule | Soft |
 
@@ -34,6 +34,15 @@ If layer 1 is wrong, the other three only look safe.
 
 # Boundary
 
-Without a separate reader account, the login the user did themselves is the grant: the wrapper reads (show, list, get, query, logs) with it and needs no further step (E-015). The agent still never logs in, switches accounts or sets the config directory ([guard-bash.sh](../../hooks/guard-bash.sh) blocks it). Layer 1 then no longer guarantees read-only, so the wrapper's verb and secret checks alone carry it.
+Without a separate reader account, the login the user did themselves is the grant: the wrapper reads (show, list, get, query, logs) with it and needs no further step ([E-015](../../examples/e-015-user-granted-current-login.md)). The agent still never logs in, switches accounts or sets the config directory ([guard-bash.sh](../../hooks/guard-bash.sh) blocks it). Layer 1 then no longer guarantees read-only, so the wrapper's verb and secret checks alone carry it.
 
 Tests in a DEV environment write (a backup run, an incident in ServiceNow). They run under the pipeline's identity, not the agent's. The agent reads their results.
+
+# Related guidance
+
+This rule applies [P3 Governed Autonomy](../../principles/p-03-governed-autonomy.md), [P7 Security by Design](../../principles/p-07-security-by-design.md).
+
+Worked examples:
+
+- [E-038 Read-only GET uses the authorized current login](../../examples/e-038-cloud-get-uses-the-current-login.md) (boundary).
+- [E-050 A resource named like a verb is data, and the wrapper holds no default org or subscription](../../examples/e-050-option-values-are-data-not-commands.md) (boundary).

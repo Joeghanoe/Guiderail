@@ -16,7 +16,7 @@ Consumer adoption is explicit through `keyVaultPilots` in the reusable PR templa
 
 # Overlap and residual review
 
-After a successful resolved result, the legacy IaC gate skips its IAC.4 literal check only for that exact unchanged entry template. IAC.2/IAC.3, Terraform and other source paths keep their existing checks. Failed, missing and stale receipts do not suppress a legacy check. This avoids permanent duplicate enforcement while preserving uncovered paths.
+After a successful resolved result, the legacy IaC gate skips its [IAC.4](../rules/iac/iac-4-key-vault-hardened.md) literal check only for that exact unchanged entry template. [IAC.2](../rules/iac/iac-2-network-deny-by-default.md)/[IAC.3](../rules/iac/iac-3-tls-1-2-or-higher.md), Terraform and other source paths keep their existing checks. Failed, missing and stale receipts do not suppress a legacy check. This avoids permanent duplicate enforcement while preserving uncovered paths.
 
 The selected profile does not prove absence of access policies, narrow IAM grants, every resource's network/TLS policy or deployed state. These remain review concerns. Only supplied deployment inputs are covered; a different environment parameter set needs its own run.
 

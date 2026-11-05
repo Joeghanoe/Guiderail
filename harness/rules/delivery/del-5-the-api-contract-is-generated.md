@@ -25,7 +25,7 @@ An API is any service that other code or other people call over HTTP: an app, a 
 2. **At build time, offline.** Building produces the document with no running host, no network and no secrets, so CI and an agent can get it from a plain build. It lands in the build output next to the artifact (`bin/.../swagger.json` or `openapi.json`, `dist/`, `build/`) and the pipeline publishes it as an artifact. The generator is a no-op for projects that are not APIs, so one blanket reference in a shared props file or template is safe.
 3. **Same pipeline as the runtime document.** If the service also serves its document (`/openapi.json`, a Swagger UI), the build-time document and the served one come from the same generation code, so they cannot disagree.
 4. **One place for metadata.** Title, version, description and servers come from one class or file, not from a copy per environment.
-5. **Operations are complete enough to call.** Every operation has a stable `operationId`, a summary, the response type for each status it returns, and the error body (the OBS.3 error-code catalogue). Examples where a value is not obvious (AI agents call APIs from this document).
+5. **Operations are complete enough to call.** Every operation has a stable `operationId`, a summary, the response type for each status it returns, and the error body (the [OBS.3](../observability/obs-3-operational-output-is-a-contract.md) error-code catalogue). Examples where a value is not obvious (AI agents call APIs from this document).
 6. **Consumers read the generated file.** Frontend types or clients, API management imports, contract tests and agents are generated from it, not retyped.
 7. **A drift check where a copy is committed.** When a snapshot is committed (a frontend in the same repo generates its client from it, or reviewers want to see contract changes in the diff), CI regenerates the document and fails when it differs from the committed copy ([openapi-drift.py](../../tools/code/openapi-drift.py)). A breaking change (a removed operation or a changed required field) is then visible in review.
 
@@ -48,3 +48,11 @@ A service nobody calls over HTTP (a worker, a batch job, a library) has no contr
 # Check
 
 `tools/code/openapi-drift.py --generated <fresh> --committed <snapshot>` fails with the operations added and removed. Review confirms that the build produces the file, that operations are complete (point 5), and that a hand-written spec has contract tests behind it.
+
+# Related guidance
+
+This rule applies [P6 Automation by Default](../../principles/p-06-automation-by-default.md), [P13 AI-First and Colleague-Usable](../../principles/p-13-ai-first-and-colleague-usable.md), [P11 Standards Enable Innovation](../../principles/p-11-standards-enable-innovation.md).
+
+Worked examples:
+
+- [E-036 The API contract is generated from the code, not kept by hand](../../examples/e-036-the-api-contract-is-generated-from-the-code.md) (violation).

@@ -20,7 +20,7 @@ Code generation frequently clumps services, DTOs, interfaces, and records into s
 
 # Expected verdict
 
-The bad example violates CODE.5 by declaring `Menu` and `IMenuRepository` as sibling top-level types in `MenuService.cs`. Keep one top-level type per file. Private helpers used exclusively by one class may remain nested inside that class.
+The bad example violates [CODE.5](../rules/code/code-5-one-responsibility.md) by declaring `Menu` and `IMenuRepository` as sibling top-level types in `MenuService.cs`. Keep one top-level type per file. Private helpers used exclusively by one class may remain nested inside that class.
 
 # Compliant pattern
 

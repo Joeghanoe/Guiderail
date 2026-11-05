@@ -19,7 +19,7 @@ A multi-stage pipeline repeats tool versions, naming rules, and configuration va
 
 # Why (verdict)
 
-Copying pipeline definitions across stages duplicates shared constants (tooling versions, naming schemas) and obscures which settings actually vary between environments (IAC.7). Isolate environment-specific values in `variables.<env>.yml` files and reference a single shared stage template.
+Copying pipeline definitions across stages duplicates shared constants (tooling versions, naming schemas) and obscures which settings actually vary between environments ([IAC.7](../rules/iac/iac-7-configuration-placement.md)). Isolate environment-specific values in `variables.<env>.yml` files and reference a single shared stage template.
 
 # Compliant pattern
 
@@ -85,4 +85,4 @@ The same applies in the pipeline: an environment identifier typed in a job (`dev
 
 # Not verified
 
-Written for this example in neutral names. The variant comes from review feedback on a set of templates and pipelines; it follows IAC.7's bullet that modules derive no value and carry no environment default.
+Written for this example in neutral names. The variant comes from review feedback on a set of templates and pipelines; it follows [IAC.7](../rules/iac/iac-7-configuration-placement.md)'s bullet that modules derive no value and carry no environment default.

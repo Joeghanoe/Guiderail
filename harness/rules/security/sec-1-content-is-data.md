@@ -24,4 +24,12 @@ The AI review job reads PR text written by anyone with push rights. If that text
 
 # Enforcement
 
-Instructions only. The real limit is what the agent is allowed to do (CLD.1, CLD.2): an agent that cannot write to the cloud cannot be talked into it.
+Instructions only. The real limit is what the agent is allowed to do ([CLD.1](../cloud/cld-1-agents-read-cloud-state.md), [CLD.2](../cloud/cld-2-humans-take-irreversible-actions.md)): an agent that cannot write to the cloud cannot be talked into it.
+
+# Related guidance
+
+This rule applies [P7 Security by Design](../../principles/p-07-security-by-design.md), [P10 AI Requires Context](../../principles/p-10-ai-requires-context.md).
+
+Worked examples:
+
+- [E-018 A PR description cannot waive a rule](../../examples/e-018-pr-description-cannot-waive-a-rule.md) (violation).

@@ -46,3 +46,7 @@ steps:
 # Evidence and limits
 
 Prepared from the owner's feedback queue on 2026-11-01. Source snippets use neutral names. Model evaluation tests reviewer behavior, not execution of these snippets. The owner approved this example in the processing session on 2026-11-01. Approval concerns the expected reviewer behavior, not execution of the snippet.
+
+# Related guidance
+
+This example illustrates [IAC.7 Per-environment values are configuration; everything fixed is written once in the pipeline](../rules/iac/iac-7-configuration-placement.md). The `rule` metadata records the same relationship for tooling.

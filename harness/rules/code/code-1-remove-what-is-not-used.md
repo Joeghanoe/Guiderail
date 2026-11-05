@@ -26,3 +26,12 @@ sources:
 # Boundary
 
 A framework or platform may require a reference that no code mentions (a analyzer package, a runtime setting the host reads). Keep it and say why in a comment.
+
+# Related guidance
+
+This rule applies [P12 Continuous Improvement](../../principles/p-12-continuous-improvement.md).
+
+Worked examples:
+
+- [E-007 Commented-out code and unused registrations are deleted](../../examples/e-007-remove-what-is-not-used.md) (violation).
+- [E-031 A validator, its list and an injected configuration that nothing uses](../../examples/e-031-an-event-validator-nothing-calls.md) (violation).

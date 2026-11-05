@@ -18,7 +18,7 @@ An OAuth token provider needs to distinguish between an expired refresh token (`
 
 # Why (verdict)
 
-Error response bodies can leak sensitive tokens, descriptions, or proxy HTML into log stores (SEC.2). Extract only the standard error code (e.g., `invalid_grant`), log it alongside the status code, and throw via `EnsureSuccessStatusCode()` so the failure surfaces cleanly without exposing payloads (CODE.2).
+Error response bodies can leak sensitive tokens, descriptions, or proxy HTML into log stores ([SEC.2](../rules/security/sec-2-no-secrets-or-personal-data.md)). Extract only the standard error code (e.g., `invalid_grant`), log it alongside the status code, and throw via `EnsureSuccessStatusCode()` so the failure surfaces cleanly without exposing payloads ([CODE.2](../rules/code/code-2-fail-loudly.md)).
 
 # Compliant pattern
 

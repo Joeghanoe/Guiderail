@@ -21,7 +21,7 @@ A function app reads queue settings across multiple files using string literals 
 
 # Why (verdict)
 
-Hardcoding string keys like `"ServiceBus:QueueName"` in multiple places invites typos that only surface at runtime. Hardcoding trigger names also breaks silently when methods are renamed. Use shared constants for configuration keys and `nameof()` for trigger names so the compiler enforces correctness (CODE.4).
+Hardcoding string keys like `"ServiceBus:QueueName"` in multiple places invites typos that only surface at runtime. Hardcoding trigger names also breaks silently when methods are renamed. Use shared constants for configuration keys and `nameof()` for trigger names so the compiler enforces correctness ([CODE.4](../rules/code/code-4-write-a-name-once.md)).
 
 # Compliant pattern
 

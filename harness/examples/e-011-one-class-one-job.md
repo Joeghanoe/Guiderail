@@ -22,7 +22,7 @@ A connector service bundles health check endpoints inside business function clas
 
 # Why (verdict)
 
-Health checks and business functions change for completely different reasons. Mixing them violates single responsibility (CODE.5). Furthermore, the client service that communicates with a partner dependency knows how to interpret partner health—it should not force callers to parse raw response payloads.
+Health checks and business functions change for completely different reasons. Mixing them violates single responsibility ([CODE.5](../rules/code/code-5-one-responsibility.md)). Furthermore, the client service that communicates with a partner dependency knows how to interpret partner health—it should not force callers to parse raw response payloads.
 
 # Compliant pattern
 

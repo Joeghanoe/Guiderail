@@ -55,3 +55,7 @@ public static string ImportStatus(ImportOutcome outcome)
 # Evidence and limits
 
 Prepared from the owner's feedback queue on 2026-11-01. Source snippets use neutral names. Model evaluation tests reviewer behavior, not execution of these snippets. The owner approved this example in the processing session on 2026-11-01. Approval concerns the expected reviewer behavior, not execution of the snippet.
+
+# Related guidance
+
+This example illustrates [CODE.11 Return early and keep conditional expressions simple](../rules/code/code-11-return-early.md). The `rule` metadata records the same relationship for tooling.

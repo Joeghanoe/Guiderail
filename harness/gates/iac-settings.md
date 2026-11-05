@@ -18,7 +18,7 @@ A setting that is missing (the platform default applies), values that come from 
 
 # Complementary checks
 
-AI review of IAC.2 to IAC.4 for what the script cannot see.
+AI review of [IAC.2](../rules/iac/iac-2-network-deny-by-default.md) to [IAC.4](../rules/iac/iac-4-key-vault-hardened.md) for what the script cannot see.
 
 # Failure behaviour
 
@@ -30,4 +30,4 @@ A PR description line `iac: n/a - <reason>` (at least 10 characters), visible to
 
 # Refresh trigger
 
-A new resource type with its own spelling of these settings, or a change to IAC.2, IAC.3 or IAC.4.
+A new resource type with its own spelling of these settings, or a change to [IAC.2](../rules/iac/iac-2-network-deny-by-default.md), [IAC.3](../rules/iac/iac-3-tls-1-2-or-higher.md) or IAC.4.

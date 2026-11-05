@@ -25,3 +25,11 @@ sources:
 # Boundary
 
 A one-line command (`dotnet test`, `az bicep build`) stays inline.
+
+# Related guidance
+
+This rule applies [P6 Automation by Default](../../principles/p-06-automation-by-default.md).
+
+Worked examples:
+
+- [E-013 A pipeline step calls a script; it does not contain one](../../examples/e-013-pipelines-call-scripts.md) (violation).

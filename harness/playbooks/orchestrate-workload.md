@@ -64,7 +64,7 @@ Launch each subagent with:
 - The exact verification command that must pass before completion.
 - Strict constraint: **Local-first execution** (no git branches or premature commits until the lead agent approves).
 - A fresh context and a brief (objective, files, decisions, open questions), never the lead's transcript. Workers that share a window converge on one opinion; independent contexts give independent findings. The reviewer runs in its own context, never the builder's.
-- The autonomy rung: `investigate` (report, touch nothing), `draft` (prepare, a human approves) or `autopilot` (act, verify, ship on green). Start new kinds of work on `draft`; move up only after five clean runs in a row, and step back a rung the moment the work touches anything live. A hard-to-reverse change (migration, deletion, production data, money) has no autopilot rung at all (CLD.2); this is a closed lane, not a high threshold.
+- The autonomy rung: `investigate` (report, touch nothing), `draft` (prepare, a human approves) or `autopilot` (act, verify, ship on green). Start new kinds of work on `draft`; move up only after five clean runs in a row, and step back a rung the moment the work touches anything live. A hard-to-reverse change (migration, deletion, production data, money) has no autopilot rung at all ([CLD.2](../rules/cloud/cld-2-humans-take-irreversible-actions.md)); this is a closed lane, not a high threshold.
 - Merging, ranking, deduplicating and before/after comparisons are scripts, not model calls. If the step can be described without _judge, decide, assess_ or _summarize_, it is code.
 
 Keep sessions small: one job per session, state in a file of at most ten lines (done, decisions, file names, next step), and start a fresh session when the context grows past roughly 120K tokens. Wake the lead only when a package is done with proof, needs a decision, or is blocked.
@@ -89,7 +89,7 @@ Without the scope line a returned unit grows into an unreviewed multi-file diff.
 
 ### 3c. Learning edge
 
-When the lead accepts a result, write the general constraint it implies (a principle, not the incident; it must make sense to someone who was not there) into the brief that step 1 reads for later packages. A confirmed cause becomes a rule, so the next failure starts where this one ended. If a tool could decide it, take it to [process-feedback.md](process-feedback.md) (H.2).
+When the lead accepts a result, write the general constraint it implies (a principle, not the incident; it must make sense to someone who was not there) into the brief that step 1 reads for later packages. A confirmed cause becomes a rule, so the next failure starts where this one ended. If a tool could decide it, take it to [process-feedback.md](process-feedback.md) ([H.2](../rules/harness/h-2-repeated-work-moves-up.md)).
 
 ### 4. Lead Agent Review & Quality Gate
 

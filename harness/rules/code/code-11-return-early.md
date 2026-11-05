@@ -26,3 +26,12 @@ This is a minor readability finding unless evidence establishes a separate defec
 # Boundary
 
 An if/else that makes two non-terminating alternatives clear can stay. A short label choice such as `missing ? "Missing" : "Ready"` can stay.
+
+# Related guidance
+
+This rule applies [P11 Standards Enable Innovation](../../principles/p-11-standards-enable-innovation.md).
+
+Worked examples:
+
+- [E-041 Return early and avoid nested conditional expressions](../../examples/e-041-return-early-instead-of-nesting.md) (violation).
+- [E-048 Ternaries choose simple values rather than nested operations](../../examples/e-048-conditional-expressions-stay-simple.md) (violation).

@@ -26,3 +26,12 @@ sources:
 # Boundary
 
 A string that is a public contract (a route, a queue name a partner uses) is deliberately literal and is changed on purpose, with its consumers.
+
+# Related guidance
+
+This rule applies [P5 Reuse Before Reinvention](../../principles/p-05-reuse-before-reinvention.md).
+
+Worked examples:
+
+- [E-010 A name used in several places is written once, and function names come from nameof](../../examples/e-010-write-a-name-once.md) (violation).
+- [E-030 A configuration key is checked under one name and read under another](../../examples/e-030-a-configuration-key-written-twice-and-spelled-two-ways.md) (violation).

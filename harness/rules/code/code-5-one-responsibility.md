@@ -35,3 +35,12 @@ On a touched mixed file, split out the types the change adds or changes; do not 
 The C# checker is authoritative for generated-file detection, partial filenames, nested visibility and declaration comparison. Its regression fixtures live in [test_code_types.py](../../../tests/test_code_types.py) in the harness repository. Do not maintain a second list of those mechanics here or infer responsibility from a structural pass.
 
 The scope was approved on 2026-10-29. Semantic ownership, responsibility and the single-user condition on private helpers remain review concerns.
+
+# Related guidance
+
+This rule applies [P2 Architecture Provides Direction](../../principles/p-02-architecture-provides-direction.md).
+
+Worked examples:
+
+- [E-011 A health endpoint is its own class, and the client decides what its response means](../../examples/e-011-one-class-one-job.md) (violation).
+- [E-020 One type per file: records, interfaces, enums and validators get their own file, in C# and TypeScript](../../examples/e-020-code-5-one-type-per-file-no-small-type-exception.md) (violation).

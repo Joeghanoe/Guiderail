@@ -21,7 +21,7 @@ An API behind Azure API Management uses hand-written operation policies to check
 
 # Why (verdict)
 
-When `subscriptionRequired` is true, the gateway automatically validates subscription keys before any operation policy runs (CODE.6). Re-checking keys and hand-coding JSON schema validation inside operation policies duplicates platform capabilities and invites drift. Use standard `validate-content` policies backed by OpenAPI definitions.
+When `subscriptionRequired` is true, the gateway automatically validates subscription keys before any operation policy runs ([CODE.6](../rules/code/code-6-use-what-the-platform-does.md)). Re-checking keys and hand-coding JSON schema validation inside operation policies duplicates platform capabilities and invites drift. Use standard `validate-content` policies backed by OpenAPI definitions.
 
 # Compliant pattern
 

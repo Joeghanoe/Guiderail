@@ -20,7 +20,7 @@ Fixing code-quality findings requires the issue list from Sonar. Without a dedic
 
 # Why (verdict)
 
-Just like [cloud-read.sh](../tools/cloud/cloud-read.sh), external reads belong in a read-only wrapper that strictly rejects state-changing calls (H.2). This keeps credentials safe and standardizes how agents fetch findings.
+Just like [cloud-read.sh](../tools/cloud/cloud-read.sh), external reads belong in a read-only wrapper that strictly rejects state-changing calls ([H.2](../rules/harness/h-2-repeated-work-moves-up.md)). This keeps credentials safe and standardizes how agents fetch findings.
 
 # Compliant pattern
 
@@ -32,7 +32,7 @@ Just like [cloud-read.sh](../tools/cloud/cloud-read.sh), external reads belong i
 - [guard-bash.sh](../hooks/guard-bash.sh) blocks curl to Sonar and any command naming the token.
 - Exit 3 with a reason when refused, as [cloud-read.sh](../tools/cloud/cloud-read.sh) does.
 
-- Shift left: when a change touches code Sonar analyses (C#), check findings before reporting done (T.1). With the SonarQube for IDE extension installed (`sonarsource.sonarlint-vscode`), read the IDE diagnostics for the changed files first, because that is the cheapest scan. Without it, or for the project's server-side ruleset, use `sonar-read.sh issues/search` with `impactSoftwareQualities=RELIABILITY,SECURITY`. Filtering on `types=BUG,VULNERABILITY` misses Reliability findings filed as code smells (a missed `cts.Cancel()` -> `CancelAsync` finding showed this).
+- Shift left: when a change touches code Sonar analyses (C#), check findings before reporting done ([T.1](../rules/testing/t-1-done-means-verified.md)). With the SonarQube for IDE extension installed (`sonarsource.sonarlint-vscode`), read the IDE diagnostics for the changed files first, because that is the cheapest scan. Without it, or for the project's server-side ruleset, use `sonar-read.sh issues/search` with `impactSoftwareQualities=RELIABILITY,SECURITY`. Filtering on `types=BUG,VULNERABILITY` misses Reliability findings filed as code smells (a missed `cts.Cancel()` -> `CancelAsync` finding showed this).
 
 # Not verified
 
@@ -41,3 +41,7 @@ Just like [cloud-read.sh](../tools/cloud/cloud-read.sh), external reads belong i
 - Whether the harness should also carry a playbook (`fix-sonar-findings.md`) or wait for a second use.
 
 [^evidence]: Sonar findings session, 2026-10-19
+
+# Related guidance
+
+This example illustrates [SEC.2 No secrets or personal data in code, logs, telemetry or prompts](../rules/security/sec-2-no-secrets-or-personal-data.md). The `rule` metadata records the same relationship for tooling.

@@ -35,3 +35,11 @@ status: stable
 # Boundary
 
 Names imposed from outside (a customer's own naming policy, a platform-generated name) win. The repo's `AGENTS.md` says which and why.
+
+# Related guidance
+
+This rule applies [P11 Standards Enable Innovation](../../principles/p-11-standards-enable-innovation.md).
+
+Worked examples:
+
+- [E-005 Resource names follow one convention, built from the environment name](../../examples/e-005-names-follow-one-convention.md) (violation).

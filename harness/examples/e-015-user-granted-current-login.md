@@ -24,7 +24,7 @@ An agent needs to inspect dev gateway logs to troubleshoot a failed load test. T
 
 # Why (verdict)
 
-CLD.1 requires that agents only read and never manage credentials or execute writes. When a developer does not have a dedicated read-only service principal set up, their active `az login` acts as the explicit grant. The wrapper falls back to this session for read verbs (show, list, query, logs) while strictly enforcing read-only protections in layer 2. Agents never run login commands, switch accounts, or execute mutations.
+[CLD.1](../rules/cloud/cld-1-agents-read-cloud-state.md) requires that agents only read and never manage credentials or execute writes. When a developer does not have a dedicated read-only service principal set up, their active `az login` acts as the explicit grant. The wrapper falls back to this session for read verbs (show, list, query, logs) while strictly enforcing read-only protections in layer 2. Agents never run login commands, switch accounts, or execute mutations.
 
 ## Good example
 

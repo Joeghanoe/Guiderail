@@ -18,7 +18,7 @@ A service sends requests to an external partner API.
 
 # Why (verdict)
 
-Instantiating `HttpClient` directly leads to socket exhaustion under load and prevents unit tests from mocking network calls. Injecting `HttpClient` centralizes connection pool management and lets tests inject a mock handler (T.2).
+Instantiating `HttpClient` directly leads to socket exhaustion under load and prevents unit tests from mocking network calls. Injecting `HttpClient` centralizes connection pool management and lets tests inject a mock handler ([T.2](../rules/testing/t-2-services-do-not-create-io.md)).
 
 # Compliant pattern
 

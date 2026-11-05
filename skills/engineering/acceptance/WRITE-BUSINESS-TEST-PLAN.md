@@ -9,7 +9,7 @@ verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:13Z }
 
 # When
 
-Someone who does not read code has to run or sign off an end-to-end test: a project manager, a business owner, a service desk lead. The automated scenarios (T.5) stay the first line; this is the plan for the person who signs off on a target environment. It speaks business terms (P1): the process, who acts, what they see.
+Someone who does not read code has to run or sign off an end-to-end test: a project manager, a business owner, a service desk lead. The automated scenarios ([T.5](../../../harness/rules/testing/t-5-behaviour-has-a-scenario.md)) stay the first line; this is the plan for the person who signs off on a target environment. It speaks business terms ([P1](../../../harness/principles/p-01-business-before-technology.md)): the process, who acts, what they see.
 
 # Steps
 
@@ -29,4 +29,4 @@ Someone who does not read code has to run or sign off an end-to-end test: a proj
 
 - Do not write a test per technical branch. The plan follows the process, so a branch that does not change what a person sees stays in the technical plan.
 - Do not promise a failure you have not seen (a target system may accept bad input). Give the step a way out (`NOK` with a remark) and name the open question.
-- No credentials, keys or personal data in the plan (SEC.2). Use roles and test data.
+- No credentials, keys or personal data in the plan ([SEC.2](../../../harness/rules/security/sec-2-no-secrets-or-personal-data.md)). Use roles and test data.

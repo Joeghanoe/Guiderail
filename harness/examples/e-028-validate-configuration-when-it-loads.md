@@ -19,7 +19,7 @@ An abstract base class loads external integration settings stored as JSON docume
 
 # Why (verdict)
 
-Missing or malformed configuration documents should fail immediately with an explicit error naming the missing property, preventing partially configured services from running (CODE.2). Error messages and logs should name only the integration ID and key name, keeping secret values out of logs (SEC.2).
+Missing or malformed configuration documents should fail immediately with an explicit error naming the missing property, preventing partially configured services from running ([CODE.2](../rules/code/code-2-fail-loudly.md)). Error messages and logs should name only the integration ID and key name, keeping secret values out of logs ([SEC.2](../rules/security/sec-2-no-secrets-or-personal-data.md)).
 
 # Compliant pattern
 

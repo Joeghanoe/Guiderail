@@ -17,3 +17,7 @@ sources:
 # Rule
 
 Runtime and framework versions are the current stable release or the one before it. An older version needs an upgrade item on the backlog, linked in the PR.
+
+# Related guidance
+
+This rule applies [P11 Standards Enable Innovation](../../principles/p-11-standards-enable-innovation.md).

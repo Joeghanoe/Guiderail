@@ -18,7 +18,7 @@ A rate limiter reads `DateTimeOffset.UtcNow` directly inside its methods to eval
 
 # Why (verdict)
 
-Calling the system clock directly inside business logic makes time-dependent code (rate limits, timeouts, expirations) untestable without fragile thread sleeps (T.2). Inject .NET's `TimeProvider` or accept timestamps as parameters so unit tests can control time deterministically.
+Calling the system clock directly inside business logic makes time-dependent code (rate limits, timeouts, expirations) untestable without fragile thread sleeps ([T.2](../rules/testing/t-2-services-do-not-create-io.md)). Inject .NET's `TimeProvider` or accept timestamps as parameters so unit tests can control time deterministically.
 
 # Compliant pattern
 

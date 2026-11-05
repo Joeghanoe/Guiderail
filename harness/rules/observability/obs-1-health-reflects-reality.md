@@ -23,7 +23,7 @@ sources:
 - An unhealthy result returns a status code outside 200-399. Availability tests and load balancers only look at the status code.
 - The check adds no permission that the service does not need for its real work.
 - External systems are checked too. A dependency being outside the team's control does not make its failure irrelevant: report which capability and, where applicable, which tenant is affected. Use bounded, non-destructive probes or recent operational evidence; a check that cannot establish health reports that uncertainty rather than assuming success.
-- A health endpoint is its own class and file (CODE.5), named for the service it reports on.
+- A health endpoint is its own class and file ([CODE.5](../code/code-5-one-responsibility.md)), named for the service it reports on.
 
 # Boundary
 
@@ -32,3 +32,9 @@ A degraded state (one of two queues down) may return 200 with a payload that say
 An external dependency that prevents the microservice from doing its main job makes it unhealthy, even when another team must fix the dependency. If useful capabilities remain available, report degraded and identify the unavailable capabilities; a 200 is acceptable only with an explicit alert reading that state.
 
 For a service serving multiple tenants, check tenant-specific external dependencies and expose their results through tenant-scoped health or capability status and alerts. One tenant's outage must not make every tenant look down. The aggregate result reports partial impact as degraded while unaffected tenants remain usable. An outage that prevents the service's main job across tenants is unhealthy. Each alert names who can act; external dependencies are never silently omitted from monitoring.
+
+# Guidance and verification
+
+This rule applies [P8 Observable by Design](../../principles/p-08-observable-by-design.md). [E-014](../../examples/e-014-health-reports-unhealthy.md) demonstrates incorrect HTTP status mapping; [E-032](../../examples/e-032-health-endpoint-fails-when-a-dependency-fails.md) demonstrates a bounded dependency probe that preserves cancellation.
+
+[OBS.2](obs-2-alerts-follow-causality.md) governs alerts on unhealthy, degraded or missing health signals. Use [deployment verification](../../playbooks/verify-deployment.md) to inspect deployed health and [incident triage](../../playbooks/triage-incident.md) to investigate failures. Review verifies dependency coverage and status mapping; the [design gate](../../gates/design-check.md) checks structure, not runtime health behavior.

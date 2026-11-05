@@ -18,7 +18,7 @@ An incremental ingest job fetches paginated data and saves a checkpoint timestam
 
 # Why (verdict)
 
-Treating HTTP errors as empty pages causes ingestion jobs to report success and advance checkpoints over missing data (CODE.2). Unexpected status codes must throw or call `EnsureSuccessStatusCode()` to abort the checkpoint. Only explicitly expected responses (like 404 on an optional sub-resource) should be handled as empty results.
+Treating HTTP errors as empty pages causes ingestion jobs to report success and advance checkpoints over missing data ([CODE.2](../rules/code/code-2-fail-loudly.md)). Unexpected status codes must throw or call `EnsureSuccessStatusCode()` to abort the checkpoint. Only explicitly expected responses (like 404 on an optional sub-resource) should be handled as empty results.
 
 # Compliant pattern
 

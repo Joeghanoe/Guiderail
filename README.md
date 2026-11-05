@@ -139,6 +139,10 @@ The AI review is only trusted as far as its evals show (Vegviser AI Evaluation S
 
 ## Change the harness
 
+When changing guidance, link the canonical rule, principle, example or procedure where it helps the reader take the next step. Explain the relationship: a rule applies a principle, an example demonstrates a rule, a playbook uses it, and a gate checks a stated part of it. Keep structured `principle`, `rule` and enforcement metadata intact. Update the relevant index and directly affected guidance; add related-document sections only when they provide a useful route. The [observability principle](harness/principles/p-08-observable-by-design.md) demonstrates these routes through health rules, examples and verification.
+
+For a focused document graph, include `harness/principles/`, `harness/rules/`, `harness/examples/`, `harness/playbooks/`, `harness/gates/` and `skills/`, excluding `harness/examples/fixtures/`. Inspect indexes as navigation hubs, then hide them to examine direct relationships between guidance documents. Keep benchmarks, templates, runtime output and historical feedback outside that view; inspect them separately when tracing evidence or history. These are viewer-independent scope recommendations. The [guidance audit](harness/tools/harness/guidance.py) checks active-guidance reachability, while metadata relationships remain separate from Markdown links. An isolated artifact is not automatically missing a link.
+
 Install the Markdown commit hook once per clone:
 
 ```bash

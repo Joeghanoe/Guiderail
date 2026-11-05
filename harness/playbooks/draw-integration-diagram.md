@@ -20,4 +20,4 @@ verified: { by: human:teamvaluegroup, at: 2026-11-01T20:11:03Z }
 # Notes
 
 - Customer content (specs, logos, outputs) stays in the customer's folder, not in the harness (examples are project-agnostic).
-- The generator is data-driven so the next diagram costs a spec, not a script (H.2).
+- The generator is data-driven so the next diagram costs a spec, not a script ([H.2](../rules/harness/h-2-repeated-work-moves-up.md)).

@@ -22,7 +22,7 @@ A file is renamed to match its contained type without any code modifications.
 
 # Why (verdict)
 
-Reviewers should distinguish pure renames from logic changes. When the target file and type names are already clear, the reviewer should abstain from flagging major issues (CODE.3).
+Reviewers should distinguish pure renames from logic changes. When the target file and type names are already clear, the reviewer should abstain from flagging major issues ([CODE.3](../rules/code/code-3-names-say-what-it-is-for.md)).
 
 ## Good example
 

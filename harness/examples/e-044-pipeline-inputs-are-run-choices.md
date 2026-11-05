@@ -14,7 +14,7 @@ eval_split_files: true
 
 # Situation
 
-The owner now requires a repo-owned configuration directory, including shared values, environment settings and resource names. Parameterized variable templates expand at stage scope; nested job templates use runtime macros for those values. Only run choices are top-level parameters, with clear display names. Internal environment template parameters are structural inputs, not UI choices. The owner manually confirmed the runtime pattern in the temporary Azure pipeline, including the corrected check. Compile-time visibility from the nested job template was unavailable and is not established by that success. E-006 is historical precedent for an older placement convention; this example records the newer explicitly adopted configuration-directory convention without rewriting E-006.
+The owner now requires a repo-owned configuration directory, including shared values, environment settings and resource names. Parameterized variable templates expand at stage scope; nested job templates use runtime macros for those values. Only run choices are top-level parameters, with clear display names. Internal environment template parameters are structural inputs, not UI choices. The owner manually confirmed the runtime pattern in the temporary Azure pipeline, including the corrected check. Compile-time visibility from the nested job template was unavailable and is not established by that success. [E-006](e-006-environment-values-in-one-place.md) is historical precedent for an older placement convention; this example records the newer explicitly adopted configuration-directory convention without rewriting E-006.
 
 ## Good example
 
@@ -100,3 +100,7 @@ stages:
 # Evidence and limits
 
 Prepared from the owner's feedback queue on 2026-11-01. Source snippets use neutral names. Model evaluation tests reviewer behavior, not execution of these snippets. The owner approved this example in the processing session on 2026-11-01. Approval concerns the expected reviewer behavior, not execution of the snippet.
+
+# Related guidance
+
+This example illustrates [IAC.7 Per-environment values are configuration; everything fixed is written once in the pipeline](../rules/iac/iac-7-configuration-placement.md). The `rule` metadata records the same relationship for tooling.

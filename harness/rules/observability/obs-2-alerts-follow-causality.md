@@ -32,3 +32,9 @@ In practice:
 # Boundary
 
 A signal that is legitimately absent (a nightly job outside its window, a service scaled to zero on purpose) gets a schedule or condition that says so, written next to the alert. It is not left to silence.
+
+# Guidance and verification
+
+This rule applies [P8 Observable by Design](../../principles/p-08-observable-by-design.md). [OBS.1](obs-1-health-reflects-reality.md) defines health results that alerts consume; [OBS.3](obs-3-operational-output-is-a-contract.md) defines stable events and fields that telemetry-based alerts depend on.
+
+Use [deployment verification](../../playbooks/verify-deployment.md) to inspect current telemetry and [incident triage](../../playbooks/triage-incident.md) to investigate a missing or failing signal. Review checks the alert definition and evidence for both bad-value and no-data cases. The [design gate](../../gates/design-check.md) does not test alert behavior; inspecting current telemetry does not prove those failure cases.

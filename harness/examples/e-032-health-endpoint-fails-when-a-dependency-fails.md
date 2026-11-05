@@ -18,7 +18,7 @@ A service needs to verify document database connectivity in its health check whi
 
 # Why (verdict)
 
-Probing a dependency requires bounded, lightweight I/O rather than assuming health. When dependencies fail, report `Unhealthy`; when the caller cancels the check, propagate the cancellation rather than falsely alerting an outage (OBS.1). [E-014](/examples/e-014-health-reports-unhealthy.md) covers full HTTP status mapping.
+Probing a dependency requires bounded, lightweight I/O rather than assuming health. When dependencies fail, report `Unhealthy`; when the caller cancels the check, propagate the cancellation rather than falsely alerting an outage ([OBS.1](../rules/observability/obs-1-health-reflects-reality.md)). [E-014](/examples/e-014-health-reports-unhealthy.md) covers full HTTP status mapping.
 
 # Compliant pattern
 
@@ -70,3 +70,7 @@ public sealed class StoreHealthCheck(StoreClient store) : IHealthCheck
 # Not verified
 
 The SDK's probe timeout and required permissions must be checked in the implementing service. Endpoint status mapping is evaluated separately by E-014.
+
+# Verification in context
+
+Use [deployment verification](../playbooks/verify-deployment.md) to inspect the deployed endpoint and [incident triage](../playbooks/triage-incident.md) when a dependency reports unhealthy. The example demonstrates probe behavior; [OBS.2](../rules/observability/obs-2-alerts-follow-causality.md) separately requires alert coverage for bad and missing signals.
