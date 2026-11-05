@@ -1,6 +1,7 @@
 ---
 name: Golden Path Review
 description: Automated TeamValue Golden Path harness review for pull requests, triggered on-demand by /golden-path-review org-wide.
+inlined-imports: true
 on:
   slash_command:
     name: golden-path-review
