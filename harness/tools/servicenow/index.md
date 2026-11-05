@@ -8,8 +8,8 @@ Playbook: [analyse-servicenow.md](../../playbooks/analyse-servicenow.md).
 
 | When the user says | Tool / Playbook | Command |
 |---|---|---|
-| "ServiceNow config" / "why does SN do X?" | Configuration reader | `~/.golden-path-harness/harness/tools/servicenow/sn-get.sh <table> "<query>" "<fields>"` |
-| "check ServiceNow access" / "which tables can we read?" | Access checker | `~/.golden-path-harness/harness/tools/servicenow/sn-access-check.sh` |
+| "ServiceNow config" / "why does SN do X?" | Configuration reader | `tvh servicenow get --raw -- <table> "<query>" "<fields>"` |
+| "check ServiceNow access" / "which tables can we read?" | Access checker | `tvh servicenow access --raw --` |
 | "analyse ServiceNow" / "business rule or flow issue" | Analysis playbook | `~/.golden-path-harness/harness/playbooks/analyse-servicenow.md` |
 
 ## Allowlisted tables

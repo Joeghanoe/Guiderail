@@ -1,5 +1,9 @@
 # Change log
 
+## 2026-11-05
+
+- Completed the public-tool CLI migration with 82 declared routes across 51 tool implementations; 23 libraries, provider adapters, hook handlers and fixtures remain explicitly internal. Added the [checked catalog](tools/cli/catalog.json) and [command reference](tools/cli/commands.md), native-argument forwarding, explicit stdin scope, raw output for pipelines, and guarded human-only operations. PR findings are validated before the existing pipeline writer runs. Updated public playbook and tool examples to use `tvh`. The process-step skills extension remains proposed.
+
 ## 2026-11-04
 
 - Extended `tvh` with frontend capture/comparison, bounded streaming pipeline watches, greenfield initialization, and recorded design verification. Added native initial-skill-selection probes with observed tool-call evidence; workflow outcomes remain separate. Pipeline diagnosis stays a playbook and CLI operation, and installation removes the retired harness-owned skill adapter. The verify template now fails when its design gate is unavailable instead of silently passing design-only verification.

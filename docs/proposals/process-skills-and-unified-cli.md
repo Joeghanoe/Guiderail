@@ -1,30 +1,36 @@
 # Process skills backed by a unified harness CLI
 
-Status: approved by joeghanoe, 2026-11-04. Approval covers the architectural direction and pilot. Breaking changes are acceptable while the harness is in development. This document does not itself install capabilities or change agent permissions.
+Status: approved by joeghanoe, 2026-11-04. CLI migration completed on 2026-11-05 following the explicit request to support all tools. Approval covers the architectural direction and CLI implementation. Breaking changes are acceptable while the harness is in development. This document does not itself install capabilities or change agent permissions.
 
 Expose engineering processes through small, automatically selected skills, and expose executable tools through one stable CLI. Keep playbooks as the canonical process definitions. Start with change review as a skill and pipeline diagnosis as a playbook backed by CLI commands. Measure their effectiveness before expanding automatic process selection.
 
 This optimizes for predictable agent behavior, less repeated tool discovery, and lower context consumption. It costs CLI maintenance, adapter integration, and behavioral evaluation. Token savings remain a hypothesis until measured.
 
-Implementation: partial. The review skill, operational playbooks, and shared command entry point are implemented, but the complete agent-facing toolset has not been migrated. The original goal of one supported invocation path for every agent-facing tool remains incomplete. See the migration inventory below and the [CLI contract and current commands](../../harness/tools/cli/index.md). A native read-only selection runner measures initial skill invocation separately from full workflow execution. Comparative resource measurements remain pending.
+Implementation: the CLI migration covers every current public harness tool operation. The [checked catalog](../../harness/tools/cli/catalog.json) exposes 82 public routes across 51 tool implementations and classifies 23 additional implementation files as internal. The [command reference](../../harness/tools/cli/commands.md) lists each route, implementation and declared effects. Comparative process effectiveness and resource measurements remain separate from command coverage.
 
-The proposed [process-step skills and document-discovery extension](process-step-skills-and-document-discovery.md) maps the wider current and future lifecycle to skills, canonical playbooks and ownership. It also distinguishes graph appearance from actual document discovery. That extension remains proposed.
+The proposed [process-step skills and document-discovery extension](process-step-skills-and-document-discovery.md) remains deferred. Completing this CLI proposal does not approve or begin that extension.
 
 ## CLI migration status
 
-Inventory checked on 2026-11-04 against the [tool catalog](../../harness/tools/index.md) and current CLI command definitions. A domain with some commands exposed is not fully migrated.
+Command coverage completed on 2026-11-05. Run `tvh tools --check --json` to reproduce the source inventory; new unclassified executable files, missing implementations and duplicate command paths fail the coverage check. Every public route also has offline CLI help and contract coverage. Installation or credentials for every optional runtime are not implied by a registered route.
 
-| Available through `tvh` | Remaining public operations |
+| Tool area | Supported CLI routes |
 | --- | --- |
-| Context selection, project verification, change review | Bundle validation/indexing/privacy checks, feedback submission, context-density analysis, adapter checks, findings validation/rendering, advanced verification operations and scanner installation |
-| Cloud and Sonar reads, pipeline diagnosis and watching | ServiceNow reads/access checks, dependency reads/currency checks, local-app diagnostics, ADO PR threads, findings posting, run timing and review-comment mining |
-| Frontend capture/comparison, greenfield initialization | Contrast checks, standalone design checks, convention discovery, spec notes, diagrams and logo/icon lookup |
-| Native initial-skill-selection probes | Reviewer evaluations and queues, candidate/brownfield runners, evaluation freezing/rescoring, run diagnosis, harness-usage analysis, coverage impact, scenario checks, business test plans and orchestration |
-| Project verification can invoke existing checks | Standalone code/IaC gates and project-verify configuration operations still require their current entry points |
+| Bundle and guidance | `bundle`, `context select`, density reports/duplicates/candidates, adapter checks |
+| Review and findings | `review`, `findings validate`, `findings render`, `eval reviewer`, resumable `eval queue` operations |
+| Verification and gates | `verify`, `project verify-config`, `checks` registry/run/code-types/secrets/keyvault/review-plan/report/install-tools, IaC/scenario/test-presence/OpenAPI/Node checks, explicit-file `code types` |
+| Operational reads | `cloud read`, `sonar read`, `servicenow`, `deps`, `dev read`, ADO run diagnosis/watch/timing and PR threads |
+| Operational writes and human tools | ADO PR-findings posting with existing pipeline identity and prior validation; terminal-only review-comment mining, container login and MSAL state production |
+| Design and artifacts | Greenfield initialization/design checks, convention discovery, spec notes, diagrams/logo/icon lookup, frontend capture/comparison/contrast, business test plans |
+| Evaluation and planning | Candidate freeze/run/rescore/login, artifact freezing/verification, brownfield run/grade, run diagnosis, usage/coverage analysis, backup grading, container image builds, native skill-selection probes and orchestration |
 
-The remaining operations are migration work, not capabilities supplied implicitly by the dispatcher. Internal helpers, libraries, provider adapters, fixtures and example producers do not each need a public subcommand. Classify each remaining executable as a public operation or an internal implementation before deciding its command shape. Preserve authorization requirements for operations that write externally, such as posting PR findings.
+Declared native routes use CLI controls before `--` and native arguments after it. `--json` returns the execution envelope; `--raw` preserves native stdout for existing JSON/text pipelines. Exit mapping and effects are explicit in the catalog. Required outputs default into external evidence storage where possible. Checks requiring a changed-path list require explicit stdin scope. Missing runtimes, authentication failures, timeouts, rejected or dropped findings, and incomplete native results cannot become clean checks.
 
-The full migration is complete when every supported agent-facing operation has a documented `tvh` command, command-contract checks cover its behavior and failure states, and skills, playbooks and base instructions use that command instead of runtime-specific script paths. Record intentional exclusions with a reason. Internal implementation scripts and direct CI calls may remain. Pilot completion alone does not satisfy this criterion.
+Internal libraries, provider/grader adapters, hook protocols, diagram package modules and the brownfield snapshot verification fixture are intentional private implementations. Their owning public commands or protocols are recorded in the catalog. They do not need redundant public commands. Native implementation calls may remain in CI, hooks, adapters, engine tests and source-code documentation; agent-facing process instructions use the CLI.
+
+External-write routes retain existing authority and identity requirements. Supporting a PR-posting command does not authorize an agent to post. Human-only operations require an interactive terminal and do not capture credential exchanges in CLI logs. No blanket permission rule is added. Real optional infrastructure and credential-dependent operations are not claimed to be validated merely because routing and stubbed boundary checks pass.
+
+The migration completion criterion is one supported CLI route for every current public operation, explicit reasons for internal exclusions, valid public command references, and passing command/coverage tests. Keep this criterion enforced as tools are added. Full workflow outcomes, native skill selection, business approval, and cost effectiveness remain separate evidence dimensions.
 
 ## Problem and current position
 
@@ -124,7 +130,7 @@ These sources are design references, not dependencies to install. Their mutable 
 | Adopt a complete external process framework | Broad workflow coverage | Adds process, context, and integration costs that need separate justification |
 | Small skill adapters plus a unified CLI | Reuses current guidance and tools; makes invocation consistent | Requires maintained command contracts and per-agent behavioral evaluation |
 
-The proposed option adds consistency without introducing another orchestration framework. Avoid a plugin system, remote execution service, or new policy engine in the pilot.
+The proposed option adds consistency without introducing another orchestration framework. The implementation uses a checked local command catalog and thin dispatch. It adds no plugin system, remote execution service, or policy engine.
 
 ## Delivery and migration
 
@@ -133,7 +139,7 @@ The proposed option adds consistency without introducing another orchestration f
 3. Align the existing review skill with the CLI. Keep pipeline diagnosis in its playbook and commands. Verify review-skill installation and actual discovery for Claude Code and Copilot; assess Codex support separately before claiming parity.
 4. Update pilot playbooks, relevant base instructions, installation rules, and hooks together. Make the CLI the supported pilot interface without compatibility aliases. Existing scripts can remain internal implementations and direct CI entry points.
 5. Evaluate the pilot against the baseline. Expand to additional processes only after reviewing quality, selection reliability, and resource use. Deprecate direct script invocation in agent-facing documentation once equivalent behavior is demonstrated.
-6. Complete the CLI migration inventory above. Migrate the remaining public operations, update their agent-facing references, and test result/exit mapping and existing restrictions. Track this separately from adding skills: onboarding an operational command does not require creating a skill for it.
+6. Completed: migrate the full public tool inventory, update agent-facing references, and check result/exit mapping and existing restrictions. Maintain exhaustive classification and route-help tests. This work is separate from adding skills; onboarding an operational command does not require creating a skill for it.
 
 The CLI ships with the pinned harness revision. Do not auto-update it independently of its skills and playbooks. Installation must detect conflicting executables and offer an explicit path when PATH setup is unavailable. Rolling back restores the previous pinned harness revision; no compatibility layer is required.
 
@@ -141,7 +147,7 @@ The separate [headless Sonar proposal](headless-sonar-analysis.md) can later exp
 
 ## Proposed acceptance and evaluation
 
-These are proposed pilot criteria, subject to review before implementation:
+The following criteria separate CLI correctness from process and model evaluation:
 
 - Natural-language review requests select the review skill without an explicit name. Operational requests use the matching playbook and commands without inventing a dedicated skill. Negative cases, such as explaining pipeline concepts or inspecting an unrelated file, do not start a review process.
 - Pilot tasks use the supported commands without searching for internal script paths or reconstructing runtime invocations.
@@ -158,4 +164,4 @@ Adopt the pilot only when it preserves required behavior and reduces discovery e
 
 ## Decisions requested
 
-The architectural direction and two-process pilot are approved. Use `tvh` with a harness-owned executable directory and target Claude Code and Copilot first. Quantitative adoption thresholds and comparative model runs remain to be agreed before claiming improved effectiveness. Use the existing architecture decision process if this becomes the long-term tooling interface. This proposal does not itself amend approved ADRs or consumer repository policies.
+The architectural direction and CLI migration are approved and implemented. The process-step skills extension remains proposed. Use `tvh` with a harness-owned executable directory and target Claude Code and Copilot first. Quantitative adoption thresholds and comparative model runs remain to be agreed before claiming improved effectiveness. Use the existing architecture decision process if this becomes the long-term tooling interface. This proposal does not itself amend approved ADRs or consumer repository policies.

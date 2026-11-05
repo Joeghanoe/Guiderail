@@ -9,8 +9,8 @@ status: stable
 # Steps
 
 1. **Confirm the scope** in one sentence: the question, the instance, the tables you expect to need. Use a sub-prod instance (UAT or DEV), never production.
-2. **Check access.** Run `~/.golden-path-harness/harness/tools/servicenow/sn-access-check.sh` once per session. A table that returns 403 is a gap to report (CLD.1), not a reason to look for another way in.
-3. **Read configuration, not data.** Use `~/.golden-path-harness/harness/tools/servicenow/sn-get.sh <table> "<encoded query>" "<fields>"`. Start from the question:
+2. **Check access.** Run `tvh servicenow access --raw --` once per session. A table that returns 403 is a gap to report (CLD.1), not a reason to look for another way in.
+3. **Read configuration, not data.** Use `tvh servicenow get --raw -- <table> "<encoded query>" "<fields>"`. Start from the question:
 
    | Question | Tables |
    | --- | --- |

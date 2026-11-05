@@ -9,9 +9,9 @@ Playbook: [write-spec.md](../../playbooks/write-spec.md).
 | When the user says | Tool / Playbook | Command |
 |---|---|---|
 | "write a spec" / "what does done mean here?" | Spec playbook | `~/.golden-path-harness/harness/playbooks/write-spec.md` |
-| "put the spec in my vault" | Spec note writer | `python3 ~/.golden-path-harness/harness/tools/spec/spec-note.py new --customer <folder> --title "<title>"` |
-| "mark the spec agreed" / "it is built" | Front-matter update | `python3 ~/.golden-path-harness/harness/tools/spec/spec-note.py set --customer <folder> --slug <slug> --field status=agreed` |
-| "is there already a spec for this?" | Listing | `python3 ~/.golden-path-harness/harness/tools/spec/spec-note.py list --customer <folder>` |
+| "put the spec in my vault" | Spec note writer | `tvh spec new --raw -- --customer <folder> --title "<title>"` |
+| "mark the spec agreed" / "it is built" | Front-matter update | `tvh spec set --raw -- --customer <folder> --slug <slug> --field status=agreed` |
+| "is there already a spec for this?" | Listing | `tvh spec list --raw -- --customer <folder>` |
 | "record the decision behind it" | Vegviser, not here | the `vegviser-adr` skill and `50-standards/architecture/ADR Standard.md` |
 
 ## Where it writes

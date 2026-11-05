@@ -1,6 +1,6 @@
 # Unified harness CLI
 
-`tvh` provides change review, Azure DevOps run diagnosis/watching, frontend capture/comparison, and greenfield initialization through existing tools. The review skill selects its canonical process. Operational tasks use their playbooks and CLI commands directly; pipeline diagnosis has no dedicated skill. Other tool domains keep their current entry points until migrated.
+`tvh` is the supported invocation interface for every current public harness tool. The [command catalog](commands.md) lists all routes and the internal implementations deliberately kept private. Run `tvh tools --check --json` to verify that every executable tool file is classified. The review skill selects its canonical process. Operational tasks use playbooks and commands directly; pipeline diagnosis has no dedicated skill.
 
 From a checkout, run `./harness/tvh`. After `install.sh`, add `~/.golden-path-harness/bin` to PATH or use its `tvh` executable directly. `GOLDEN_PATH_HOME` relocates the installed executable and skill references. The installer never edits shell profiles or adds a blanket `tvh` permission rule. A conflicting executable in the installation directory is refused; a different executable already on PATH is reported.
 
@@ -23,6 +23,34 @@ tvh greenfield init --target /tmp/new-service --profile service --json
 tvh verify --repo /tmp/new-service --design --json
 ```
 
+## Command conventions
+
+Explicit workflow commands such as `review`, `verify`, and `frontend capture` have their own typed arguments. Other public operations use declared native routes. CLI controls precede `--`; arguments for the underlying operation follow it. The CLI owns interpreter selection, paths, execution limits, retained evidence and exit mapping. Native options remain available without reconstructing a script invocation.
+
+```bash
+tvh tools --check --json
+tvh bundle check --json
+tvh findings validate --raw -- findings.json --repo .
+tvh deps read --json -- npm outdated --json
+tvh servicenow get --json -- sys_script 'active=true' 'sys_id,name'
+tvh dev read --json -- http get http://localhost:3000/health
+tvh scaffold brief --raw -- --repo . --kind service
+tvh spec list --raw -- --vault /path/to/vault --customer example
+tvh orchestrate plan --raw -- --spec 'Build an API and frontend'
+tvh checks iac --input-file changed.txt --json
+tvh checks code-types --json -- --repo . --baseline origin/main --symbols none
+tvh code types --raw -- Widget.cs --symbols none
+tvh eval reviewer --timeout 1800 --json -- --engine copilot
+tvh benchmark candidate run --timeout 3600 --json -- --frozen /tmp/frozen \
+  --manifest-sha256 <trusted-hash> --profile profile.json
+```
+
+Use `--cwd` on native routes to set the working directory without shell chaining. `--input-file` supplies an explicit stdin file; `--input-file -` accepts piped input. IaC and scenario checks require this scope rather than silently checking an empty list. Bundle and density commands accept `--bundle-root` before `--` when operating on an alternative bundle. Native output flags and result schemas remain available after `--`.
+
+Native routes default required output locations into their fresh evidence directory where possible. Explicit native output paths retain the operation's existing artifact/vault scope rules. CLI evidence always stays outside the source and harness checkout. Resumable evaluation queues retain their own persistent runtime state. Set the outer CLI timeout to cover native time budgets, grading and build overhead; it may be 1..86400 seconds per dispatched operation.
+
+`--json` emits the versioned execution envelope. `--raw` emits complete native stdout without banners or truncation, preserving existing JSON/text pipelines while still writing `result.json` and logs separately. These modes are mutually exclusive. Without either, human output previews are bounded. Native exit codes remain in the result even when the CLI normalizes them. Inspect the result's status and native diagnostics before treating a check as complete.
+
 Use an explicit baseline from the PR or repository configuration. `HEAD` selects local edits only. Review computes the merge base of the supplied baseline and HEAD, then includes tracked staged and unstaged changes. Untracked files make review incomplete; the CLI neither stages nor opens them. Inspect and stage intended files separately. Tracked dotenv changes are refused. Filenames containing newlines are unsupported by the existing reviewer input contract.
 
 `--context-file` supplies review topics, specs, and prior check evidence as untrusted data. The independent reviewer retains the existing provider-specific restrictions and JSON findings. Review does not execute verification, approve, fix, commit, or push. The review-and-fix playbook owns the surrounding process. No second reviewer is required merely because the CLI used a provider process.
@@ -37,7 +65,7 @@ Use an explicit baseline from the PR or repository configuration. `HEAD` selects
 
 ## Results and evidence
 
-Every operational command supports `--json`, `--out`, and `--timeout`. JSON options must precede the raw provider arguments of `cloud read`. Output directories must be fresh and outside both the source and harness checkout. The default is a private temporary directory. Logs remain there until removed by the caller or normal temporary-file cleanup; retain required evidence in approved artifact storage.
+Noninteractive operational commands support `--json`, `--raw`, `--out`, and `--timeout`. JSON options must precede the raw provider arguments of `cloud read`. Output directories must be fresh and outside both the source and harness checkout. The default is a private temporary directory. Logs remain there until removed by the caller or normal temporary-file cleanup; retain required evidence in approved artifact storage.
 
 | Exit | Meaning |
 | --- | --- |
@@ -64,14 +92,15 @@ Human output previews at most 12,000 bytes per stream and links to the complete 
 | `greenfield init` | Writes design skeletons and an external project verify; no source implementation or deployment |
 | `frontend capture`, `frontend compare` | Local browser capture and artifact reads; no app startup or remote-host override |
 | `eval skills` | Explicit native model calls with skill/file-reading tools only; local traces and model usage |
+| Remaining catalog commands | Effects are declared per route in [the catalog](commands.md); local execution, network reads, artifact writes, installations and external writes remain distinct |
 
-The CLI dispatches argument arrays, not shell command strings. It does not log in, install tools, rerun pipelines, or widen authorization. Read-wrapper output redaction remains best effort. Verification logs can contain sensitive consumer output; use the existing access and redaction policy. The Bash hook recognizes the supported CLI cloud-read form and continues to reject mutations and command chaining. Identity permissions remain the real boundary.
+The CLI dispatches argument arrays, not shell command strings. Command help and `doctor` do not start authentication or installation. Pinned tool installation, dependency builds, local execution and external writes are separate declared operations, never automatic preflight actions. External writes such as posting PR findings retain the existing pipeline identity and require authorization; adding a route does not authorize posting. No broad allow rule is installed. Human-only container login, MSAL state production and review-comment mining require `--interactive` in a terminal, reject JSON/raw capture and inherit terminal input/output without credential logs. Tool and TTY checks are guardrails, not proof of human identity or a sandbox. No route queues or retries a pipeline. Read-wrapper output redaction remains best effort. Verification logs can contain sensitive consumer output; use the existing access and redaction policy. The Bash hook recognizes the supported CLI cloud-read form and continues to reject mutations and command chaining. Identity permissions remain the real boundary.
 
 Timeouts terminate the process group on POSIX and use `taskkill /T` on Windows. The timeout bounds each dispatched operation, not the total duration of a multi-step process. Syntax errors print normal argument help with exit 2; operational failures return the JSON envelope when requested.
 
 ## Validation and remaining evaluation
 
-`tests/test_cli.py` exercises dispatch, argument preservation, wrapper refusals, timeout handling, incomplete evidence, review replay, verification receipts, source changes, and installation in temporary homes. It makes no provider or network calls.
+`tests/test_cli.py` covers explicit workflows and installation. `tests/test_cli_catalog.py` checks exhaustive file classification, offline help for every route, real local tool dispatch, stdin scope, raw JSON compatibility, native exits, artifact paths, wrapper refusals and human-only boundaries. The deterministic suite makes no provider or remote service calls. Private libraries, provider/grader adapters, hook protocols and snapshot fixtures remain internal; their owners are recorded in the catalog. Direct CI implementation calls may remain.
 
 The [pilot evaluation cases](../../../benchmarks/cases/process-skills.json) distinguish expected native skill selection from workflow outcomes. Run a selected case explicitly with a pinned provider model:
 

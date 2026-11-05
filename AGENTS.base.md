@@ -34,7 +34,7 @@ Use the automatically selected `tv-review` skill for change reviews. It loads th
 
 Use `tvh --help` for supported operations and `tvh doctor` for local prerequisites. If PATH is unset, use `~/.golden-path-harness/bin/tvh`. For guidance selection, use the PR target or established baseline; `HEAD` covers local edits only. Name paths directly when no baseline is established.
 
-Before using an extension, MCP, `curl` or raw CLI, consult `~/.golden-path-harness/harness/tools/index.md`. The CLI retains restricted wrappers for cloud and Sonar reads; other domains keep their documented tools. The user's login is already in place; never log in (CLD.1).
+Before using an extension, MCP, `curl` or raw CLI, consult `~/.golden-path-harness/harness/tools/index.md`. All public harness tools have `tvh` routes; use its domain help. Restricted wrappers and authorization boundaries remain in effect. The user's login is already in place; never log in (CLD.1).
 
 Open the matching playbook under `~/.golden-path-harness/harness/playbooks/` and follow it:
 

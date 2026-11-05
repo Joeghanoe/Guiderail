@@ -12,7 +12,7 @@ Material changes and approval outcomes are summarized in [harness/log.md](harnes
 
 Executable check usage lives with the [verification tools](harness/tools/verification/index.md). Audits, model comparisons and verification run reports belong in `$GOLDEN_PATH_HOME/testing/`, defaulting to `~/.golden-path-harness/testing/`, outside Git.
 
-The [unified CLI](harness/tools/cli/index.md) provides change review, Azure DevOps run diagnosis/watching, frontend capture/comparison, greenfield initialization, and native skill-selection evaluation. `install.sh` installs `tvh` under `$GOLDEN_PATH_HOME/bin` and the automatically selected review skill for Claude Code and Copilot. Pipeline diagnosis stays a playbook and CLI operation. Add the executable directory to PATH or invoke it directly. The CLI and skill ship with the harness revision. Other tool domains retain their existing entry points during development.
+The [unified CLI](harness/tools/cli/index.md) provides change review, Azure DevOps run diagnosis/watching, frontend capture/comparison, greenfield initialization, and native skill-selection evaluation. `install.sh` installs `tvh` under `$GOLDEN_PATH_HOME/bin` and the automatically selected review skill for Claude Code and Copilot. Pipeline diagnosis stays a playbook and CLI operation. Add the executable directory to PATH or invoke it directly. The CLI and skill ship with the harness revision. All current public tool operations have CLI routes; `tvh tools --check --json` verifies coverage. Private libraries, provider adapters and direct CI implementation calls remain internal.
 
 ```bash
 ./harness/tvh doctor --json
@@ -115,7 +115,7 @@ Copilot code review on GitHub runs on GitHub's servers and cannot see `~/.golden
 
 ## Is it loaded? (adapter check)
 
-An `@import` that is present is not proof that it was expanded. `tools/harness/check-adapter.sh [dir]` asks the agent, without tools, whether the marker `tvh-loaded` is in its instructions. That costs one short prompt.
+An `@import` that is present is not proof that it was expanded. `tvh context check-adapter --raw -- [dir]` asks the agent, without tools, whether the marker `tvh-loaded` is in its instructions. That costs one short prompt.
 
 | Tool | Where | Result | Date |
 | --- | --- | --- | --- |
@@ -128,7 +128,7 @@ Re-run after a Claude Code or Copilot update, or a change to how the adapter imp
 
 Reviews use explicit adversarial topics: spec coverage, access and least privilege, failure and recovery, operations and capacity, and delivery risks. Pass additional topics to `/tv-review` with the target. A repository or release review follows [review-repository.md](harness/playbooks/review-repository.md); change reviews keep the existing fix workflow. The [human report template](harness/templates/review-report.md) records scope, checks, decisions, spec coverage, findings and open verifications. Pipeline findings retain their existing JSON contract.
 
-The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Human-verified violation, compliant and boundary examples generate reviewer evals; undecided feedback and automation proposals do not. Their bad examples must be flagged by the linked rule and their good examples must not; boundary cases test only the good side. Run `python3 -I harness/tools/review/eval.py` after changing rules, examples, playbooks or the review tools; CI does the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md). The [verdict and status reference](docs/example-verdicts.md) explains classification, human acceptance, advisory cases and pass/fail/error results.
+The AI review is only trusted as far as its evals show (Vegviser AI Evaluation Standard). Human-verified violation, compliant and boundary examples generate reviewer evals; undecided feedback and automation proposals do not. Their bad examples must be flagged by the linked rule and their good examples must not; boundary cases test only the good side. Run `tvh eval reviewer --raw --` after changing rules, examples, playbooks or the review tools; CI does the same. Engines, gate thresholds, evidence and options: [harness/tools/review/README.md](harness/tools/review/README.md). The [verdict and status reference](docs/example-verdicts.md) explains classification, human acceptance, advisory cases and pass/fail/error results.
 
 ## How the harness learns
 
@@ -151,12 +151,12 @@ The hook runs a pinned Prettier version on staged Markdown files. It removes ext
 Run `pre-commit run --all-files` to format existing Markdown. CI runs the same check and fails if formatting changes are needed. Generated concept indexes are excluded because `bundle.py` owns their exact contents.
 
 ```bash
-python3 harness/tools/harness/bundle.py index    # after adding or renaming a concept
-python3 harness/tools/harness/bundle.py check    # OKF conformance, IDs, links, code in examples, indexes
-python3 harness/tools/harness/bundle.py privacy-check
-python3 harness/tools/harness/bundle.py budget       # always-loaded text (AGENTS.base.md, index.md) stays within its recorded size
+tvh bundle index --raw --    # after adding or renaming a concept
+tvh bundle check --raw --    # OKF conformance, IDs, links, code in examples, indexes
+tvh bundle privacy-check --raw --
+tvh bundle budget --raw --       # always-loaded text (AGENTS.base.md, index.md) stays within its recorded size
 tests/run.sh                             # tools, hooks and install
-python3 -I harness/tools/review/eval.py  # the reviewer, when rules, examples or the review changed
+tvh eval reviewer --raw --  # the reviewer, when rules, examples or the review changed
 ```
 
 Git history is the change log; write the why in the commit message. CI (`azure-pipelines.yml`) runs the same checks plus shellcheck, and the evals when the review changed.

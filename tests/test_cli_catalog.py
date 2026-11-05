@@ -3,6 +3,7 @@ import importlib.util
 import json
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -36,7 +37,7 @@ class CatalogTests(unittest.TestCase):
 
     def stub(self, name, body):
         path = self.bin / name
-        path.write_text('#!/usr/bin/env python3\n' + body)
+        path.write_text('#!' + sys.executable + '\n' + body)
         path.chmod(0o755)
 
     def test_every_executable_tool_is_classified_and_every_route_has_offline_help(self):
@@ -68,7 +69,7 @@ class CatalogTests(unittest.TestCase):
             self.assertEqual(data['data']['native_exit_code'], 0)
 
     def test_explicit_stdin_scope_reaches_iac_and_scenario_checks(self):
-        (self.cwd / 'bad.bicep').write_text("resource r 'x@1' = { properties: { minTlsVersion: '1.0' } }\n")
+        (self.cwd / 'bad.bicep').write_text("resource r 'x@1' = {\n properties: {\n minTlsVersion: '1.0'\n }\n}\n")
         changed = self.root / 'changed.txt'
         changed.write_text('bad.bicep\n')
         proc, data = self.run_cli('checks', 'iac', '--json', '--input-file', str(changed))
@@ -146,6 +147,78 @@ class CatalogTests(unittest.TestCase):
         argv = json.loads(pathlib.Path(data['steps'][0]['stdout']).read_text())
         self.assertEqual(argv[-1], literal)
         self.assertFalse((self.cwd / 'no-shell-evaluation').exists())
+
+    def test_raw_output_keeps_native_json_parseable_and_retains_separate_receipt(self):
+        findings = self.root / 'findings.json'
+        findings.write_text('[]')
+        out = self.root / 'raw-evidence'
+        proc = subprocess.run([sys.executable, '-I', str(CLI), 'findings', 'validate', '--raw',
+                               '--out', str(out), '--', str(findings)], cwd=self.cwd, env=self.env,
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        self.assertEqual(json.loads(proc.stdout), [])
+        self.assertEqual(json.loads((out / 'result.json').read_text())['status'], 'completed')
+
+    def test_posting_validates_before_the_existing_pipeline_writer(self):
+        marker = self.root / 'posted'
+        self.stub('curl', 'import pathlib, sys\n'
+                  f'if "POST" in sys.argv:\n    pathlib.Path({str(marker)!r}).write_text("posted")\n'
+                  'print("{\\"value\\": []}")\n')
+        self.env.update(SYSTEM_ACCESSTOKEN='fixture-token', SYSTEM_COLLECTIONURI='https://dev.azure.com/example',
+                        SYSTEM_TEAMPROJECT='test', BUILD_REPOSITORY_ID='repo', SYSTEM_PULLREQUEST_PULLREQUESTID='1')
+        (self.cwd / 'app.cs').write_text('class App {}\n')
+        findings = self.root / 'findings.json'
+        finding = dict(rule_id='UNKNOWN', file='app.cs', line=1, evidence='class App',
+                       confidence='high', severity='minor', summary='Fixture finding')
+        findings.write_text(json.dumps([finding]))
+        proc, data = self.run_cli('ado', 'pr', 'post-findings', '--json', '--', str(findings))
+        self.assertEqual(proc.returncode, 2, data)
+        self.assertFalse(marker.exists())
+        finding['rule_id'] = 'CODE.5'
+        findings.write_text(json.dumps([finding]))
+        proc, data = self.run_cli('ado', 'pr', 'post-findings', '--json', '--', str(findings))
+        self.assertEqual(proc.returncode, 0, data)
+        self.assertTrue(marker.exists())
+        self.assertEqual(data['scope']['effects'], ['external-write', 'pipeline-identity'])
+
+    def test_findings_cannot_anchor_outside_the_declared_source_or_into_dotenv(self):
+        finding = dict(rule_id='CODE.5', file='../outside.cs', line=1, evidence='x', confidence='high')
+        file = self.root / 'unsafe-findings.json'
+        for name in ('../outside.cs', '.git/config', '.env'):
+            finding['file'] = name
+            file.write_text(json.dumps([finding]))
+            proc, data = self.run_cli('findings', 'validate', '--json', '--', str(file), '--repo', str(self.cwd))
+            self.assertEqual((proc.returncode, data['status']), (2, 'incomplete'), data)
+
+    def test_diagram_build_retains_its_default_artifact(self):
+        source = ROOT / 'harness/tools/diagrams/examples/minimal.json'
+        proc, data = self.run_cli('diagram', 'build', '--json', '--', str(source))
+        self.assertEqual(proc.returncode, 0, data)
+        artifact = pathlib.Path(data['artifacts']['diagram.drawio'])
+        self.assertIn('<mxfile', artifact.read_text())
+
+    def test_a_native_success_cannot_hide_a_missing_requested_preview(self):
+        self.stub('python3', 'import pathlib, sys\n'
+                  'a=sys.argv\np=pathlib.Path(a[a.index("--out")+1])\np.write_text("<mxfile/>")\n')
+        proc, data = self.run_cli('diagram', 'build', '--json', '--', 'spec.json', '--png', str(self.root / 'missing.png'))
+        self.assertEqual((proc.returncode, data['status']), (2, 'incomplete'), data)
+        self.assertIn('missing.png', data['error'])
+
+    @unittest.skipUnless(shutil.which('dotnet'), 'the explicit-file checker requires the .NET SDK')
+    def test_explicit_file_csharp_checker_builds_externally_and_preserves_findings(self):
+        (self.cwd / 'App.cs').write_text('class App {} class Extra {}\n')
+        proc, data = self.run_cli('code', 'types', '--json', '--', 'App.cs', '--symbols', 'none')
+        self.assertEqual((proc.returncode, data['status']), (1, 'failed'), data)
+        self.assertFalse((self.cwd / 'bin').exists())
+        report = json.loads(pathlib.Path(data['steps'][-1]['stdout']).read_text())
+        self.assertEqual(report['version'], 2)
+        self.assertGreater(len(report['findings']), 0)
+
+    def test_command_reference_documentation_matches_catalog(self):
+        doc = ROOT / 'harness/tools/cli/commands.md'
+        self.assertTrue(doc.exists(), 'commands.md must exist')
+        self.assertEqual(doc.read_text(encoding='utf-8'), catalog.documentation())
+
 
 
 if __name__ == '__main__':

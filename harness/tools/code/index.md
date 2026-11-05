@@ -1,17 +1,8 @@
 # C# structural checks
 
-Build: `dotnet build harness/tools/code/CheckTypes.csproj` (SDK 10, with the .NET 10 targeting pack).
-The checker uses Roslyn assemblies from the selected SDK, with no NuGet analyzer dependency.
+Use `tvh code types --raw -- Widget.cs Other.cs` from the source tree for an explicit-file check. The CLI builds the SDK-backed checker in its external evidence directory; no manual DLL path is needed. SDK 10 and its targeting pack must be installed. Add `--baseline <baseline-source-tree>` or `--symbols DEBUG,FEATURE` after the files; use `--symbols none` for an explicitly empty configuration. Source paths remain relative to the working directory.
 
-Run from the source tree: `dotnet <absolute-path-to-CheckTypes.dll> Widget.cs Other.cs`.
-Add `--baseline <absolute-path-to-baseline-source-tree>` after the paths for change evaluation.
-For conditional code, pass `--symbols DEBUG,FEATURE` or `--symbols none`. Run once per supported
-configuration; the JSON records symbols and coverage for that run, not all possible configurations.
-Without this option a file containing `#if` returns an error instead of a compliance result.
-Paths are explicit and relative to the current source tree. The caller supplies the isolated workspace
-and baseline; the checker never edits either. Pin the selected SDK and checker commit in run evidence.
-Save stdout outside the repository as the JSON report. Exit 0 means no structural findings, 1 means
-CODE.5 findings, and 2 means the check could not complete. An error must not be scored as compliance.
+For repository-scoped change checks and retained verification receipts, use `tvh checks code-types --json -- --repo . --baseline origin/main --symbols none`. The [CLI catalog](../cli/commands.md) records both operations. CLI exit 0 means complete without findings, 1 reports findings, and 2 means incomplete. Native JSON and exit codes remain in retained evidence; `--raw` preserves the native JSON stream for explicit-file callers.
 
 The [checker source](Program.cs) is authoritative for structural mechanics and exclusions.
 `tests/test_code_types.py` demonstrates the accepted cases. This page documents invocation and
@@ -33,4 +24,4 @@ return exit 2. Capture the checker commit and SDK version alongside JSON for rep
 
 ## Project verify
 
-`project-verify.sh path [repo-root]` prints, and `project-verify.sh init [--profile generic|service|web-app] [repo-root]` writes, the project's quick verify command in `~/.golden-path-harness/projects/<repo-id>/verify.sh` (the repo-id comes from the origin URL). It is kept outside the repo: CI is the full gate, this is the agent's fast local subset, run by the Stop hook with `--fast` (T.1). A scripts/verify.sh committed in a repo is not used.
+`tvh project verify-config path --raw -- [repo-root]` prints, and `tvh project verify-config init --raw -- [--profile generic|service|web-app] [repo-root]` writes, the project's quick verify command in `~/.golden-path-harness/projects/<repo-id>/verify.sh` (the repo-id comes from the origin URL). It is kept outside the repo: CI is the full gate, this is the agent's fast local subset, run by the Stop hook with `--fast` (T.1). A scripts/verify.sh committed in a repo is not used.

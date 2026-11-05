@@ -3,6 +3,7 @@ import argparse
 import ast
 import json
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -23,9 +24,20 @@ def subcommands(parser, depth):
 
 
 def usage(item):
-    source = (BUNDLE / 'tools' / item['tool']).read_text(encoding='utf-8')
+    try:
+        source = (BUNDLE / 'tools' / item['tool']).read_text(encoding='utf-8')
+    except OSError:
+        return 'Implementation unavailable; run tvh tools --check.'
     if item['runtime'] == 'python':
-        return (ast.get_docstring(ast.parse(source)) or item['summary'])[:4000]
+        try:
+            tree = ast.parse(source)
+            options = sorted({arg.value for call in ast.walk(tree) if isinstance(call, ast.Call)
+                              and isinstance(call.func, ast.Attribute) and call.func.attr == 'add_argument'
+                              for arg in call.args if isinstance(arg, ast.Constant) and isinstance(arg.value, str)})
+            return ((ast.get_docstring(tree) or item['summary'])[:3200] +
+                    ('\n\nNative argument names: ' + ', '.join(options) if options else ''))
+        except SyntaxError:
+            return 'Native source contains a syntax error; command execution will be incomplete.'
     lines = source.splitlines()
     header = []
     for line in lines[1:]:
@@ -79,6 +91,27 @@ def inventory():
             'tool_files': len(actual), 'public_tool_files': len(covered), 'errors': errors}
 
 
+def documentation():
+    data = manifest()
+    rows = ['# Public commands and internal implementations', '',
+            'This reference comes from [catalog.json](catalog.json). Use `tvh tools --check --json` to verify coverage.', '',
+            'For declared native routes, place CLI controls before `--` and native arguments after it. '
+            'Use `--json` for the execution envelope or `--raw` for native stdout. '
+            'Human-only commands require `--interactive` in a terminal and do not capture credentials.', '',
+            '| Command | Implementation | Effects |', '| --- | --- | --- |']
+    for item in sorted(data['builtins'] + data['commands'], key=lambda i: i['path']):
+        effect = ', '.join(item.get('effects', ['see CLI contract']))
+        if item.get('human_only'):
+            effect += '; human terminal only'
+        rows.append('| `tvh ' + ' '.join(item['path']) + '` | [' + item['tool'] + '](../' + item['tool'] + ') | ' + effect + ' |')
+    rows += ['', '## Internal implementations', '',
+             'These are reached through the public commands or hook/profile protocols. '
+             'They are not separate agent-facing commands.', '',
+             '| File | Reason |', '| --- | --- |']
+    rows += ['| [' + item['tool'] + '](../' + item['tool'] + ') | ' + item['reason'] + ' |' for item in data['internal']]
+    return '\n'.join(rows) + '\n'
+
+
 def raw_arguments(args):
     native = args.native_args
     return native[1:] if native[:1] == ['--'] else native
@@ -102,10 +135,36 @@ def source_roots(args):
     return roots
 
 
+def validate_finding_paths(file, repo):
+    original = pathlib.Path(file)
+    file = original.resolve(strict=True)
+    if any(p == '.env' or p.startswith('.env.') and p != '.env.example' for p in (*original.parts, *file.parts)):
+        raise ValueError('A dotenv file cannot be used as findings input')
+    raw = file.read_text(encoding='utf-8')
+    fenced = re.search(r'```(?:json)?\s*(\[.*\])\s*```', raw, flags=re.S)
+    raw = fenced.group(1) if fenced else raw[raw.find('['):raw.rfind(']') + 1]
+    findings = json.loads(raw)
+    if not isinstance(findings, list):
+        raise ValueError('Findings must be an array')
+    for finding in findings:
+        if not isinstance(finding, dict):
+            raise ValueError('Each finding must be an object')
+        name = finding.get('file', '')
+        if not isinstance(name, str):
+            raise ValueError('Finding file must be a repository-relative path')
+        path = pathlib.PurePosixPath(name.lstrip('/'))
+        if (not path.parts or path.parts[0] in {'.git', '.harness'} or '..' in path.parts
+                or '\\' in name or pathlib.PureWindowsPath(name).drive):
+            raise ValueError('Unsafe finding file path')
+        resolved = (repo / path).resolve()
+        if not resolved.is_relative_to(repo) or any(p == '.env' or p.startswith('.env.') and p != '.env.example' for p in resolved.parts):
+            raise ValueError('Finding file resolves outside its source scope or to a dotenv file')
+
+
 def run(args, out, result, execute):
     if args.command == 'tools':
         result['data'] = inventory()
-        result['status'] = 'failed' if result['data']['errors'] else 'completed'
+        result['status'] = 'failed' if args.check and result['data']['errors'] else 'completed'
         return True
     item = getattr(args, 'catalog_command', None)
     if not item:
@@ -115,6 +174,27 @@ def run(args, out, result, execute):
         raise ValueError('--cwd must be a directory')
     native = raw_arguments(args)
     tool = BUNDLE / 'tools' / item['tool']
+    if item.get('reject_dropped') or item.get('validate_findings'):
+        if not native or native[0].startswith('-'):
+            if native not in (['--help'], ['-h']):
+                raise ValueError('Supply a findings JSON file as the first native argument')
+        else:
+            repo = cwd
+            if '--repo' in native:
+                if native.index('--repo') + 1 >= len(native):
+                    raise ValueError('--repo needs a directory')
+                repo = (cwd / native[native.index('--repo') + 1]).resolve()
+            validate_finding_paths(cwd / native[0], repo)
+            if item.get('validate_findings'):
+                if len(native) != 1:
+                    raise ValueError('Posting accepts one validated findings file')
+                validated = execute([sys.executable, '-I', str(BUNDLE / 'tools/harness/bundle.py'),
+                                     'findings', native[0], '--repo', str(cwd)], cwd, out,
+                                    'validate-findings', args.timeout)
+                result['steps'].append(validated)
+                if validated['exit_code'] or 'dropped finding' in pathlib.Path(validated['stderr']).read_text(errors='replace'):
+                    raise ValueError('Findings validation is incomplete; nothing was posted')
+                native = [validated['stdout']]
     if item['runtime'] == 'csharp':
         project = out / 'checker'
         project.mkdir()
@@ -173,10 +253,25 @@ def run(args, out, result, execute):
         raise ValueError('Findings were dropped; validation is incomplete')
     if code in item['success']:
         missing = [name for name, path in generated.items() if not path.exists()]
+        for flag in item.get('required_artifacts', []):
+            aliases = [flag] + item.get('flag_aliases', {}).get(flag, [])
+            for i, arg in enumerate(command):
+                if arg in aliases and i + 1 < len(command):
+                    target = cwd / command[i + 1]
+                elif any(arg.startswith(alias + '=') for alias in aliases):
+                    target = cwd / arg.partition('=')[2]
+                else:
+                    continue
+                if not target.exists():
+                    missing.append(str(target))
+                else:
+                    result['artifacts'][flag.lstrip('-')] = str(target)
         if missing and '--help' not in native and '-h' not in native and not item.get('optional_output'):
             raise ValueError('Native operation returned no required artifact: ' + ', '.join(missing))
         result['status'] = 'completed'
     elif code in item['failure']:
+        if item.get('failure_requires_stdout') and pathlib.Path(step['stdout']).stat().st_size == 0:
+            raise ValueError('Native operation failed before producing a check result')
         result['status'] = 'failed'
     else:
         raise ValueError(f'Native operation incomplete (exit {code}); see retained diagnostics')

@@ -117,7 +117,8 @@ def harness_identity():
     spec.loader.exec_module(verification)
     return {**verification.harness_identity(),
             'cli_inputs': {name: hashlib.sha256((BUNDLE / name).read_bytes()).hexdigest()
-                           for name in ('tvh', 'tools/cli/main.py', 'tools/cli/workflows.py', 'playbooks/review-and-fix.md',
+                           for name in ('tvh', 'tools/cli/main.py', 'tools/cli/workflows.py', 'tools/cli/catalog.py',
+                                        'tools/cli/catalog.json', 'playbooks/review-and-fix.md',
                                         'playbooks/diagnose-pipeline-failure.md')}}
 
 
@@ -188,8 +189,11 @@ def run(args, out, result):
         return step
 
     if args.command == 'doctor':
-        tools = {name: shutil.which(name) for name in ('bash', 'git', 'jq', 'curl', 'node', 'az', 'claude', 'copilot', 'codex', 'agy')}
+        tools = {name: shutil.which(name) for name in ('bash', 'git', 'jq', 'curl', 'node', 'dotnet', 'pwsh', 'docker',
+                                                     'npm', 'pnpm', 'az', 'terraform', 'tofu', 'kubectl', 'hcloud',
+                                                     'claude', 'copilot', 'codex', 'agy')}
         result['data'] = {'python': sys.executable, 'bundle': str(BUNDLE), 'executables': tools,
+                          'python_modules': {'openpyxl': importlib.util.find_spec('openpyxl') is not None},
                           'credentials': 'not inspected', 'skills': 'installation does not prove model selection'}
         result['status'] = 'completed' if all(tools[x] for x in ('bash', 'git', 'jq', 'curl')) else 'incomplete'
         return

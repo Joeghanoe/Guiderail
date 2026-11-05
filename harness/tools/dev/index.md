@@ -10,12 +10,12 @@ visible action.
 
 | When the user says | Command |
 |---|---|
-| "is the app up?" / "what is on port 5000?" | `~/.golden-path-harness/harness/tools/dev/dev-read.sh ports 5000` |
-| "does /health answer?" / "what does the API return?" | `~/.golden-path-harness/harness/tools/dev/dev-read.sh http get http://localhost:5000/health` (`http head <url>` for headers only) |
-| "which containers are running?" | `~/.golden-path-harness/harness/tools/dev/dev-read.sh docker ps` (also `images`, `stats --no-stream`, `top <c>`, `port <c>`, `compose ps`) |
-| "check the container logs" / "why did it crash?" | `~/.golden-path-harness/harness/tools/dev/dev-read.sh docker logs --tail 100 --since 10m <container>` (`docker compose logs <service>`) |
-| "inspect the container" / "what state is it in?" | `~/.golden-path-harness/harness/tools/dev/dev-read.sh docker inspect <container>` (Env values are masked), or `--format '{{.State.Status}}'` |
-| "read the app log" | `~/.golden-path-harness/harness/tools/dev/dev-read.sh logfiles`, then `logfile <path> --tail 200` |
+| "is the app up?" / "what is on port 5000?" | `tvh dev read --raw -- ports 5000` |
+| "does /health answer?" / "what does the API return?" | `tvh dev read --raw -- http get http://localhost:5000/health` (`http head <url>` for headers only) |
+| "which containers are running?" | `tvh dev read --raw -- docker ps` (also `images`, `stats --no-stream`, `top <c>`, `port <c>`, `compose ps`) |
+| "check the container logs" / "why did it crash?" | `tvh dev read --raw -- docker logs --tail 100 --since 10m <container>` (`docker compose logs <service>`) |
+| "inspect the container" / "what state is it in?" | `tvh dev read --raw -- docker inspect <container>` (Env values are masked), or `--format '{{.State.Status}}'` |
+| "read the app log" | `tvh dev read --raw -- logfiles`, then `logfile <path> --tail 200` |
 
 ## What it allows and refuses
 

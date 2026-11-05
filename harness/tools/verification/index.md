@@ -3,7 +3,7 @@
 `requirements.json` is a versioned registry of scoped requirements, their methods, available tools and residual judgment. It travels with the bundle under tools, outside OKF concept discovery. Existing concept types, rule IDs, verdicts and routing remain compatible.
 
 ```bash
-python3 -I harness/tools/verification/verify.py check
+tvh checks registry --raw --
 ```
 
 A tool's presence means available implementation. It does not establish installation or required execution in a consumer. The registry retains implemented, standard-tool-candidate, custom-automation-candidate, hybrid, semantic-only and guidance-only states. Methods remain independent. An `automation-candidate` example can link to an implemented tool without changing its verdict.
@@ -13,7 +13,7 @@ A tool's presence means available implementation. It does not establish installa
 Run from a Git repository root. Choose a new directory outside both the source repository and the harness.
 
 ```bash
-python3 -I .harness/tools/verification/verify.py run \
+tvh checks run --timeout 1800 --raw -- \
   --requirement T.1.verify-command --repo . --stage local \
   --out /tmp/orders-verification/command --timeout 1800 \
   -- bash scripts/verify.sh
@@ -24,7 +24,7 @@ This records command completion and retained output, not proof that the command 
 ## Check C# changes independently of retrieval
 
 ```bash
-python3 -I .harness/tools/verification/verify.py code-types \
+tvh checks code-types --raw -- \
   --repo . --baseline origin/main --symbols none --symbols DEBUG \
   --out /tmp/orders-verification/code-types
 ```
@@ -36,7 +36,7 @@ The runner copies/builds the existing SDK-backed checker in temporary storage an
 ## Summarize required evidence
 
 ```bash
-python3 -I .harness/tools/verification/verify.py report \
+tvh checks report --raw -- \
   --out /tmp/orders-verification/receipt.json \
   --required T.1.verify-command CODE.5.file-layout \
   --review CODE.5.responsibility \
@@ -69,10 +69,10 @@ tools_dir="${GOLDEN_PATH_HOME:-$HOME/.golden-path-harness}/cache/verification-to
 testing_root="${GOLDEN_PATH_HOME:-$HOME/.golden-path-harness}/testing"
 mkdir -p "$testing_root/runs"
 run_dir="$(mktemp -d "$testing_root/runs/verification.XXXXXX")"
-python3 -I .harness/tools/verification/install-tools.py --out "$tools_dir"
-python3 -I .harness/tools/verification/verify.py gitleaks \
+tvh checks install-tools --raw -- --out "$tools_dir"
+tvh checks secrets --raw -- \
   --repo . --tools "$tools_dir" --working-tree --out "$run_dir/secrets"
-python3 -I .harness/tools/verification/verify.py psrule \
+tvh checks keyvault --raw -- \
   --repo . --tools "$tools_dir" --template infra/vault.bicep \
   --parameters infra/vault.dev.parameters.json --out "$run_dir/vault"
 ```

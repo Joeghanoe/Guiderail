@@ -8,11 +8,11 @@ command, a human runs it. Gate: [framework-currency.md](../../gates/framework-cu
 
 | When the user says | Tool | Command |
 |---|---|---|
-| "what is outdated?" / "are we on the latest?" | Package reader | `~/.golden-path-harness/harness/tools/deps/dep-read.sh dotnet list package --outdated --format json > outdated.json` |
-| "npm outdated" | Package reader | `~/.golden-path-harness/harness/tools/deps/dep-read.sh npm outdated --json > npm-outdated.json` |
-| "which SDK / runtime is installed?" | Runtime query | `~/.golden-path-harness/harness/tools/deps/dep-read.sh dotnet --list-sdks` (or `--list-runtimes`) |
-| "any vulnerable packages?" | Advisory read, needs the flag | `~/.golden-path-harness/harness/tools/deps/dep-read.sh --allow-network dotnet list package --vulnerable` or `... --allow-network npm audit --json` |
-| "are we at n-1?" (DEL.2) | Currency gate | `python3 ~/.golden-path-harness/harness/tools/deps/check-currency.py --current currency.json --dotnet-outdated outdated.json --npm-outdated npm-outdated.json --description pr.txt` |
+| "what is outdated?" / "are we on the latest?" | Package reader | `tvh deps read --raw -- dotnet list package --outdated --format json > outdated.json` |
+| "npm outdated" | Package reader | `tvh deps read --raw -- npm outdated --json > npm-outdated.json` |
+| "which SDK / runtime is installed?" | Runtime query | `tvh deps read --raw -- dotnet --list-sdks` (or `--list-runtimes`) |
+| "any vulnerable packages?" | Advisory read, needs the flag | `tvh deps read --raw -- --allow-network dotnet list package --vulnerable` or `... --allow-network npm audit --json` |
+| "are we at n-1?" (DEL.2) | Currency gate | `tvh deps currency --raw -- --current currency.json --dotnet-outdated outdated.json --npm-outdated npm-outdated.json --description pr.txt` |
 
 ## What the wrapper does and refuses
 

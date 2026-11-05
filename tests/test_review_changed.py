@@ -15,6 +15,7 @@ class ReviewChangedTests(unittest.TestCase):
                  'harness/tools/verification/requirements.json': True, 'harness/hooks/edit-gate.sh': True,
                  'AGENTS.base.md': True, 'adapters/tv-review.skill.md': True,
                  'harness/tvh': True, 'harness/tools/cli/main.py': True,
+                 'harness/tools/cli/catalog.json': True,
                  'harness/rules/code/rule.md': True, 'docs/audits/note.md': False}
         with tempfile.TemporaryDirectory() as temp:
             root = pathlib.Path(temp)

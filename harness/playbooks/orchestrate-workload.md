@@ -18,13 +18,13 @@ Splitting the workload among focused subagents coordinated by a lead orchestrati
 
 # Trigger
 
-`orchestrate.py layers --spec "<task>" --report REPORT.md` counts the layers a task touches; three or more means this playbook applies. It exits 3 until the report holds the plan or a named reason for one thread (`Decomposition: single thread - <reason>`).
+`tvh orchestrate layers --raw -- --spec "<task>" --report REPORT.md` counts the layers a task touches; three or more means this playbook applies. It exits 3 until the report holds the plan or a named reason for one thread (`Decomposition: single thread - <reason>`).
 
 # Input
 
 - The requirement, epic, or issue description (e.g., from backlog or user prompt).
 - The repository structure, affected files, and existing verification commands (`dotnet test`, `pnpm test`, etc.).
-- Optional: run `python3 ~/.golden-path-harness/harness/tools/orchestration/orchestrate.py plan --spec "<description>" --format markdown`.
+- Optional: run `tvh orchestrate plan --raw -- --spec "<description>" --format markdown`.
 
 # Steps
 
@@ -52,9 +52,9 @@ For each subagent, select the model tier that minimizes token spend while satisf
 
 Assign the tier, never a vendor's model name: the tier is the decision, the name is a lookup that differs per platform and goes stale. Take the tier to whatever model your platform offers for it, the cheapest one that reliably passes the work package's verification command. If the platform offers one model, the tier still decides how much context and review the work gets.
 
-To resolve tiers to names for a provider, pass `--provider <name>` (or set `HARNESS_MODEL_PROVIDER`). `orchestrate.py` reads `models.json` beside it, then `~/.config/harness/models.json`, then `--models FILE`; add any vendor there, with the date you checked its names. No provider is the default, a provider that is not configured is an error, and a name older than 120 days is flagged as stale.
+To resolve tiers to names for a provider, pass `--provider <name>` (or set `HARNESS_MODEL_PROVIDER`). `tvh orchestrate tier` reads `models.json` beside it, then `~/.config/harness/models.json`, then `--models FILE`; add any vendor there, with the date you checked its names. No provider is the default, a provider that is not configured is an error, and a name older than 120 days is flagged as stale.
 
-Use `python3 ~/.golden-path-harness/harness/tools/orchestration/orchestrate.py tier --task "<subtask>"` to verify the recommended tier.
+Use `tvh orchestrate tier --raw -- --task "<subtask>"` to verify the recommended tier.
 
 ### 3. Dispatch & Supervise
 

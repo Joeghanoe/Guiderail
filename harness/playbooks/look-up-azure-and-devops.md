@@ -14,10 +14,10 @@ status: draft
 
 # Steps
 
-1. **Find the subscription or organization.** `cloud-read.sh az account list --output table` lists every subscription the login can see. To find a resource without knowing where it is: `cloud-read.sh az graph query -q "Resources | where type =~ 'microsoft.apimanagement/service' | project name, resourceGroup, subscriptionId"`. For Azure DevOps use the organization URL from the repo remote, the pipeline or the user.
+1. **Find the subscription or organization.** `tvh cloud read --raw az account list --output table` lists every subscription the login can see. To find a resource without knowing where it is: `tvh cloud read --raw az graph query -q "Resources | where type =~ 'microsoft.apimanagement/service' | project name, resourceGroup, subscriptionId"`. For Azure DevOps use the organization URL from the repo remote, the pipeline or the user.
 2. **Name it on the call.** Nothing is "selected" for you. Put `--subscription <id>` on each `az` call and `--org <url> --project <name>` on each `az repos`, `az pipelines`, `az boards` and `az devops` call.
 3. **Read with the narrowest command.** `az <service> list|show --subscription <id> --resource-group <rg>`. A policy or setting that has no `az` command: `az rest --method get --url "https://management.azure.com/subscriptions/<id>/resourceGroups/<rg>/providers/Microsoft.ApiManagement/service/<apim>/apis/<api>/policies/policy?api-version=2022-08-01&format=rawxml"`. Use `--query` to cut output.
-4. **Read the refusal, not around it.** Exit 3 names the word it refused. Exit 4 means the login expired: tell the user to run `! az login` and retry once they have. Do not fall back to `curl`, a token or a portal.
+4. **Read the refusal, not around it.** CLI exit 2 means incomplete evidence; the retained native diagnostic distinguishes a refused command from an expired login. For an expired login, tell the user to run `! az login` and retry once they have. Do not fall back to `curl`, a token or a portal.
 5. **Report.** Conclusion first, then the command and what it returned, then what you did not read.
 
 # Boundaries

@@ -41,7 +41,7 @@ After a decision, move the processed source feedback from `feedback/` to `docs/f
 To prepare a draft without changing the active harness checkout, run this before adding `verified`:
 
 ```bash
-python3 -I ~/.golden-path-harness/harness/tools/harness/bundle.py submit-feedback ~/.golden-path-harness/feedback/<draft.md>
+tvh bundle submit-feedback --raw -- ~/.golden-path-harness/feedback/<draft.md>
 ```
 
 The command validates the draft, creates a local branch and worktree under `~/.golden-path-harness/workspaces/feedback/`, copies it into `harness/examples/`, refreshes the index and stages those two files. It does not contact a remote or create a PR. Review the staged diff, apply the acceptance metadata, run the required checks, then commit, push and open the PR yourself.

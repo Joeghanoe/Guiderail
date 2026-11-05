@@ -18,8 +18,8 @@ Playbook: [scaffold-from-conventions.md](../../playbooks/scaffold-from-conventio
 
 | When the user says | Command |
 |---|---|
-| "what does this repo call things?" / picking the right `--kind` | `python3 .harness/tools/scaffold/read-conventions.py kinds --repo <dir>` |
-| "add a service / endpoint / component like the others" | `python3 .harness/tools/scaffold/read-conventions.py brief --repo <dir> --kind service` |
+| "what does this repo call things?" / picking the right `--kind` | `tvh scaffold kinds --raw -- --repo <dir>` |
+| "add a service / endpoint / component like the others" | `tvh scaffold brief --raw -- --repo <dir> --kind service` |
 | the repo uses its own word for it | `... brief --repo <dir> --kind service --alias svc --alias provider` |
 | feeding another tool | add `--format json` |
 

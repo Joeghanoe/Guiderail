@@ -244,7 +244,8 @@
       "effects": [
         "model-call"
       ],
-      "summary": "context check-adapter"
+      "summary": "context check-adapter",
+      "failure_requires_stdout": true
     },
     {
       "path": [
@@ -559,7 +560,12 @@
         "--out": [
           "-o"
         ]
-      }
+      },
+      "required_artifacts": [
+        "--out",
+        "--svg",
+        "--png"
+      ]
     },
     {
       "path": [
@@ -627,7 +633,8 @@
       "effects": [
         "local-read"
       ],
-      "summary": "frontend contrast"
+      "summary": "frontend contrast",
+      "failure_requires_stdout": true
     },
     {
       "path": [
@@ -723,7 +730,8 @@
         "external-write",
         "pipeline-identity"
       ],
-      "summary": "ado pr post-findings"
+      "summary": "ado pr post-findings",
+      "validate_findings": true
     },
     {
       "path": [
@@ -1017,7 +1025,8 @@
         "local-read"
       ],
       "summary": "checks openapi",
-      "requires_input": false
+      "requires_input": false,
+      "failure_requires_stdout": true
     },
     {
       "path": [
