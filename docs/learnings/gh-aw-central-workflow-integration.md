@@ -146,5 +146,23 @@ When modifying review rules, playbooks, or instructions in `Guiderail`:
    gh aw compile
    ```
 4. Verify with `gh aw validate`.
-5. Commit and push both `.md` and `.lock.yml` to `main`.
+5. Commit and push `.md`, `.lock.yml`, and the `.yml` alias to `main`.
 6. All downstream repositories instantly inherit the updated review standards without any changes to their individual codebases.
+
+---
+
+## 5. Wiring the Deterministic Harness & Dynamic Rules
+
+A review agent requires more than just high-level prose; it needs the exact rules and precedent examples that apply to the changed files, plus execution evidence from deterministic repository checks:
+
+1. **Mounting the Harness via `steps:`**:
+   Using `actions/checkout`, the central workflow checks out `Joeghanoe/Guiderail` into `.harness` inside the runner workspace before the agent runs.
+
+2. **Pre-flight Deterministic Gates (`T.1`)**:
+   If the repository has a `./scripts/verify.sh` test script, it is run first. If it fails, the agent reports this as a blocker finding under rule `T.1` without approving.
+
+3. **Dynamic Rule Selection (`bundle.py select`)**:
+   `bundle.py select` reads the PR's `changed.txt` and generates `/tmp/gh-aw/harness/selected.json`. The agent opens this file to inspect the exact rules and precedents relevant to the change, avoiding hallucinated or irrelevant rule citations.
+
+4. **Two-Axis Assessment**:
+   Findings are evaluated and formatted following `.harness/skills/engineering/code-review/REVIEW-CHANGE.md` across both **Standards** and **Spec** axes.

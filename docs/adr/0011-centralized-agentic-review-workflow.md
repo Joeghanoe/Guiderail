@@ -101,6 +101,14 @@ In GitHub Actions, **`issue_comment` triggers are always resolved and evaluated 
 
 The caller relay file (`review.yml`) must be merged into `main` of the consuming repository for `/golden-path-review` PR comments to trigger.
 
+### 6. Deterministic Harness Execution & Dynamic Rule Selection
+
+A static prompt alone cannot evaluate code changes reliably across diverse repositories. To achieve parity with `tv-review` and `infra/pipelines/ai-review.yml`:
+1. **Harness Checkout in `steps:`**: The central workflow runs a checkout step to mount `Joeghanoe/Guiderail` into `.harness` inside the runner workspace.
+2. **Deterministic Pre-flight Gate**: If the downstream repository defines `./scripts/verify.sh`, it is executed prior to AI agent invocation. If this gate fails, review is blocked under rule `T.1`.
+3. **Dynamic Rule & Precedent Selection**: `bundle.py select` runs against the changed files (`changed.txt`) to produce `/tmp/gh-aw/harness/selected.json`, containing only the applicable rules, summaries, and human-verified precedent examples.
+4. **Agent Inspection via Bash Tools**: The agent is provided with bash tools (`cat`, `ls`, `grep`, `python3`) and instructed to inspect `/tmp/gh-aw/harness/selected.json`, adhere to `.harness/skills/engineering/code-review/REVIEW-CHANGE.md`, and report findings across the two independent axes (Standards vs. Spec).
+
 ---
 
 ## Examples

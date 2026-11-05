@@ -24,6 +24,54 @@ engine: copilot
 tools:
   github:
     toolsets: [default]
+  bash: ["cat", "ls", "grep", "head", "tail", "python3", "git"]
+
+steps:
+  - name: Checkout Golden Path Harness
+    uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+    with:
+      repository: Joeghanoe/Guiderail
+      path: .harness
+      persist-credentials: false
+
+  - name: Run Golden Path Harness Gates and Rule Selection
+    env:
+      BASE_REF: ${{ github.base_ref }}
+    run: |
+      set -euo pipefail
+      mkdir -p /tmp/gh-aw/harness
+
+      # Determine PR baseline and changed files
+      target="origin/${BASE_REF:-main}"
+      git fetch origin "${BASE_REF:-main}" --depth=100 || true
+      git merge-base "$target" HEAD > /tmp/gh-aw/harness/base.txt 2>/dev/null || git rev-parse HEAD~1 > /tmp/gh-aw/harness/base.txt || echo "HEAD" > /tmp/gh-aw/harness/base.txt
+      base_commit="$(cat /tmp/gh-aw/harness/base.txt)"
+      git diff --name-only "$base_commit"...HEAD > /tmp/gh-aw/harness/changed.txt 2>/dev/null || git diff --name-only HEAD~1...HEAD > /tmp/gh-aw/harness/changed.txt || touch /tmp/gh-aw/harness/changed.txt
+      git diff "$base_commit"...HEAD > /tmp/gh-aw/harness/diff.patch 2>/dev/null || git diff HEAD~1...HEAD > /tmp/gh-aw/harness/diff.patch || touch /tmp/gh-aw/harness/diff.patch
+
+      echo "=== Changed files ==="
+      cat /tmp/gh-aw/harness/changed.txt
+
+      # Execute dynamic rule selection
+      python3 -I .harness/harness/tools/harness/bundle.py select < /tmp/gh-aw/harness/changed.txt > /tmp/gh-aw/harness/selected.json 2>/dev/null || echo "{}" > /tmp/gh-aw/harness/selected.json
+
+      # Execute semantic review-plan
+      if [ -f .harness/harness/tools/verification/verify.py ]; then
+        python3 -I .harness/harness/tools/verification/verify.py review-plan --selected /tmp/gh-aw/harness/selected.json --out /tmp/gh-aw/harness/semantic-plan.json 2>/dev/null || true
+      fi
+
+      # Pre-flight gate: Execute verify.sh if present
+      if [ -f ./scripts/verify.sh ]; then
+        echo "Executing deterministic verify gate (./scripts/verify.sh)..."
+        if bash ./scripts/verify.sh > /tmp/gh-aw/harness/verify.log 2>&1; then
+          echo "PASS" > /tmp/gh-aw/harness/verify.status
+        else
+          echo "FAIL" > /tmp/gh-aw/harness/verify.status
+          echo "Deterministic verify gate failed!"
+        fi
+      else
+        echo "NO_SCRIPT" > /tmp/gh-aw/harness/verify.status
+      fi
 
 safe-outputs:
   submit-pull-request-review:
@@ -50,7 +98,23 @@ Your role is advisory: you uncover defects, standard violations, security issues
 
 ---
 
-## 2. Review Methodology: The Two Axes
+## 2. Execution of Harness Gates & Context
+
+Before analyzing the diff:
+1. **Pre-flight Gate Check**:
+   - Check `/tmp/gh-aw/harness/verify.status`.
+   - If the status is `FAIL`, read `/tmp/gh-aw/harness/verify.log`. A failing deterministic verification gate blocks review (`T.1`). Report this as a `blocker` finding citing rule `T.1` with the failure log evidence.
+2. **Dynamic Rule Selection**:
+   - Read `/tmp/gh-aw/harness/selected.json`. This provides the exact rules (`rules`), rule summaries (`summary`), and human-verified precedent examples (`precedent`) selected for this change by `bundle.py select`.
+   - Read `.harness/skills/engineering/code-review/REVIEW-CHANGE.md` for the canonical review procedure.
+   - For any cited rule or precedent, read the markdown rule in `.harness/harness/rules/...` and example in `.harness/harness/examples/...`.
+   - If `/tmp/gh-aw/harness/semantic-plan.json` exists, follow the semantic rubrics and scopes specified therein.
+3. **Diff & Changed Files**:
+   - Inspect `/tmp/gh-aw/harness/changed.txt` and `/tmp/gh-aw/harness/diff.patch` to examine the complete changeset.
+
+---
+
+## 3. Review Methodology: The Two Axes
 
 Evaluate the pull request across two independent axes without mixing or cross-axis reranking:
 
@@ -92,7 +156,7 @@ Review the diff adversarially against established TeamValue rules:
 
 ---
 
-## 3. Findings Format & Output
+## 4. Findings Format & Output
 
 When reporting findings, adhere strictly to the following standards:
 
