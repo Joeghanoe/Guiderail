@@ -108,6 +108,43 @@ class GuidanceTests(unittest.TestCase):
             self.assertFalse((Path(tmp) / 'gp').exists())
             self.assertEqual(path.read_text(), 'personal skill')
 
+    def test_legacy_debug_migrates_for_both_clients_and_install_roots(self):
+        old = (ROOT / 'tests/fixtures/legacy-debug.txt').read_bytes()
+        for custom in (False, True):
+            with self.subTest(custom=custom), tempfile.TemporaryDirectory() as tmp:
+                home = Path(tmp) / 'home'
+                installed = Path(tmp) / 'custom harness' if custom else home / '.golden-path-harness'
+                vscode = Path(tmp) / 'vscode'
+                env = dict(os.environ, HOME=str(home), GOLDEN_PATH_HOME=str(installed),
+                           HARNESS_VSCODE_USER_DIR=str(vscode))
+                for client in ('.claude', '.copilot'):
+                    directory = home / client / 'skills/debug'
+                    directory.mkdir(parents=True)
+                    content = old.replace(b'~/.golden-path-harness', str(installed).encode()) if custom else old
+                    (directory / 'SKILL.md').write_bytes(content)
+                    (directory / 'PERSONAL.md').write_text('keep')
+                for _ in range(2):
+                    run = subprocess.run(['bash', str(ROOT / 'install.sh')], env=env,
+                                         capture_output=True, text=True)
+                    self.assertEqual(run.returncode, 0, run.stderr)
+                for client in ('.claude', '.copilot'):
+                    directory = home / client / 'skills/debug'
+                    self.assertIsNotNone(guidance.manifest(directory))
+                    self.assertTrue((directory / 'HYPOTHESIS-LOOP.md').is_file())
+                    self.assertEqual((directory / 'PERSONAL.md').read_text(), 'keep')
+                    self.assertNotEqual((directory / 'SKILL.md').read_bytes(), old)
+
+    def test_modified_legacy_debug_still_conflicts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp) / 'debug'
+            directory.mkdir()
+            old = (ROOT / 'tests/fixtures/legacy-debug.txt').read_bytes() + b'\nPersonal change\n'
+            (directory / 'SKILL.md').write_bytes(old)
+            hashes = json.loads((ROOT / 'skills/legacy-packages.json').read_text())['debug']
+            with self.assertRaisesRegex(ValueError, 'Skill-name conflict'):
+                guidance.publish(ROOT / 'skills/engineering/debug/SKILL.md', directory, ROOT, ROOT, hashes)
+            self.assertEqual((directory / 'SKILL.md').read_bytes(), old)
+
     def test_known_legacy_review_is_removed_but_personal_namesake_survives(self):
         with tempfile.TemporaryDirectory() as tmp:
             home = Path(tmp) / 'home'
