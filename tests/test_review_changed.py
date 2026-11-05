@@ -13,7 +13,7 @@ class ReviewChangedTests(unittest.TestCase):
                  'harness/tools/review/run-codex.py': True, 'harness/tools/review/run-copilot.py': True,
                  'harness/tools/review/run-agy.py': True, 'harness/tools/review/thresholds.json': True,
                  'harness/tools/verification/requirements.json': True, 'harness/hooks/edit-gate.sh': True,
-                 'AGENTS.base.md': True, 'adapters/tv-review.skill.md': True,
+                 'AGENTS.base.md': True, 'skills/engineering/tv-review/SKILL.md': True,
                  'harness/tvh': True, 'harness/tools/cli/main.py': True,
                  'harness/tools/cli/catalog.json': True,
                  'harness/rules/code/rule.md': True, 'docs/audits/note.md': False}

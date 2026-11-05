@@ -54,7 +54,7 @@ harness/              the bundle (~/.golden-path-harness/harness after install.s
                       sonar/, frontend/, deps/, dev/, spec/, scaffold/, orchestration/
   hooks/              guard-bash.sh, guard-read.sh, stop-verify.sh
 feedback/             draft examples from every repo (~/.golden-path-harness/feedback), reviewed weekly
-adapters/             /tv-review for Claude Code, installed by install.sh
+skills/               engineering process skills, installed by install.sh
 benchmarks/          agent evaluation scenarios (task, criteria, run profiles); tests/ verifies the harness itself
 infra/scripts/        CI and local helper scripts (context budget, review-changed, eval-home-setup)
 infra/pipelines/ai-review.yml   Azure DevOps steps template: pin, verify, T.5, AI review, receipt, clean-up

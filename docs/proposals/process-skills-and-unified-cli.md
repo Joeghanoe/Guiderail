@@ -41,7 +41,7 @@ The current implementation provides a useful starting point:
 - [AGENTS.base.md](../../AGENTS.base.md) contains universal rules, process routing, and concrete script invocations.
 - [Playbooks](../../harness/playbooks/index.md) describe task triggers, steps, exceptions, and expected outputs.
 - [Tools](../../harness/tools/index.md) implement operations across several runtimes and domains.
-- [tv-review](../../adapters/tv-review.skill.md) is already a small skill adapter that directs the agent to a canonical playbook. The installer registers it for Claude Code and Copilot.
+- [tv-review](../../skills/engineering/tv-review/SKILL.md) is a small skill adapter that directs the agent to a canonical playbook. The installer registers it for Claude Code and Copilot.
 - [Context delivery](../../harness/tools/harness/context.py) selects relevant rules before edits and deduplicates unchanged guidance. Its receipt establishes selection, not that an agent read or followed every document.
 - [Verification contracts](../../harness/tools/verification/index.md) distinguish executed checks, retained evidence, semantic review, and approval.
 

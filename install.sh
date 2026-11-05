@@ -213,11 +213,15 @@ for name in ("known_marketplaces.json", "installed_plugins.json"):
             write(path, json.dumps(data, indent=2) + "\n")
 
 # Both clients discover native personal skills; VS Code profile instructions do not register a slash command.
+skills_dir = here / "skills/engineering"
+skill_sources = sorted(skills_dir.glob("*/SKILL.md")) if skills_dir.exists() else []
+
 for client in (".claude", ".copilot"):
-    for name in ("tv-review",):
+    for source in skill_sources:
+        name = source.parent.name
         skill = home / client / "skills" / name / "SKILL.md"
         if install:
-            text = (here / f"adapters/{name}.skill.md").read_text(encoding="utf-8")
+            text = source.read_text(encoding="utf-8")
             if gp_home != home / ".golden-path-harness":
                 text = text.replace("~/.golden-path-harness", str(gp_home))
             write(skill, text)

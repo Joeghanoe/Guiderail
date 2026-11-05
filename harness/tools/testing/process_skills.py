@@ -26,7 +26,7 @@ def prepare(workspace, engine):
     directory = workspace / ('.github/skills' if engine == 'copilot' else '.claude/skills')
     hashes = {}
     for name in SKILLS:
-        source = REPO / f'adapters/{name}.skill.md'
+        source = REPO / 'skills/engineering' / name / 'SKILL.md'
         content = source.read_text(encoding='utf-8')
         hashes[name] = hashlib.sha256(content.encode()).hexdigest()
         target = directory / name / 'SKILL.md'
